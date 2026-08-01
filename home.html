@@ -18,9 +18,16 @@
         <img src="./assets/logo-adaaja.png" alt="AdaAja">
     
 </a>
-<div class="header-auth">
-<a href="login.html" class="login-btn">Masuk</a>
-<a href="register.html" class="register-btn">Daftar</a>
+<div class="header-auth" id="headerAuth">
+
+<a href="login.html" class="login-btn">
+Masuk
+</a>
+
+<a href="register.html" class="register-btn">
+Daftar
+</a>
+
 </div>
 
     
@@ -300,6 +307,69 @@ function toggleNotification(){
     document.getElementById("notificationPopup").classList.toggle("show");
 }
 </script>
+<script>
 
+function loadUserSession(){
+
+    const userData = localStorage.getItem("user");
+
+    const header = document.getElementById("headerAuth");
+
+
+    if(!header){
+        return;
+    }
+
+
+    if(userData){
+
+
+        const user = JSON.parse(userData);
+
+
+        let nama = user.username || "Akun";
+
+
+        header.innerHTML = `
+
+        <a href="profile.html" 
+        class="login-btn"
+        style="
+        display:flex;
+        align-items:center;
+        gap:8px;
+        ">
+
+        ${
+        user.foto_profile
+        ?
+        `<img src="${user.foto_profile}" 
+        style="
+        width:24px;
+        height:24px;
+        border-radius:50%;
+        object-fit:cover;
+        ">`
+        :
+        ""
+        }
+
+        ${nama}
+
+        </a>
+
+        `;
+
+
+    }
+
+
+}
+
+
+loadUserSession();
+
+
+</script>
 </body>
 </html>
