@@ -340,10 +340,12 @@ function loadUserSession(){
         gap:8px;
         ">
 
-        ${
-        user.foto_profile
-        ?
-        `<img src="${convertDriveImage(user.foto_profile)}"
+       ${user.foto_profile 
+?
+`<img src="${convertDriveImage(user.foto_profile)}">`
+:
+""
+}
         
         style="
         width:24px;
@@ -389,6 +391,27 @@ loadUserSession();
 
     }
 
+
+    return url;
+
+}
+
+function convertDriveImage(url){
+
+    if(!url){
+        return "";
+    }
+
+    if(url.includes("drive.google.com")){
+
+        const id = url.match(/[-\w]{25,}/);
+
+        if(id){
+
+            return "https://drive.google.com/thumbnail?id=" + id[0] + "&sz=w200";
+
+        }
+    }
 
     return url;
 
