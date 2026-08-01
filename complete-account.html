@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AdaAja Complete Account V21</title>
+<link rel="stylesheet" href="complete-account.css">
+</head>
+<body>
+<div class="app">
+
+<header>
+<button class="back">‹</button>
+<img class="logo" src="assets/logo.png" alt="AdaAja">
+</header>
+
+<h1>Lengkapi akun kamu</h1>
+<p class="subtitle">Lengkapi informasi untuk pengalaman jual beli yang lebih aman.</p>
+
+<section class="profile-card">
+<h3>Profil Pengguna</h3>
+
+<div class="avatar" id="avatar">+</div>
+
+<label class="upload">
+Tambah foto profil
+<input id="photo" type="file" accept="image/*">
+</label>
+
+<label>Username</label>
+<div class="username-box">
+<span>@</span>
+<input placeholder="Buat username">
+</div>
+
+</section>
+
+<section class="address-card">
+<h3>Alamat Pengiriman</h3>
+
+<button class="field" onclick="openLocation('province')">
+<div><small>Provinsi</small><b id="province">Pilih provinsi</b></div>›
+</button>
+
+<button class="field" onclick="openLocation('city')">
+<div><small>Kota/Kabupaten</small><b id="city">Pilih kota</b></div>›
+</button>
+
+<button class="field" onclick="openLocation('district')">
+<div><small>Kecamatan</small><b id="district">Pilih kecamatan</b></div>›
+</button>
+
+<button class="field" onclick="openLocation('village')">
+<div><small>Kelurahan/Desa</small><b id="village">Pilih kelurahan</b></div>›
+</button>
+
+<label>Alamat lengkap</label>
+<textarea placeholder="Rumah, jalan, nomor, detail alamat"></textarea>
+
+<label>Kode Pos</label>
+<input placeholder="Masukkan kode pos">
+
+</section>
+
+<button class="save">Simpan & Mulai</button>
+
+<div class="sheet" id="sheet">
+<div class="sheet-box">
+<h2 id="title"></h2>
+<input id="search" placeholder="Cari lokasi">
+<div id="list"></div>
+</div>
+</div>
+
+</div>
+<script src="complete-account.js"></script>
+</body>
+</html>

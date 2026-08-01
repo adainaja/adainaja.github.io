@@ -1,0 +1,1 @@
+V21 - Username only, navy gradient profile card, white address card, title case locations. Place AdaAja logo at assets/logo.png

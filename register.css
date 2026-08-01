@@ -1,0 +1,21 @@
+*{box-sizing:border-box}
+body{margin:0;background:#f5f7fa;font-family:Arial,sans-serif;color:#092544}
+.app{max-width:430px;min-height:100vh;background:#fff;margin:auto;padding:24px}
+header{height:50px;display:flex;justify-content:center;align-items:center;position:relative}
+.back{position:absolute;left:0;background:#f5f7fa;width:40px;height:40px;border-radius:14px;text-align:center;line-height:40px;text-decoration:none;color:#092544}
+.logo{width:125px}
+.steps{display:flex;gap:8px;margin-top:22px}.steps div{height:4px;flex:1;background:#e5e7eb;border-radius:10px}.steps .active{background:#ff7a00}
+.labels{display:flex;justify-content:space-between;color:#9ca3af;font-size:11px;margin-top:7px}
+.welcome{margin-top:30px}.welcome h1{font-size:26px;margin:0 0 8px}.welcome p{font-size:14px;color:#6b7280}
+label{display:block;font-size:13px;font-weight:700;margin:17px 0 8px}
+input{width:100%;height:54px;border:1px solid #e5e7eb;border-radius:17px;padding:0 16px;font-size:14px}
+input:focus{outline:none;border-color:#ff7a00}
+.pass{position:relative}.pass button{position:absolute;right:12px;top:12px;border:0;background:none}
+#message{height:15px;font-size:12px}.error{color:#dc2626}.success{color:#16a34a}
+.check{display:flex;gap:8px;align-items:center;font-size:12px;font-weight:400;color:#6b7280;margin-top:20px}
+.check input{width:16px;height:16px}
+.main-btn{width:100%;height:56px;border:0;border-radius:18px;background:#ff7a00;color:white;font-size:16px;font-weight:bold;margin-top:20px}
+.divider{display:flex;align-items:center;gap:10px;color:#aaa;font-size:12px;margin:24px 0}
+.divider:before,.divider:after{content:'';height:1px;background:#eee;flex:1}
+.google{height:54px;width:100%;border-radius:17px;border:1px solid #e5e7eb;background:white;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:bold;color:#092544}
+.login{text-align:center;margin-top:28px;color:#6b7280;font-size:14px}.login a{color:#ff7a00;font-weight:bold;text-decoration:none}
