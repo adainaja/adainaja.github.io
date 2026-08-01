@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verifikasi OTP AdaAja</title>
+<link rel="stylesheet" href="otp-login.css">
+</head>
+<body>
+
+<div class="app">
+
+<header>
+<img src="assets/logo-adaaja.png" class="logo">
+</header>
+
+<section class="box">
+
+<h1>Verifikasi OTP</h1>
+<p>Kode verifikasi telah dikirim ke email Anda.</p>
+
+<input id="otp" maxlength="6" placeholder="Masukkan 6 digit kode OTP">
+
+<p id="message"></p>
+
+<button class="main-btn" onclick="verifyLogin()">
+Verifikasi & Masuk
+</button>
+
+</section>
+
+</div>
+
+<script src="otp-login.js"></script>
+
+</body>
+</html>
