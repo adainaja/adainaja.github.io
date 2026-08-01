@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verifikasi OTP AdaAja</title>
+<link rel="stylesheet" href="otp.css">
+</head>
+<body>
+<div class="app">
+<header><img src="assets/logo-adaaja.png" class="logo"></header>
+<section class="otp-box">
+<h1>Verifikasi Email</h1>
+<p>Masukkan kode OTP yang dikirim ke:</p>
+<strong id="emailText"></strong>
+<div class="otp-input">
+<input maxlength="1"><input maxlength="1"><input maxlength="1">
+<input maxlength="1"><input maxlength="1"><input maxlength="1">
+</div>
+<p id="message"></p>
+<button class="main-btn" onclick="verify()">Verifikasi</button>
+<div class="resend">Belum menerima kode? <button onclick="resend()">Kirim ulang</button></div>
+</section>
+</div>
+<script src="otp.js"></script>
+</body>
+</html>
