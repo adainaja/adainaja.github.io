@@ -343,7 +343,8 @@ function loadUserSession(){
         ${
         user.foto_profile
         ?
-        `<img src="${user.foto_profile}" 
+        `<img src="${convertDriveImage(user.foto_profile)}"
+        
         style="
         width:24px;
         height:24px;
@@ -369,6 +370,29 @@ function loadUserSession(){
 
 loadUserSession();
 
+    function convertDriveImage(url){
+
+    if(!url){
+        return "";
+    }
+
+
+    if(url.includes("drive.google.com")){
+
+        const id = url.match(/[-\w]{25,}/);
+
+        if(id){
+
+            return "https://drive.google.com/uc?export=view&id=" + id[0];
+
+        }
+
+    }
+
+
+    return url;
+
+}
 
 </script>
 </body>
