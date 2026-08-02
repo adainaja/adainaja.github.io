@@ -312,27 +312,23 @@ function toggleNotification(){
 function loadUserSession(){
 
     const userData = localStorage.getItem("user");
-
     const header = document.getElementById("headerAuth");
-
 
     if(!header){
         return;
     }
 
+    if(!userData){
+        return;
+    }
 
-    if(userData){
-
+    try{
 
         const user = JSON.parse(userData);
 
-
-        let nama = user.username || "Akun";
-
-
         header.innerHTML = `
 
-        <a href="profile.html" 
+        <a href="profile.html"
         class="login-btn"
         style="
         display:flex;
@@ -340,32 +336,33 @@ function loadUserSession(){
         gap:8px;
         ">
 
-       ${user.foto_profile 
-?
-`<img src="${convertDriveImage(user.foto_profile)}">`
-:
-""
-}
-        
-        style="
-        width:24px;
-        height:24px;
-        border-radius:50%;
-        object-fit:cover;
-        ">`
-        :
-        ""
+        ${
+            user.foto_profile
+            ?
+            `<img
+            src="${convertDriveImage(user.foto_profile)}"
+            alt="Foto profil"
+            style="
+            width:32px;
+            height:32px;
+            border-radius:50%;
+            object-fit:cover;
+            ">`
+            :
+            ""
         }
 
-        ${nama}
+        <span>${user.username || user.nama_lengkap || "Akun"}</span>
 
         </a>
 
         `;
 
+    }catch(error){
+
+        console.error("Session user tidak valid:", error);
 
     }
-
 
 }
 
