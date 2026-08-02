@@ -309,16 +309,14 @@ function toggleNotification(){
 </script>
 <script>
 
+<script>
+
 function loadUserSession(){
 
     const userData = localStorage.getItem("user");
     const header = document.getElementById("headerAuth");
 
-    if(!header){
-        return;
-    }
-
-    if(!userData){
+    if(!header || !userData){
         return;
     }
 
@@ -347,6 +345,7 @@ function loadUserSession(){
             height:32px;
             border-radius:50%;
             object-fit:cover;
+            display:block;
             ">`
             :
             ""
@@ -367,9 +366,6 @@ function loadUserSession(){
 }
 
 
-loadUserSession();
-
-
 function convertDriveImage(url){
 
     if(!url){
@@ -385,11 +381,15 @@ function convertDriveImage(url){
             return "https://drive.google.com/thumbnail?id=" + id[0] + "&sz=w200";
 
         }
+
     }
 
     return url;
 
 }
+
+
+loadUserSession();
 
 </script>
 </body>
