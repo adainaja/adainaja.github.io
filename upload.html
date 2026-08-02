@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>Jual Produk - AdaAja</title>
+  <link rel="stylesheet" href="upload.css">
+</head>
+<body>
+<div class="app-shell">
+
+  <header class="topbar">
+    <a class="back-button" href="home.html" aria-label="Kembali">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+    </a>
+    <div>
+      <span class="eyebrow">MULAI BERJUALAN</span>
+      <h1>Jual produk</h1>
+    </div>
+    <button class="draft-button" id="draftButton" type="button">Simpan draf</button>
+  </header>
+
+  <main>
+    <form id="productForm" novalidate>
+
+      <section class="form-card photo-card">
+        <div class="section-heading">
+          <div>
+            <span class="section-number">01</span>
+            <h2>Foto produk</h2>
+          </div>
+          <span class="optional-note"><b id="photoCount">0</b>/10</span>
+        </div>
+        <p class="section-description">Foto pertama menjadi sampul. Gunakan foto asli, terang, dan terlihat jelas.</p>
+
+        <div class="photo-grid" id="photoGrid">
+          <label class="photo-add" for="photoInput">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="5" width="18" height="15" rx="3"></rect>
+              <path d="m7 15 3-3 3 3 2-2 3 3"></path>
+              <path d="M12 8v5M9.5 10.5h5"></path>
+            </svg>
+            <strong>Tambah foto</strong>
+            <span>Maks. 10</span>
+          </label>
+        </div>
+        <input id="photoInput" type="file" accept="image/*" multiple hidden>
+      </section>
+
+      <section class="form-card">
+        <div class="section-heading">
+          <div>
+            <span class="section-number">02</span>
+            <h2>Informasi produk</h2>
+          </div>
+        </div>
+
+        <label class="field">
+          <span class="field-label">Nama produk</span>
+          <input id="productName" type="text" maxlength="40" placeholder="Contoh: Tas kulit wanita warna cokelat">
+          <small><span id="nameCount">0</span>/40 karakter</small>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Deskripsi</span>
+          <textarea id="description" maxlength="1000" placeholder="Jelaskan kondisi, kelengkapan, ukuran, dan kekurangan produk dengan jujur."></textarea>
+          <small><span id="descriptionCount">0</span>/1000 karakter</small>
+        </label>
+
+        <div class="field">
+          <span class="field-label">Kategori</span>
+          <select id="category">
+            <option value="">Pilih kategori</option>
+            <option value="CAT_BARANG">Barang</option>
+            <option value="CAT_JASA">Jasa</option>
+            <option value="CAT_MAKANAN">Makanan</option>
+            <option value="CAT_RUMAH">Rumah</option>
+            <option value="CAT_ELEKTRONIK">Elektronik</option>
+            <option value="CAT_KENDARAAN">Kendaraan</option>
+            <option value="CAT_EVENT">Event</option>
+            <option value="CAT_LAINNYA">Lainnya</option>
+          </select>
+        </div>
+
+        <label class="field">
+          <span class="field-label">Merek <em>Opsional</em></span>
+          <input id="brand" type="text" maxlength="60" placeholder="Masukkan merek produk">
+        </label>
+
+        <div class="field">
+          <span class="field-label">Kondisi</span>
+          <select id="condition">
+            <option value="">Pilih kondisi produk</option>
+            <option value="new">Baru, belum pernah digunakan</option>
+            <option value="like_new">Seperti baru</option>
+            <option value="good">Kondisi baik</option>
+            <option value="fair">Ada sedikit bekas pemakaian</option>
+            <option value="poor">Ada kerusakan atau noda</option>
+            <option value="very_poor">Kondisi kurang baik</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="form-card">
+        <div class="section-heading">
+          <div>
+            <span class="section-number">03</span>
+            <h2>Pengiriman</h2>
+          </div>
+        </div>
+
+        <div class="field">
+          <span class="field-label">Biaya pengiriman</span>
+          <div class="segmented-control" id="shippingPayerGroup">
+            <button type="button" data-value="seller">Ditanggung penjual</button>
+            <button type="button" data-value="buyer">Ditanggung pembeli</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <span class="field-label">Metode pengiriman</span>
+          <select id="shippingMethod">
+            <option value="">Pilih metode pengiriman</option>
+            <option value="kurir">Kurir / ekspedisi</option>
+            <option value="instant">Instan / same day</option>
+            <option value="pickup">Ambil di tempat</option>
+            <option value="digital">Produk digital / tanpa pengiriman</option>
+          </select>
+        </div>
+
+        <label class="field">
+          <span class="field-label">Dikirim dari</span>
+          <input id="shipFromRegion" type="text" maxlength="80" placeholder="Contoh: Batam, Kepulauan Riau">
+        </label>
+
+        <div class="field">
+          <span class="field-label">Waktu proses</span>
+          <select id="processingTime">
+            <option value="">Pilih waktu proses</option>
+            <option value="1-2 hari">1–2 hari</option>
+            <option value="2-3 hari">2–3 hari</option>
+            <option value="4-7 hari">4–7 hari</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="form-card">
+        <div class="section-heading">
+          <div>
+            <span class="section-number">04</span>
+            <h2>Harga & stok</h2>
+          </div>
+        </div>
+
+        <label class="field">
+          <span class="field-label">Harga jual</span>
+          <div class="money-input">
+            <span>Rp</span>
+            <input id="price" inputmode="numeric" placeholder="0">
+          </div>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Stok tersedia</span>
+          <div class="stock-input">
+            <button type="button" id="decreaseStock" aria-label="Kurangi stok">−</button>
+            <input id="stock" type="number" min="1" max="9999" value="1">
+            <button type="button" id="increaseStock" aria-label="Tambah stok">+</button>
+          </div>
+        </label>
+      </section>
+
+      <div class="notice" id="formMessage" role="status"></div>
+
+      <section class="publish-summary">
+        <div>
+          <strong>Siap diterbitkan?</strong>
+          <span>Produk akan langsung tampil setelah berhasil disimpan.</span>
+        </div>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+      </section>
+
+      <button class="publish-button" id="publishButton" type="submit">
+        <span>Terbitkan produk</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </form>
+  </main>
+</div>
+
+<div class="loading-overlay" id="loadingOverlay" aria-hidden="true">
+  <div class="loading-card">
+    <div class="spinner"></div>
+    <strong>Menerbitkan produk</strong>
+    <span>Mohon jangan tutup halaman ini.</span>
+  </div>
+</div>
+
+<script src="upload.js"></script>
+</body>
+</html>
