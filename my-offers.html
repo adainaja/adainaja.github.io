@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Penawaran Saya - AdaAja</title>
+<link rel="stylesheet" href="my-offers.css">
+</head>
+<body>
+<div class="app-shell">
+<header class="topbar">
+<a href="profile.html" class="icon-button">‹</a>
+<div class="page-title"><span>PEMBELI</span><h1>Penawaran Saya</h1></div>
+<button class="icon-button" id="refreshButton">↻</button>
+</header>
+
+<section class="hero-card">
+<div class="hero-copy">
+<span>RINGKASAN PENAWARAN</span>
+<h2>Pantau semua harga yang Anda ajukan</h2>
+<p>Penawaran diterima dapat langsung dilanjutkan ke checkout.</p>
+</div>
+<div class="hero-stats">
+<div><strong id="pendingCount">0</strong><span>Menunggu</span></div>
+<div><strong id="acceptedCount">0</strong><span>Diterima</span></div>
+<div><strong id="rejectedCount">0</strong><span>Ditolak</span></div>
+</div>
+</section>
+
+<nav class="filter-tabs">
+<button class="active" data-status="all">Semua</button>
+<button data-status="pending">Menunggu</button>
+<button data-status="accepted">Diterima</button>
+<button data-status="rejected">Ditolak</button>
+</nav>
+
+<main id="offersContainer">
+<section class="state-card"><div class="spinner"></div><strong>Memuat penawaran...</strong><span>Mohon tunggu sebentar.</span></section>
+</main>
+</div>
+<script src="my-offers.js"></script>
+</body>
+</html>
