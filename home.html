@@ -469,8 +469,18 @@ function renderProductCard(product){
     convertDriveImage(product.image_url);
 
     const imageContent = image
-    ? `<img src="${image}" alt="${escapeHtml(product.nama_produk)}">`
-    : `<div class="product-image-placeholder">Tidak ada foto</div>`;
+    ? `<img
+        src="${image}"
+        alt="${escapeHtml(product.nama_produk)}"
+        loading="lazy"
+        onerror="this.parentElement.innerHTML='<div class=&quot;product-image-placeholder&quot;>Foto tidak tersedia</div>'"
+       >`
+    : `<div class="product-image-placeholder">
+         Foto tidak tersedia
+       </div>`;
+
+    const kondisi =
+    formatCondition(product.kondisi);
 
     return `
 
@@ -481,6 +491,14 @@ function renderProductCard(product){
             <div class="product-image">
 
                 ${imageContent}
+
+                ${
+                    kondisi
+                    ? `<span class="product-condition">
+                         ${escapeHtml(kondisi)}
+                       </span>`
+                    : ""
+                }
 
             </div>
 
@@ -495,7 +513,7 @@ function renderProductCard(product){
                 </strong>
 
                 <span class="product-location">
-                    ${escapeHtml(product.ship_from_region || "")}
+                    ${escapeHtml(product.ship_from_region || "Lokasi belum tersedia")}
                 </span>
 
             </div>
@@ -520,6 +538,27 @@ function formatRupiah(value){
 
 }
 
+    function formatCondition(value){
+
+    const conditions = {
+
+        new:"Baru",
+
+        like_new:"Seperti baru",
+
+        good:"Kondisi baik",
+
+        fair:"Bekas pemakaian",
+
+        poor:"Ada kerusakan",
+
+        very_poor:"Kurang baik"
+
+    };
+
+    return conditions[value] || value || "";
+
+}
 
 function escapeHtml(value){
 
