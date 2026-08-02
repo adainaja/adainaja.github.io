@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Detail Produk - AdaAja</title>
+<link rel="stylesheet" href="product-detail.css">
+</head>
+<body>
+<div class="app-shell">
+<header class="topbar">
+<a href="home.html" class="icon-button">‹</a>
+<strong>Detail Produk</strong>
+<button class="icon-button" id="shareButton" type="button">↗</button>
+</header>
+<main id="detailContent">
+<section class="loading-state"><div class="loading-image"></div><div class="loading-line wide"></div><div class="loading-line medium"></div></section>
+</main>
+<section class="error-state hidden" id="errorState"><div class="error-icon">!</div><strong>Produk tidak dapat dimuat</strong><span id="errorMessage"></span><a href="home.html">Kembali ke Home</a></section>
+</div>
+<div class="bottom-action hidden" id="bottomAction">
+<button class="favorite-button" id="favoriteButton">♡</button>
+<button class="offer-button" id="offerButton">Ajukan Harga</button>
+<button class="buy-button" id="buyButton">Beli Sekarang</button>
+</div>
+<div class="modal" id="offerModal">
+<div class="modal-backdrop" data-close-modal></div>
+<div class="modal-sheet">
+<div class="modal-handle"></div>
+<div class="modal-header"><div><span>AJUKAN HARGA</span><h2>Buat penawaran</h2></div><button class="modal-close" data-close-modal>×</button></div>
+<p class="modal-copy">Masukkan harga yang ingin Anda ajukan. Penjual dapat menerima atau menolak penawaran.</p>
+<div class="current-price"><span>Harga sekarang</span><strong id="modalCurrentPrice">Rp0</strong></div>
+<label class="offer-input"><span>Harga penawaran</span><div><b>Rp</b><input id="offerPrice" inputmode="numeric" placeholder="0"></div></label>
+<p class="offer-hint" id="offerHint"></p><p class="modal-message" id="modalMessage"></p>
+<button class="submit-offer" id="submitOffer">Kirim Penawaran</button>
+</div>
+</div>
+<script src="product-detail.js"></script>
+</body>
+</html>
