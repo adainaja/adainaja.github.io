@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Penawaran Masuk - AdaAja</title>
+<link rel="stylesheet" href="seller-offers.css">
+</head>
+<body>
+<div class="app-shell">
+<header class="topbar">
+<a href="profile.html" class="icon-btn">‹</a>
+<div><span class="eyebrow">PENJUAL</span><h1>Penawaran Masuk</h1></div>
+<button class="icon-btn" id="refreshButton">↻</button>
+</header>
+
+<section class="summary-card">
+<div><span>Menunggu</span><strong id="pendingCount">0</strong></div>
+<div><span>Diterima</span><strong id="acceptedCount">0</strong></div>
+<div><span>Ditolak</span><strong id="rejectedCount">0</strong></div>
+</section>
+
+<nav class="tabs">
+<button class="active" data-status="all">Semua</button>
+<button data-status="pending">Menunggu</button>
+<button data-status="accepted">Diterima</button>
+<button data-status="rejected">Ditolak</button>
+</nav>
+
+<main id="offersContainer">
+<section class="state"><div class="spinner"></div><strong>Memuat penawaran...</strong></section>
+</main>
+</div>
+
+<div class="modal" id="confirmModal">
+<div class="backdrop" data-close></div>
+<div class="sheet">
+<div class="handle"></div>
+<h2 id="modalTitle">Terima penawaran?</h2>
+<p id="modalText"></p>
+<div class="modal-actions">
+<button class="secondary" data-close>Batal</button>
+<button class="primary" id="confirmAction">Lanjutkan</button>
+</div>
+</div>
+</div>
+
+<script src="seller-offers.js"></script>
+</body>
+</html>
