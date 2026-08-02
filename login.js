@@ -1,67 +1,194 @@
-const API_URL="https://script.google.com/macros/s/AKfycbx0VQGRZ9bXUSp8nTdgttqyD5VNOtTavrB0iqpS91gWjqTstIZzd189uIxtTQHD6FI/exec";
+const API_URL =
+"https://script.google.com/macros/s/AKfycbx0VQGRZ9bXUSp8nTdgttqyD5VNOtTavrB0iqpS91gWjqTstIZzd189uIxtTQHD6FI/exec";
 
 
 async function sendOTP(){
 
-const email=document.getElementById("email").value.trim();
-const message=document.getElementById("message");
+    const emailInput =
+    document.getElementById("email");
+
+    const message =
+    document.getElementById("message");
+
+    const email =
+    emailInput.value.trim();
 
 
-if(!email){
+    if(!email){
 
-message.className="error";
-message.innerHTML="Masukkan email terlebih dahulu";
-return;
+        message.className = "error";
 
-}
+        message.textContent =
+        "Masukkan email terlebih dahulu";
 
+        emailInput.focus();
 
-message.innerHTML="Mengirim OTP...";
+        return;
 
-
-try{
-
-const response=await fetch(API_URL,{
-method:"POST",
-body:JSON.stringify({
-action:"sendOTP",
-email:email
-})
-});
+    }
 
 
-const result=await response.json();
+    const emailPattern =
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 
-if(result.status==="success"){
+    if(!emailPattern.test(email)){
 
-localStorage.setItem("login_email",email);
+        message.className = "error";
 
-message.className="success";
-message.innerHTML="OTP berhasil dikirim";
+        message.textContent =
+        "Format email tidak valid";
 
+        emailInput.focus();
 
-setTimeout(()=>{
+        return;
 
-location.href="otp-login.html";
-
-},1000);
-
-
-}else{
-
-message.className="error";
-message.innerHTML=result.message;
-
-}
+    }
 
 
-}catch(error){
+    message.className = "";
 
-message.className="error";
-message.innerHTML="Gagal terhubung server";
+    message.textContent =
+    "Mengirim OTP...";
 
-}
 
+    try{
+
+        const response =
+        await fetch(API_URL,{
+
+            method:"POST",
+
+            redirect:"follow",
+
+            headers:{
+
+                "Content-Type":
+                "text/plain;charset=utf-8"
+
+            },
+
+            body:JSON.stringify({
+
+                action:"sendOTP",
+
+                email:email
+
+            })
+
+        });
+
+
+        const responseText =
+        await response.text();
+
+
+        if(!response.ok){
+
+            console.error(
+                "HTTP Error:",
+                response.status,
+                responseText
+            );
+
+            throw new Error(
+                "HTTP " + response.status
+            );
+
+        }
+
+
+        let result;
+
+
+        try{
+
+            result =
+            JSON.parse(responseText);
+
+        }catch(parseError){
+
+            console.error(
+                "Respons server bukan JSON:",
+                responseText
+            );
+
+            throw new Error(
+                "Respons server tidak valid"
+            );
+
+        }
+
+
+        if(result.status === "success"){
+
+            localStorage.setItem(
+                "login_email",
+                email
+            );
+
+
+            message.className =
+            "success";
+
+            message.textContent =
+            "OTP berhasil dikirim";
+
+
+            setTimeout(function(){
+
+                location.href =
+                "otp-login.html";
+
+            },1000);
+
+        }else{
+
+            message.className =
+            "error";
+
+            message.textContent =
+            result.message ||
+            "OTP gagal dikirim";
+
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "Gagal mengirim OTP:",
+            error
+        );
+
+
+        message.className =
+        "error";
+
+
+        if(
+            error.message.includes("404")
+        ){
+
+            message.textContent =
+            "Endpoint server tidak ditemukan";
+
+        }else if(
+            error.message.includes(
+                "Respons server tidak valid"
+            )
+        ){
+
+            message.textContent =
+            "Respons server tidak valid";
+
+        }else{
+
+            message.textContent =
+            "Gagal terhubung server";
+
+        }
+
+    }
 
 }
