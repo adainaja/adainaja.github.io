@@ -1276,160 +1276,95 @@ svg{
    PRODUCT CARD — PREMIUM MARKETPLACE STYLE
    ========================================= */
 
-.product-grid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:14px;
-  width:100%;
-  margin-top:16px;
-}
+function renderProductCard(product){
 
-.product-card{
-  display:block;
-  min-width:0;
-  overflow:hidden;
-  border:1px solid #e8edf3;
-  border-radius:18px;
-  background:#ffffff;
-  color:#0d2240;
-  text-decoration:none;
-  box-shadow:0 8px 24px rgba(9,37,68,.07);
-  transition:transform .2s ease,box-shadow .2s ease;
-}
+    const image =
+    convertDriveImage(product.image_url);
 
-.product-card:active{
-  transform:scale(.98);
-}
+    const imageContent = image
+    ? `
+        <img
+        src="${image}"
+        alt="${escapeHtml(product.nama_produk)}"
+        loading="lazy"
+        onerror="
+            this.parentElement.innerHTML =
+            '<div class=&quot;product-image-placeholder&quot;>Foto tidak tersedia</div>'
+        "
+        >
+      `
+    : `
+        <div class="product-image-placeholder">
+            Foto tidak tersedia
+        </div>
+      `;
 
-.product-image{
-  position:relative;
-  width:100%;
-  aspect-ratio:1/1;
-  overflow:hidden;
-  background:#f3f5f8;
-}
+    const kondisi =
+    formatCondition(product.kondisi);
 
-.product-image img{
-  display:block;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  transition:transform .3s ease;
-}
+    const stok =
+    Number(product.stok || 0);
 
-.product-card:hover .product-image img{
-  transform:scale(1.03);
-}
+    return `
 
-.product-image-placeholder{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  width:100%;
-  height:100%;
-  padding:16px;
-  color:#98a2b3;
-  font-size:11px;
-  font-weight:600;
-  text-align:center;
-}
+        <a
+        href="product-detail.html?id=${encodeURIComponent(product.product_id)}"
+        class="product-card">
 
-.product-info{
-  display:flex;
-  min-width:0;
-  flex-direction:column;
-  padding:12px;
-}
+            <div class="product-image">
 
-.product-info h3{
-  display:-webkit-box;
-  min-height:38px;
-  margin:0 0 8px;
-  overflow:hidden;
-  color:#12233f;
-  font-size:13px;
-  font-weight:700;
-  line-height:1.45;
-  text-decoration:none;
-  -webkit-box-orient:vertical;
-  -webkit-line-clamp:2;
-}
+                ${imageContent}
 
-.product-price{
-    display:block;
-    margin-top:12px;
-    color:#e60023;     /* Merah premium */
-    font-size:18px;
-    font-weight:800;
-    line-height:1.2;
-    letter-spacing:-.35px;
-}
+                ${
+                    kondisi
+                    ?
+                    `<span class="product-condition">
+                        ${escapeHtml(kondisi)}
+                    </span>`
+                    :
+                    ""
+                }
 
-.product-location{
-  display:block;
-  overflow:hidden;
-  color:#7a8493;
-  font-size:10px;
-  font-weight:600;
-  line-height:1.35;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
+            </div>
 
-.product-empty{
-  grid-column:1/-1;
-  display:flex;
-  min-height:190px;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  padding:28px 20px;
-  border:1px solid #e7ebf0;
-  border-radius:22px;
-  background:#f8fafc;
-  color:#7a8493;
-  text-align:center;
-}
+            <div class="product-info">
 
-.product-empty .empty-icon{
-  display:grid;
-  width:42px;
-  height:42px;
-  margin-bottom:13px;
-  place-items:center;
-  border-radius:50%;
-  background:#fff2e8;
-  color:#ff7a00;
-  font-size:24px;
-}
+                <h3>
+                    ${escapeHtml(product.nama_produk)}
+                </h3>
 
-.product-empty strong{
-  margin-bottom:5px;
-  color:#092544;
-  font-size:15px;
-}
+                <strong class="product-price">
+                    ${formatRupiah(product.harga)}
+                </strong>
 
-.product-empty span{
-  font-size:11px;
-  line-height:1.5;
-}
+                <div class="product-meta">
 
-@media(max-width:360px){
-  .product-grid{
-    gap:10px;
-  }
+                    <span class="product-location">
 
-  .product-info{
-    padding:10px;
-  }
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"></path>
+                            <circle cx="12" cy="10" r="2.5"></circle>
+                        </svg>
 
-  .product-info h3{
-    font-size:12px;
-  }
+                        ${escapeHtml(
+                            product.ship_from_region ||
+                            "Lokasi belum tersedia"
+                        )}
 
-  .product-price{
-    font-size:14px;
-  }
+                    </span>
+
+                    <span class="product-stock">
+                        Stok ${stok}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </a>
+
+    `;
+
 }
 
 /* ================================
