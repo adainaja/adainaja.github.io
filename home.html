@@ -386,8 +386,155 @@ function convertDriveImage(url){
 
 }
 
+    const API_URL =
+"https://script.google.com/macros/s/AKfycbx0VQGRZ9bXUSp8nTdgttqyD5VNOtTavrB0iqpS91gWjqTstIZzd189uIxtTQHD6FI/exec";
+
+
+async function loadLatestProducts(){
+
+    const productGrid =
+    document.getElementById("productGrid");
+
+    if(!productGrid){
+        return;
+    }
+
+    productGrid.innerHTML = `
+        <div class="product-empty">
+            <strong>Memuat produk...</strong>
+            <span>Mohon tunggu sebentar</span>
+        </div>
+    `;
+
+    try{
+
+        const response = await fetch(API_URL,{
+            method:"POST",
+            body:JSON.stringify({
+                action:"getLatestProducts"
+            })
+        });
+
+        const result = await response.json();
+
+        if(
+            result.status !== "success" ||
+            !Array.isArray(result.products)
+        ){
+            throw new Error(
+                result.message || "Produk gagal dimuat"
+            );
+        }
+
+        if(result.products.length === 0){
+
+            productGrid.innerHTML = `
+                <div class="product-empty">
+                    <div class="empty-icon">+</div>
+                    <strong>Belum ada produk</strong>
+                    <span>Produk dari pengguna akan tampil di sini</span>
+                </div>
+            `;
+
+            return;
+        }
+
+        productGrid.innerHTML =
+        result.products
+        .map(renderProductCard)
+        .join("");
+
+    }catch(error){
+
+        console.error(
+            "Gagal memuat produk:",
+            error
+        );
+
+        productGrid.innerHTML = `
+            <div class="product-empty">
+                <strong>Produk belum dapat dimuat</strong>
+                <span>Coba muat ulang halaman</span>
+            </div>
+        `;
+
+    }
+
+}
+
+
+function renderProductCard(product){
+
+    const image =
+    convertDriveImage(product.image_url);
+
+    const imageContent = image
+    ? `<img src="${image}" alt="${escapeHtml(product.nama_produk)}">`
+    : `<div class="product-image-placeholder">Tidak ada foto</div>`;
+
+    return `
+
+        <a
+        href="product-detail.html?id=${encodeURIComponent(product.product_id)}"
+        class="product-card">
+
+            <div class="product-image">
+
+                ${imageContent}
+
+            </div>
+
+            <div class="product-info">
+
+                <h3>
+                    ${escapeHtml(product.nama_produk)}
+                </h3>
+
+                <strong class="product-price">
+                    ${formatRupiah(product.harga)}
+                </strong>
+
+                <span class="product-location">
+                    ${escapeHtml(product.ship_from_region || "")}
+                </span>
+
+            </div>
+
+        </a>
+
+    `;
+
+}
+
+
+function formatRupiah(value){
+
+    return new Intl.NumberFormat(
+        "id-ID",
+        {
+            style:"currency",
+            currency:"IDR",
+            maximumFractionDigits:0
+        }
+    ).format(Number(value || 0));
+
+}
+
+
+function escapeHtml(value){
+
+    return String(value || "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
 
 loadUserSession();
+loadLatestProducts();
+    
 </script>
 
 </body>
