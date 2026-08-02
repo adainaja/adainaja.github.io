@@ -1356,12 +1356,13 @@ svg{
 }
 
 .product-price{
-  display:block;
-  margin-bottom:7px;
-  color:#092544;
-  font-size:15px;
-  font-weight:800;
-  line-height:1.2;
+    display:block;
+    margin-top:12px;
+    color:#e60023;     /* Merah premium */
+    font-size:18px;
+    font-weight:800;
+    line-height:1.2;
+    letter-spacing:-.35px;
 }
 
 .product-location{
