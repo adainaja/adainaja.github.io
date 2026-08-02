@@ -469,18 +469,28 @@ function renderProductCard(product){
     convertDriveImage(product.image_url);
 
     const imageContent = image
-    ? `<img
+    ? `
+        <img
         src="${image}"
         alt="${escapeHtml(product.nama_produk)}"
         loading="lazy"
-        onerror="this.parentElement.innerHTML='<div class=&quot;product-image-placeholder&quot;>Foto tidak tersedia</div>'"
-       >`
-    : `<div class="product-image-placeholder">
-         Foto tidak tersedia
-       </div>`;
+        onerror="
+            this.parentElement.innerHTML =
+            '<div class=&quot;product-image-placeholder&quot;>Foto tidak tersedia</div>'
+        "
+        >
+      `
+    : `
+        <div class="product-image-placeholder">
+            Foto tidak tersedia
+        </div>
+      `;
 
     const kondisi =
     formatCondition(product.kondisi);
+
+    const stok =
+    Number(product.stok || 0);
 
     return `
 
@@ -494,10 +504,12 @@ function renderProductCard(product){
 
                 ${
                     kondisi
-                    ? `<span class="product-condition">
-                         ${escapeHtml(kondisi)}
-                       </span>`
-                    : ""
+                    ?
+                    `<span class="product-condition">
+                        ${escapeHtml(kondisi)}
+                    </span>`
+                    :
+                    ""
                 }
 
             </div>
@@ -512,9 +524,27 @@ function renderProductCard(product){
                     ${formatRupiah(product.harga)}
                 </strong>
 
-                <span class="product-location">
-                    ${escapeHtml(product.ship_from_region || "Lokasi belum tersedia")}
-                </span>
+                <div class="product-meta">
+
+                    <span class="product-location">
+
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"></path>
+                            <circle cx="12" cy="10" r="2.5"></circle>
+                        </svg>
+
+                        ${escapeHtml(
+                            product.ship_from_region ||
+                            "Lokasi belum tersedia"
+                        )}
+
+                    </span>
+
+                    <span class="product-stock">
+                        Stok ${stok}
+                    </span>
+
+                </div>
 
             </div>
 
