@@ -167,6 +167,11 @@ async function loadProducts(){
     products=result.products;
     renderProducts(products);
 
+    const heroProductCount=document.getElementById("heroProductCount");
+    if(heroProductCount){
+      heroProductCount.textContent=products.length;
+    }
+
   }catch(error){
     productGrid.innerHTML=`
       <div class="empty-state">
