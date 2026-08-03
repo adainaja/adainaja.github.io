@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>Checkout - AdaAja</title>
+  <link rel="stylesheet" href="checkout.css">
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <button class="icon-button" type="button" onclick="history.back()" aria-label="Kembali">
+      <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+
+    <div class="page-title">
+      <span>TRANSAKSI AMAN</span>
+      <h1>Checkout</h1>
+    </div>
+
+    <div class="secure-badge" aria-label="Pembayaran aman">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 3 5 6v5c0 4.7 3 8.3 7 10 4-1.7 7-5.3 7-10V6l-7-3Z"></path>
+        <path d="m9.5 12 1.7 1.7 3.8-4"></path>
+      </svg>
+    </div>
+  </header>
+
+  <main id="checkoutContent">
+    <section class="loading-state">
+      <div class="loading-card large"></div>
+      <div class="loading-card"></div>
+      <div class="loading-card"></div>
+    </section>
+  </main>
+
+  <section class="error-state hidden" id="errorState">
+    <div class="error-icon">!</div>
+    <strong>Checkout tidak dapat dimuat</strong>
+    <span id="errorMessage">Silakan coba kembali.</span>
+    <a href="my-offers.html">Kembali ke Penawaran Saya</a>
+  </section>
+</div>
+
+<div class="bottom-bar hidden" id="bottomBar">
+  <div class="total-box">
+    <span>Total pembayaran</span>
+    <strong id="bottomTotal">Rp0</strong>
+  </div>
+
+  <button id="createOrderButton" type="button">
+    Buat Pesanan
+  </button>
+</div>
+
+<div class="success-modal" id="successModal" aria-hidden="true">
+  <div class="modal-backdrop"></div>
+
+  <div class="success-sheet">
+    <div class="success-icon">
+      <svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"></path></svg>
+    </div>
+
+    <h2>Pesanan berhasil dibuat</h2>
+    <p>Pesanan Anda sudah tersimpan dan menunggu pembayaran.</p>
+
+    <button id="goToOrdersButton" type="button">
+      Lihat Pesanan Saya
+    </button>
+  </div>
+</div>
+
+<script src="checkout.js"></script>
+</body>
+</html>
