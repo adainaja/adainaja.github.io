@@ -1,610 +1,421 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#ffffff">
-<title>AdaAja - Beranda</title>
-<link rel="stylesheet" href="home.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>AdaAja - Beranda</title>
+  <link rel="stylesheet" href="home.css">
 </head>
 <body>
-
 <div class="app-shell">
 
-<header class="topbar">
-    
-    <div class="header-top">
-<a href="home.html" class="brand-logo">
-        <img src=".logo-adaaja.png" alt="AdaAja">
-    
-</a>
-<div class="header-auth" id="headerAuth">
-
-<a href="login.html" class="login-btn">
-Masuk
-</a>
-
-<a href="register.html" class="register-btn">
-Daftar
-</a>
-
-</div>
-
-    
-
-    <button class="notification-button" type="button" aria-label="Notifikasi">
+  <header class="app-header" id="appHeader">
+    <div class="header-inner">
+      <label class="search-shell" for="searchInput">
         <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path>
-            <path d="M10 21h4"></path>
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.5-3.5"></path>
         </svg>
-        <span class="notification-badge" id="notifBadge"></span>
-    </button>
+        <input id="searchInput" type="search" placeholder="Cari produk di AdaAja" autocomplete="off">
+      </label>
 
-
-
-</div>
-</header>
-
-<div class="notification-modal" id="notificationModal">
-    <div class="notification-box">
-        <div class="notification-header">
-            <strong>Notifikasi</strong>
-            <button id="closeNotif">×</button>
-        </div>
-        <div class="notification-empty">
-            <div>🔔</div>
-            <strong>Belum ada notifikasi</strong>
-            <span>Aktivitas terbaru akan muncul di sini</span>
-        </div>
-    </div>
-</div>
-
-<main>
-
-<section class="hero">
-    <p>Selamat datang di AdaAja</p>
-    <h1>Temukan barang<br>yang kamu suka</h1>
-    <p class="hero-subtitle">Belanja mudah dari pengguna terpercaya</p>
-
-    <div class="search-bar" onclick="document.getElementById('searchInput').focus()">
+      <button class="header-action" id="notificationBtn" type="button" aria-label="Notifikasi">
         <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="11" cy="11" r="7"></circle>
-            <path d="m20 20-3.5-3.5"></path>
+          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path>
+          <path d="M10 21h4"></path>
         </svg>
-        <input id="searchInput" type="text" placeholder="Cari barang yang Anda inginkan..." />
-    </div>
-</section>
+        <span class="header-badge" id="notifBadge"></span>
+      </button>
 
-<section class="section category-section">
-    <div class="section-header">
-        <h2>Kategori Produk</h2>
-        <a href="explore.html" class="section-link">Lihat semua</a>
-    </div>
-
-    <div class="category-container">
-    <div class="category-grid">
-
-        <a href="upload.html" class="category-item">
-            <span class="category-icon">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M6 8h12l1 12H5L6 8Z"></path>
-                    <path d="M9 8a3 3 0 0 1 6 0"></path>
-                </svg>
-            </span>
-            <span>Barang</span>
-        </a>
-
-        <a href="upload.html" class="category-item">
-            <span class="category-icon">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="m14.7 6.3 3-3a4.2 4.2 0 0 1-5.6 5.6l-7.8 7.8a2.1 2.1 0 1 0 3 3l7.8-7.8a4.2 4.2 0 0 1 5.6-5.6l-3 3-3-3Z"></path>
-                </svg>
-            </span>
-            <span>Jasa</span>
-        </a>
-
-        <a href="upload.html" class="category-item">
-            <span class="category-icon">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M7 3v8"></path>
-                    <path d="M4 3v5a3 3 0 0 0 6 0V3"></path>
-                    <path d="M7 11v10"></path>
-                    <path d="M17 3v18"></path>
-                    <path d="M17 3c-3 3-3 7 0 9"></path>
-                </svg>
-            </span>
-            <span>Makanan</span>
-        </a>
-
-        <a href="upload.html" class="category-item">
-            <span class="category-icon">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="m3 11 9-8 9 8"></path>
-                    <path d="M5 10v10h14V10"></path>
-                    <path d="M9 20v-6h6v6"></path>
-                </svg>
-            </span>
-            <span>Rumah</span>
-        </a>
-
-        <a href="upload.html" class="category-item">
-            <span class="category-icon">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <rect x="4" y="3" width="16" height="18" rx="2"></rect>
-                    <path d="M8 7h8"></path>
-                    <path d="M8 11h8"></path>
-                    <path d="M8 15h5"></path>
-                </svg>
-            </span>
-            <span>Elektronik</span>
-        </a>
-
-        <a href="upload.html" class="category-item">
-            <span class="category-icon">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="5" cy="12" r="1.5"></circle>
-                    <circle cx="12" cy="12" r="1.5"></circle>
-                    <circle cx="19" cy="12" r="1.5"></circle>
-                </svg>
-            </span>
-            <span>Kendaraan</span>
-        </a>
-
-        <a href="upload.html" class="category-item">
-            <span class="category-icon">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <rect x="3" y="5" width="18" height="16" rx="2"></rect>
-                    <path d="M16 3v4"></path>
-                    <path d="M8 3v4"></path>
-                    <path d="M3 10h18"></path>
-                </svg>
-            </span>
-            <span>Event</span>
-        </a>
-
-        <a href="upload.html" class="category-item">
-            <span class="category-icon">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="5" cy="12" r="1.5"></circle>
-                    <circle cx="12" cy="12" r="1.5"></circle>
-                    <circle cx="19" cy="12" r="1.5"></circle>
-                </svg>
-            </span>
-            <span>Lainnya</span>
-        </a>
-
-    </div>
-    </div>
-</section>
-
-<section class="market-banner">
-<strong>Jual barangmu cepat & mudah</strong>
-<span>Upload barang dan temukan pembeli di AdaAja</span>
-<a href="upload.html">Mulai Jual</a>
-</section>
-
-<section class="section popular-section">
-    <div class="section-header compact">
-        <div>
-            <span class="eyebrow">TRENDING HARI INI</span>
-            <h2>Produk yang sedang populer</h2>
-        </div>
-    </div>
-
-    <div class="trending-box" id="popularSearch">
-        <!-- Data trending dari database -->
-        <span class="trending-chip">Fashion</span>
-        <span class="trending-chip">Elektronik</span>
-        <span class="trending-chip">Koleksi</span>
-        <span class="trending-chip">Rumah</span>
-    </div>
-</section>
-
-
-
-
-<section class="section product-section">
-    <div class="section-header">
-        <div>
-            <span class="eyebrow">PRODUK TERBARU</span>
-            <h2>Pilihan untuk Anda</h2>
-        </div>
-        <a href="explore.html" class="section-link">Lihat semua</a>
-    </div>
-
-    <div class="product-grid" id="productGrid">
-        <div class="product-empty">
-            <div class="empty-icon">+</div>
-            <strong>Belum ada produk</strong>
-            <span>Produk dari pengguna akan tampil di sini</span>
-        </div>
-    </div>
-</section>
-
-<section class="section latest-section">
-    <div class="section-header">
-        <div>
-            <span class="eyebrow">TERBARU DI SEKITAR ANDA</span>
-            <h2>Produk terbaru</h2>
-        </div>
-        <a href="explore.html" class="section-link neutral">Lihat semua</a>
-    </div>
-
-    <div class="request-feed" id="requestFeed">
-        <!-- Produk terbaru dari database akan tampil di sini -->
-    </div>
-</section>
-
-</main>
-
-<nav class="bottom-nav">
-    <a href="home.html" class="nav-item active">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="m3 11 9-8 9 8"></path>
-            <path d="M5 10v10h14V10"></path>
-        </svg>
-        <small>Beranda</small>
-    </a>
-
-    <a href="explore.html" class="nav-item">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="11" cy="11" r="7"></circle>
-            <path d="m20 20-3.5-3.5"></path>
-        </svg>
-        <small>Jelajah</small>
-    </a>
-
-    <a href="upload.html" class="nav-create" aria-label="Jual Barang">+</a>
-
-    <a href="explore.html" class="nav-item">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="3" y="5" width="18" height="16" rx="2"></rect>
-            <path d="M8 3v4"></path>
-            <path d="M16 3v4"></path>
-        </svg>
-        <small>Pesanan</small>
-    </a>
-
-    <a href="explore.html" class="nav-item">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
+      <a class="header-action account-action" id="accountButton" href="login.html" aria-label="Akun">
+        <span class="account-avatar" id="accountAvatar">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="8" r="4"></circle>
             <path d="M4 21a8 8 0 0 1 16 0"></path>
-        </svg>
-        <small>Akun</small>
-    </a>
-</nav>
-
-</div>
-
-
-<script>
-document.querySelectorAll('.category-item').forEach(item=>{
-    item.onclick=function(){
-        window.location.href='explore.html';
-    }
-});
-</script>
-<script>
-const notifBtn=document.getElementById("notificationBtn");
-const notifModal=document.getElementById("notificationModal");
-const closeNotif=document.getElementById("closeNotif");
-notifBtn.onclick=()=>notifModal.classList.add("active");
-closeNotif.onclick=()=>notifModal.classList.remove("active");
-notifModal.onclick=(e)=>{if(e.target===notifModal) notifModal.classList.remove("active");};
-</script>
-
-<div class="notification-popup" id="notificationPopup">
-    <div class="notification-header">Notifikasi</div>
-    <div class="notification-empty">
-        <div class="bell-large">🔔</div>
-        <strong>Belum ada notifikasi</strong>
-        <span>Aktivitas terbaru akan muncul di sini</span>
+          </svg>
+        </span>
+      </a>
     </div>
-</div>
+  </header>
 
-<script>
-function toggleNotification(){
-    document.getElementById("notificationPopup").classList.toggle("show");
-}
-</script>
+  <main class="page-content">
 
-<script>
-function loadUserSession(){
+    <section class="intro-card">
+      <div class="intro-copy">
+        <span class="intro-kicker">MARKETPLACE LOKAL</span>
+        <h1>Temukan barang bagus. Nego langsung.</h1>
+        <p>Belanja dan jual barang dengan pengalaman yang lebih personal.</p>
+      </div>
 
-    const userData = localStorage.getItem("user");
-    const header = document.getElementById("headerAuth");
+      <a href="upload.html" class="intro-cta">
+        <span>Mulai Jual</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 12h14"></path>
+          <path d="m13 6 6 6-6 6"></path>
+        </svg>
+      </a>
+    </section>
 
-    if(!header || !userData){
-        return;
-    }
+    <section class="quick-actions" aria-label="Akses cepat">
+      <a href="upload.html" class="quick-action">
+        <span class="quick-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 8h12l1 12H5L6 8Z"></path>
+            <path d="M9 8a3 3 0 0 1 6 0"></path>
+            <path d="M12 12v5"></path>
+            <path d="M9.5 14.5h5"></path>
+          </svg>
+        </span>
+        <span>Jual</span>
+      </a>
 
-    try{
+      <a href="explore.html" class="quick-action">
+        <span class="quick-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="7" rx="2"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="2"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="2"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="2"></rect>
+          </svg>
+        </span>
+        <span>Kategori</span>
+      </a>
 
-        const user = JSON.parse(userData);
+      <a href="my-orders.html" class="quick-action">
+        <span class="quick-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path>
+            <path d="M4 8v10l8 3 8-3V8"></path>
+          </svg>
+        </span>
+        <span>Pesanan</span>
+      </a>
 
-        header.innerHTML = `
+      <a href="my-offers.html" class="quick-action">
+        <span class="quick-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 6h16v12H4z"></path>
+            <path d="M8 10h8"></path>
+            <path d="M8 14h5"></path>
+          </svg>
+        </span>
+        <span>Penawaran</span>
+      </a>
+    </section>
 
-        <a href="profile.html"
-        class="login-btn"
-        style="
-        display:flex;
-        align-items:center;
-        gap:8px;
-        ">
+    <section class="section-block">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">JELAJAHI</span>
+          <h2>Kategori pilihan</h2>
+        </div>
+        <a href="explore.html">Lihat semua</a>
+      </div>
 
-        ${
-            user.foto_profile
-            ?
-            `<img
-            src="${convertDriveImage(user.foto_profile)}"
-            alt="Foto profil"
-            style="
-            width:32px;
-            height:32px;
-            border-radius:50%;
-            object-fit:cover;
-            display:block;
-            ">`
-            :
-            ""
-        }
-
-        <span>${user.username || user.nama_lengkap || "Akun"}</span>
-
+      <div class="category-strip">
+        <a href="explore.html?category=electronics" class="category-pill">
+          <span class="category-symbol">
+            <svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"></rect><path d="M8 7h8M8 11h8M8 15h5"></path></svg>
+          </span>
+          <span>Elektronik</span>
         </a>
 
-        `;
+        <a href="explore.html?category=fashion" class="category-pill">
+          <span class="category-symbol">
+            <svg viewBox="0 0 24 24"><path d="M9 4h6l2 3 4 2-3 5-2-1v8H8v-8l-2 1-3-5 4-2 2-3Z"></path></svg>
+          </span>
+          <span>Fashion</span>
+        </a>
 
-    }catch(error){
+        <a href="explore.html?category=home" class="category-pill">
+          <span class="category-symbol">
+            <svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"></path><path d="M5 10v10h14V10"></path><path d="M9 20v-6h6v6"></path></svg>
+          </span>
+          <span>Rumah</span>
+        </a>
 
-        console.error("Session user tidak valid:", error);
+        <a href="explore.html?category=automotive" class="category-pill">
+          <span class="category-symbol">
+            <svg viewBox="0 0 24 24"><path d="m5 16-2-3 2-5h14l2 5-2 3"></path><path d="M5 16v3M19 16v3"></path><circle cx="7" cy="14" r="1"></circle><circle cx="17" cy="14" r="1"></circle></svg>
+          </span>
+          <span>Otomotif</span>
+        </a>
 
-    }
+        <a href="explore.html" class="category-pill">
+          <span class="category-symbol">
+            <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle></svg>
+          </span>
+          <span>Lainnya</span>
+        </a>
+      </div>
+    </section>
 
+    <section class="market-signal">
+      <div class="signal-dot"></div>
+      <div>
+        <strong>Produk baru terus bertambah</strong>
+        <span>Temukan listing terbaru dari pengguna AdaAja.</span>
+      </div>
+    </section>
+
+    <section class="section-block product-section">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">TERBARU</span>
+          <h2>Pilihan untuk Anda</h2>
+        </div>
+        <a href="explore.html">Lihat semua</a>
+      </div>
+
+      <div class="product-grid" id="productGrid">
+        <div class="skeleton-card">
+          <div class="skeleton-image"></div>
+          <div class="skeleton-line wide"></div>
+          <div class="skeleton-line"></div>
+        </div>
+        <div class="skeleton-card">
+          <div class="skeleton-image"></div>
+          <div class="skeleton-line wide"></div>
+          <div class="skeleton-line"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="bottom-nav" aria-label="Navigasi utama">
+    <a href="home.html" class="nav-item active">
+      <svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"></path><path d="M5 10v10h14V10"></path></svg>
+      <span>Beranda</span>
+    </a>
+
+    <a href="explore.html" class="nav-item">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      <span>Jelajah</span>
+    </a>
+
+    <a href="upload.html" class="nav-create" aria-label="Jual barang">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+    </a>
+
+    <a href="my-orders.html" class="nav-item">
+      <svg viewBox="0 0 24 24"><path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path><path d="M4 8v10l8 3 8-3V8"></path></svg>
+      <span>Aktivitas</span>
+    </a>
+
+    <a href="profile.html" class="nav-item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+      <span>Akun</span>
+    </a>
+  </nav>
+
+</div>
+
+<div class="notification-panel" id="notificationPanel" aria-hidden="true">
+  <button class="panel-backdrop" id="notificationBackdrop" type="button" aria-label="Tutup notifikasi"></button>
+  <section class="panel-sheet">
+    <div class="panel-handle"></div>
+    <div class="panel-heading">
+      <div>
+        <span>AKTIVITAS</span>
+        <h2>Notifikasi</h2>
+      </div>
+      <button id="closeNotification" type="button" aria-label="Tutup">
+        <svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg>
+      </button>
+    </div>
+    <div class="notification-empty">
+      <span class="notification-empty-icon">
+        <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg>
+      </span>
+      <strong>Belum ada notifikasi</strong>
+      <p>Aktivitas terbaru akan muncul di sini.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+const API_URL="https://script.google.com/macros/s/AKfycbx0VQGRZ9bXUSp8nTdgttqyD5VNOtTavrB0iqpS91gWjqTstIZzd189uIxtTQHD6FI/exec";
+
+const productGrid=document.getElementById("productGrid");
+const searchInput=document.getElementById("searchInput");
+let loadedProducts=[];
+
+function getUser(){
+  try{return JSON.parse(localStorage.getItem("user")||"null")}catch{return null}
 }
-
 
 function convertDriveImage(url){
-
-    if(!url){
-        return "";
-    }
-
-    if(url.includes("drive.google.com")){
-
-        const id = url.match(/[-\w]{25,}/);
-
-        if(id){
-
-            return "https://drive.google.com/thumbnail?id=" + id[0] + "&sz=w200";
-
-        }
-
-    }
-
-    return url;
-
-}
-
-    const API_URL =
-"https://script.google.com/macros/s/AKfycbx0VQGRZ9bXUSp8nTdgttqyD5VNOtTavrB0iqpS91gWjqTstIZzd189uIxtTQHD6FI/exec";
-
-
-async function loadLatestProducts(){
-
-    const productGrid =
-    document.getElementById("productGrid");
-
-    if(!productGrid){
-        return;
-    }
-
-    productGrid.innerHTML = `
-        <div class="product-empty">
-            <strong>Memuat produk...</strong>
-            <span>Mohon tunggu sebentar</span>
-        </div>
-    `;
-
-    try{
-
-        const response = await fetch(API_URL,{
-            method:"POST",
-            body:JSON.stringify({
-                action:"getLatestProducts"
-            })
-        });
-
-        const result = await response.json();
-
-        if(
-            result.status !== "success" ||
-            !Array.isArray(result.products)
-        ){
-            throw new Error(
-                result.message || "Produk gagal dimuat"
-            );
-        }
-
-        if(result.products.length === 0){
-
-            productGrid.innerHTML = `
-                <div class="product-empty">
-                    <div class="empty-icon">+</div>
-                    <strong>Belum ada produk</strong>
-                    <span>Produk dari pengguna akan tampil di sini</span>
-                </div>
-            `;
-
-            return;
-        }
-
-        productGrid.innerHTML =
-        result.products
-        .map(renderProductCard)
-        .join("");
-
-    }catch(error){
-
-        console.error(
-            "Gagal memuat produk:",
-            error
-        );
-
-        productGrid.innerHTML = `
-            <div class="product-empty">
-                <strong>Produk belum dapat dimuat</strong>
-                <span>Coba muat ulang halaman</span>
-            </div>
-        `;
-
-    }
-
-}
-
-
-function renderProductCard(product){
-
-    const image =
-    convertDriveImage(product.image_url);
-
-    const imageContent = image
-    ? `
-        <img
-        src="${image}"
-        alt="${escapeHtml(product.nama_produk)}"
-        loading="lazy"
-        onerror="
-            this.parentElement.innerHTML =
-            '<div class=&quot;product-image-placeholder&quot;>Foto tidak tersedia</div>'
-        "
-        >
-      `
-    : `
-        <div class="product-image-placeholder">
-            Foto tidak tersedia
-        </div>
-      `;
-
-    const kondisi =
-    formatCondition(product.kondisi);
-
-    const stok =
-    Number(product.stok || 0);
-
-    return `
-
-        <a
-        href="product-detail.html?id=${encodeURIComponent(product.product_id)}"
-        class="product-card">
-
-            <div class="product-image">
-
-                ${imageContent}
-
-                ${
-                    kondisi
-                    ?
-                    `<span class="product-condition">
-                        ${escapeHtml(kondisi)}
-                    </span>`
-                    :
-                    ""
-                }
-
-            </div>
-
-            <div class="product-info">
-
-                <h3>
-                    ${escapeHtml(product.nama_produk)}
-                </h3>
-
-                <strong class="product-price">
-                    ${formatRupiah(product.harga)}
-                </strong>
-
-                <div class="product-meta">
-
-                    <span class="product-location">
-
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"></path>
-                            <circle cx="12" cy="10" r="2.5"></circle>
-                        </svg>
-
-                        ${escapeHtml(
-                            product.ship_from_region ||
-                            "Lokasi belum tersedia"
-                        )}
-
-                    </span>
-
-                    <span class="product-stock">
-                        Stok ${stok}
-                    </span>
-
-                </div>
-
-            </div>
-
-        </a>
-
-    `;
-
-}
-
-
-function formatRupiah(value){
-
-    return new Intl.NumberFormat(
-        "id-ID",
-        {
-            style:"currency",
-            currency:"IDR",
-            maximumFractionDigits:0
-        }
-    ).format(Number(value || 0));
-
-}
-
-    function formatCondition(value){
-
-    const conditions = {
-
-        new:"Baru",
-
-        like_new:"Seperti baru",
-
-        good:"Kondisi baik",
-
-        fair:"Bekas pemakaian",
-
-        poor:"Ada kerusakan",
-
-        very_poor:"Kurang baik"
-
-    };
-
-    return conditions[value] || value || "";
-
+  if(!url)return"";
+  if(url.includes("drive.google.com")){
+    const id=url.match(/[-\w]{25,}/);
+    if(id)return"https://drive.google.com/thumbnail?id="+id[0]+"&sz=w700";
+  }
+  return url;
 }
 
 function escapeHtml(value){
-
-    return String(value || "")
+  return String(value||"")
     .replaceAll("&","&amp;")
     .replaceAll("<","&lt;")
     .replaceAll(">","&gt;")
     .replaceAll('"',"&quot;")
     .replaceAll("'","&#039;");
-
 }
 
-loadUserSession();
-loadLatestProducts();
-    
-</script>
+function formatRupiah(value){
+  return new Intl.NumberFormat("id-ID",{
+    style:"currency",
+    currency:"IDR",
+    maximumFractionDigits:0
+  }).format(Number(value||0));
+}
 
+function formatCondition(value){
+  return({
+    new:"Baru",
+    like_new:"Seperti baru",
+    good:"Kondisi baik",
+    fair:"Bekas pemakaian",
+    poor:"Ada kerusakan",
+    very_poor:"Kurang baik"
+  })[value]||value||"";
+}
+
+function setupUser(){
+  const user=getUser();
+  const button=document.getElementById("accountButton");
+  const avatar=document.getElementById("accountAvatar");
+
+  if(!user)return;
+
+  button.href="profile.html";
+
+  const photo=convertDriveImage(user.foto_profile||"");
+  if(photo){
+    avatar.innerHTML=`<img src="${photo}" alt="${escapeHtml(user.username||user.nama_lengkap||"Akun")}">`;
+  }else{
+    const initial=String(user.username||user.nama_lengkap||"A").charAt(0).toUpperCase();
+    avatar.innerHTML=`<strong>${escapeHtml(initial)}</strong>`;
+  }
+}
+
+function renderProductCard(product){
+  const image=convertDriveImage(product.image_url||"");
+  const imageContent=image
+    ? `<img src="${image}" alt="${escapeHtml(product.nama_produk)}" loading="lazy">`
+    : `<div class="product-image-placeholder">Foto tidak tersedia</div>`;
+
+  const condition=formatCondition(product.kondisi);
+
+  return `
+    <a href="product-detail.html?id=${encodeURIComponent(product.product_id)}" class="product-card">
+      <div class="product-image">
+        ${imageContent}
+        ${condition?`<span class="product-condition">${escapeHtml(condition)}</span>`:""}
+        <span class="favorite-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"></path></svg>
+        </span>
+      </div>
+      <div class="product-body">
+        <h3>${escapeHtml(product.nama_produk||"Produk")}</h3>
+        <strong>${formatRupiah(product.harga)}</strong>
+        <div class="product-footer">
+          <span>${escapeHtml(product.ship_from_region||"Lokasi belum tersedia")}</span>
+          <span>Stok ${Number(product.stok||0)}</span>
+        </div>
+      </div>
+    </a>
+  `;
+}
+
+function renderProducts(products){
+  if(!products.length){
+    productGrid.innerHTML=`
+      <div class="empty-state">
+        <span class="empty-visual">
+          <svg viewBox="0 0 24 24"><path d="M6 8h12l1 12H5L6 8Z"></path><path d="M9 8a3 3 0 0 1 6 0"></path></svg>
+        </span>
+        <strong>Belum ada produk</strong>
+        <p>Produk terbaru dari pengguna akan muncul di sini.</p>
+        <a href="upload.html">Jual produk pertama</a>
+      </div>
+    `;
+    return;
+  }
+
+  productGrid.innerHTML=products.map(renderProductCard).join("");
+}
+
+async function loadLatestProducts(){
+  try{
+    const response=await fetch(API_URL+"?t="+Date.now(),{
+      method:"POST",
+      redirect:"follow",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({action:"getLatestProducts"})
+    });
+
+    const text=await response.text();
+    const result=JSON.parse(text);
+
+    if(result.status!=="success"||!Array.isArray(result.products)){
+      throw new Error(result.message||"Produk gagal dimuat");
+    }
+
+    loadedProducts=result.products;
+    renderProducts(loadedProducts);
+  }catch(error){
+    productGrid.innerHTML=`
+      <div class="empty-state error-state">
+        <strong>Produk belum dapat dimuat</strong>
+        <p>${escapeHtml(error.message||"Silakan muat ulang halaman.")}</p>
+        <button onclick="loadLatestProducts()">Muat ulang</button>
+      </div>
+    `;
+  }
+}
+
+searchInput.addEventListener("input",()=>{
+  const keyword=searchInput.value.trim().toLowerCase();
+
+  if(!keyword){
+    renderProducts(loadedProducts);
+    return;
+  }
+
+  renderProducts(
+    loadedProducts.filter(product=>
+      String(product.nama_produk||"").toLowerCase().includes(keyword) ||
+      String(product.brand||"").toLowerCase().includes(keyword) ||
+      String(product.ship_from_region||"").toLowerCase().includes(keyword)
+    )
+  );
+});
+
+const panel=document.getElementById("notificationPanel");
+function openNotification(){
+  panel.classList.add("active");
+  panel.setAttribute("aria-hidden","false");
+  document.body.classList.add("panel-open");
+}
+function closeNotification(){
+  panel.classList.remove("active");
+  panel.setAttribute("aria-hidden","true");
+  document.body.classList.remove("panel-open");
+}
+
+document.getElementById("notificationBtn").onclick=openNotification;
+document.getElementById("closeNotification").onclick=closeNotification;
+document.getElementById("notificationBackdrop").onclick=closeNotification;
+
+window.addEventListener("scroll",()=>{
+  document.getElementById("appHeader").classList.toggle("scrolled",window.scrollY>8);
+},{passive:true});
+
+setupUser();
+loadLatestProducts();
+</script>
 </body>
 </html>
