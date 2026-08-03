@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>Pesanan Saya - AdaAja</title>
+  <link rel="stylesheet" href="my-orders.css">
+</head>
+<body>
+<div class="app-shell">
+
+  <header class="topbar">
+    <a href="profile.html" class="icon-button" aria-label="Kembali">
+      <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+    </a>
+
+    <div class="page-title">
+      <span>AKTIVITAS PEMBELIAN</span>
+      <h1>Pesanan Saya</h1>
+    </div>
+
+    <button class="icon-button" id="refreshButton" type="button" aria-label="Muat ulang">
+      <svg viewBox="0 0 24 24">
+        <path d="M20 11a8 8 0 1 0-2.3 5.7L20 14"></path>
+        <path d="M20 5v6h-6"></path>
+      </svg>
+    </button>
+  </header>
+
+  <section class="summary-card">
+    <div class="summary-copy">
+      <span>RINGKASAN PESANAN</span>
+      <h2>Pantau transaksi Anda dalam satu tempat</h2>
+      <p>Status pembayaran, pengemasan, pengiriman, hingga selesai.</p>
+    </div>
+
+    <div class="summary-stats">
+      <div>
+        <strong id="unpaidCount">0</strong>
+        <span>Belum Bayar</span>
+      </div>
+      <div>
+        <strong id="processCount">0</strong>
+        <span>Diproses</span>
+      </div>
+      <div>
+        <strong id="completedCount">0</strong>
+        <span>Selesai</span>
+      </div>
+    </div>
+  </section>
+
+  <nav class="filter-tabs">
+    <button type="button" class="active" data-status="all">Semua</button>
+    <button type="button" data-status="waiting_payment">Belum Bayar</button>
+    <button type="button" data-status="process">Diproses</button>
+    <button type="button" data-status="completed">Selesai</button>
+    <button type="button" data-status="cancelled">Dibatalkan</button>
+  </nav>
+
+  <main id="ordersContainer">
+    <section class="state-card">
+      <div class="spinner"></div>
+      <strong>Memuat pesanan...</strong>
+      <span>Mohon tunggu sebentar.</span>
+    </section>
+  </main>
+
+</div>
+
+<script src="my-orders.js"></script>
+</body>
+</html>
