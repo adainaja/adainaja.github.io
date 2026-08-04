@@ -1,78 +1,288 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AdaAja Complete Account V21</title>
-<link rel="stylesheet" href="complete-account.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Lengkapi profil dan alamat akun AdaAja.">
+  <title>Lengkapi Akun — AdaAja</title>
+  <link rel="stylesheet" href="complete-account.css?v=20260805-1">
 </head>
 <body>
-<div class="app">
+  <div class="app-shell">
+    <header class="page-header" id="pageHeader">
+      <button class="back-button" id="backButton" type="button" aria-label="Kembali">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m15 18-6-6 6-6"></path>
+        </svg>
+      </button>
 
-<header>
-<button class="back">‹</button>
-<img class="logo" src="assets/logo.png" alt="AdaAja">
-</header>
+      <div class="brand-logo">
+        <img src="assets/logo.png" alt="AdaAja">
+      </div>
 
-<h1>Lengkapi akun kamu</h1>
-<p class="subtitle">Lengkapi informasi untuk pengalaman jual beli yang lebih aman.</p>
+      <span class="header-spacer" aria-hidden="true"></span>
+    </header>
 
-<section class="profile-card">
-<h3>Profil Pengguna</h3>
+    <main class="content">
+      <section class="intro-section">
+        <div class="intro-copy">
+          <span class="section-label">LANGKAH 2 DARI 3</span>
+          <h1>Lengkapi profil Anda</h1>
+          <p>Tambahkan identitas profil dan alamat pengiriman agar aktivitas jual beli menjadi lebih aman dan nyaman.</p>
+        </div>
 
-<div class="avatar" id="avatar">+</div>
+        <div class="security-note">
+          <span class="security-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"></path>
+              <path d="m9 12 2 2 4-4"></path>
+            </svg>
+          </span>
+          <div>
+            <strong>Data Anda tetap aman</strong>
+            <span>Informasi digunakan untuk kebutuhan akun dan pengiriman.</span>
+          </div>
+        </div>
+      </section>
 
-<label class="upload">
-Tambah foto profil
-<input id="photo" type="file" accept="image/*">
-</label>
+      <section class="profile-card">
+        <div class="profile-card-head">
+          <div>
+            <span class="card-label">PROFIL PUBLIK</span>
+            <h2>Identitas pengguna</h2>
+          </div>
+          <span class="profile-status">Wajib</span>
+        </div>
 
-<label>Username</label>
-<div class="username-box">
-<span>@</span>
-<input placeholder="Buat username">
-</div>
+        <div class="profile-layout">
+          <label class="photo-uploader" for="photo">
+            <span class="avatar" id="avatar">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 5v14M5 12h14"></path>
+              </svg>
+            </span>
+            <span class="photo-copy">
+              <strong>Tambah foto profil</strong>
+              <small>JPG atau PNG, maksimal 5 MB</small>
+            </span>
+            <input id="photo" type="file" accept="image/jpeg,image/png,image/webp">
+          </label>
 
-</section>
+          <div class="username-area">
+            <label for="usernameInput">Username</label>
+            <div class="username-box">
+              <span>@</span>
+              <input id="usernameInput" type="text" placeholder="Buat username unik" maxlength="24" autocomplete="username">
+            </div>
+            <small class="field-help">Username akan menjadi identitas Anda di AdaAja.</small>
+          </div>
+        </div>
+      </section>
 
-<section class="address-card">
-<h3>Alamat Pengiriman</h3>
+      <section class="address-card">
+        <div class="card-heading">
+          <span class="heading-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"></path>
+              <circle cx="12" cy="10" r="2.5"></circle>
+            </svg>
+          </span>
+          <div>
+            <span class="card-label">ALAMAT UTAMA</span>
+            <h2>Alamat pengiriman</h2>
+            <p>Alamat ini digunakan sebagai alamat utama pembelian dan penjualan.</p>
+          </div>
+        </div>
 
-<button class="field" onclick="openLocation('province')">
-<div><small>Provinsi</small><b id="province">Pilih provinsi</b></div>›
-</button>
+        <div class="location-fields">
+          <button class="location-field" type="button" data-location="province">
+            <span class="location-field-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 10h18M5 10v9M9 10v9M15 10v9M19 10v9M3 19h18M12 3l9 5H3l9-5Z"></path>
+              </svg>
+            </span>
+            <span class="location-copy">
+              <small>Provinsi</small>
+              <strong id="province">Pilih provinsi</strong>
+            </span>
+            <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m9 18 6-6-6-6"></path>
+            </svg>
+          </button>
 
-<button class="field" onclick="openLocation('city')">
-<div><small>Kota/Kabupaten</small><b id="city">Pilih kota</b></div>›
-</button>
+          <button class="location-field" type="button" data-location="city">
+            <span class="location-field-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="4" y="3" width="16" height="18" rx="2"></rect>
+                <path d="M8 7h2M14 7h2M8 11h2M14 11h2M8 15h2M14 15h2"></path>
+              </svg>
+            </span>
+            <span class="location-copy">
+              <small>Kota/Kabupaten</small>
+              <strong id="city">Pilih kota</strong>
+            </span>
+            <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m9 18 6-6-6-6"></path>
+            </svg>
+          </button>
 
-<button class="field" onclick="openLocation('district')">
-<div><small>Kecamatan</small><b id="district">Pilih kecamatan</b></div>›
-</button>
+          <button class="location-field" type="button" data-location="district">
+            <span class="location-field-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"></path>
+                <path d="M9 3v15M15 6v15"></path>
+              </svg>
+            </span>
+            <span class="location-copy">
+              <small>Kecamatan</small>
+              <strong id="district">Pilih kecamatan</strong>
+            </span>
+            <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m9 18 6-6-6-6"></path>
+            </svg>
+          </button>
 
-<button class="field" onclick="openLocation('village')">
-<div><small>Kelurahan/Desa</small><b id="village">Pilih kelurahan</b></div>›
-</button>
+          <button class="location-field" type="button" data-location="village">
+            <span class="location-field-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m3 11 9-8 9 8"></path>
+                <path d="M5 10v10h14V10"></path>
+                <path d="M9 20v-6h6v6"></path>
+              </svg>
+            </span>
+            <span class="location-copy">
+              <small>Kelurahan/Desa</small>
+              <strong id="village">Pilih kelurahan</strong>
+            </span>
+            <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m9 18 6-6-6-6"></path>
+            </svg>
+          </button>
+        </div>
 
-<label>Alamat lengkap</label>
-<textarea placeholder="Rumah, jalan, nomor, detail alamat"></textarea>
+        <div class="field-group">
+          <label for="addressInput">Alamat lengkap</label>
+          <div class="textarea-shell">
+            <textarea id="addressInput" maxlength="200" placeholder="Contoh: Jalan Engku Putri No. 12, Blok A, dekat minimarket"></textarea>
+            <span id="addressCounter">0/200</span>
+          </div>
+        </div>
 
-<label>Kode Pos</label>
-<input placeholder="Masukkan kode pos">
+        <div class="field-group">
+          <label for="postalCodeInput">Kode pos</label>
+          <div class="input-shell">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 6h16v12H4z"></path>
+                <path d="m4 8 8 5 8-5"></path>
+              </svg>
+            </span>
+            <input id="postalCodeInput" type="text" inputmode="numeric" maxlength="10" placeholder="Masukkan kode pos">
+          </div>
+        </div>
+      </section>
 
-</section>
+      <div class="message" id="message" role="status" aria-live="polite"></div>
 
-<button class="save">Simpan & Mulai</button>
+      <button class="save-button" id="saveButton" type="button">
+        <span class="save-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 3h12l2 2v16H5V3Z"></path>
+            <path d="M8 3v6h8V3M8 21v-7h8v7"></path>
+          </svg>
+        </span>
+        <span class="save-copy">
+          <strong>Simpan & Mulai</strong>
+          <small>Lanjutkan ke AdaAja</small>
+        </span>
+        <svg class="save-arrow" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 12h14"></path>
+          <path d="m13 6 6 6-6 6"></path>
+        </svg>
+      </button>
 
-<div class="sheet" id="sheet">
-<div class="sheet-box">
-<h2 id="title"></h2>
-<input id="search" placeholder="Cari lokasi">
-<div id="list"></div>
-</div>
-</div>
+      <p class="privacy-copy">
+        Dengan melanjutkan, Anda menyetujui
+        <a href="terms.html">Syarat & Ketentuan</a>
+        dan
+        <a href="privacy.html">Kebijakan Privasi</a>
+        AdaAja.
+      </p>
+    </main>
 
-</div>
-<script src="complete-account.js"></script>
+    <nav class="bottom-nav" aria-label="Navigasi utama">
+      <a href="home.html" class="nav-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m3 11 9-8 9 8"></path>
+          <path d="M5 10v10h14V10"></path>
+        </svg>
+        <span>Beranda</span>
+      </a>
+
+      <a href="explore.html" class="nav-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.5-3.5"></path>
+        </svg>
+        <span>Jelajah</span>
+      </a>
+
+      <a href="upload.html" class="nav-create" data-auth-required="true" aria-label="Jual barang">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 5v14M5 12h14"></path>
+        </svg>
+      </a>
+
+      <a href="my-orders.html" class="nav-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path>
+          <path d="M4 8v10l8 3 8-3V8"></path>
+        </svg>
+        <span>Aktivitas</span>
+      </a>
+
+      <a href="profile.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 21a8 8 0 0 1 16 0"></path>
+        </svg>
+        <span>Akun</span>
+      </a>
+    </nav>
+  </div>
+
+  <div class="sheet" id="sheet" aria-hidden="true">
+    <button class="sheet-backdrop" id="sheetBackdrop" type="button" aria-label="Tutup pilihan lokasi"></button>
+    <section class="sheet-box">
+      <div class="sheet-handle"></div>
+
+      <div class="sheet-header">
+        <div>
+          <span>PILIH WILAYAH</span>
+          <h2 id="title">Pilih lokasi</h2>
+        </div>
+
+        <button class="sheet-close" id="sheetClose" type="button" aria-label="Tutup">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18"></path>
+          </svg>
+        </button>
+      </div>
+
+      <label class="sheet-search" for="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.5-3.5"></path>
+        </svg>
+        <input id="search" type="search" placeholder="Cari wilayah" autocomplete="off">
+      </label>
+
+      <div class="sheet-loading" id="sheetLoading">Memuat wilayah...</div>
+      <div id="list" class="location-list"></div>
+    </section>
+  </div>
+
+  <script src="complete-account.js?v=20260805-1"></script>
 </body>
 </html>
