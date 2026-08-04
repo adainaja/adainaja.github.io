@@ -1,35 +1,55 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>One Place. Every Need.</title>
-<link rel="stylesheet" href="splash.css">
-<meta http-equiv="refresh" content="3;url=home.html">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#071e38">
+  <meta name="description" content="AdaAja — One Place. Every Need.">
+  <title>AdaAja — One Place. Every Need.</title>
+  <link rel="stylesheet" href="splash.css">
 </head>
 <body>
+  <main class="splash" id="splash">
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <div class="ambient ambient-three"></div>
 
-<main class="splash">
-
-    <section class="brand">
-        <img src="logo.png" alt="AdaAja Logo" class="logo">
-
-        <h1>
-            <span>Ada</span><b>Aja</b>
-        </h1>
-
+    <section class="brand-card" aria-label="AdaAja">
+      <div class="logo-shell">
+        <img src="logo.png" alt="Logo AdaAja" class="logo">
+      </div>
+      <div class="brand-copy">
+        <span class="eyebrow">ADAAJA MARKETPLACE</span>
+        <h1><span>Ada</span><strong>Aja</strong></h1>
         <p>One Place. Every Need.</p>
+      </div>
     </section>
 
-    <div class="loading">
-        <i></i>
-        <i></i>
-        <i></i>
+    <section class="launch-copy">
+      <span>Marketplace yang lebih dekat</span>
+      <h2>Temukan, jual, dan beli<br>dengan lebih mudah.</h2>
+    </section>
+
+    <div class="loading-wrap" aria-label="Memuat aplikasi">
+      <div class="loading-bar"><span id="loadingProgress"></span></div>
+      <div class="loading-meta">
+        <span>Menyiapkan pengalaman terbaik</span>
+        <strong id="loadingPercent">0%</strong>
+      </div>
     </div>
 
-    <div class="wave"></div>
+    <button class="skip-button" id="skipButton" type="button">
+      Lewati
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M5 12h14"></path>
+        <path d="m13 6 6 6-6 6"></path>
+      </svg>
+    </button>
 
-</main>
-
+    <div class="bottom-mark">
+      <span></span><small>AMAN · MUDAH · PERSONAL</small><span></span>
+    </div>
+  </main>
+  <script src="splash.js"></script>
 </body>
 </html>
