@@ -33,14 +33,14 @@
           <span class="notification-count" id="notificationCount"></span>
         </button>
 
-        <a class="header-button account-button" id="accountButton" href="login.html" aria-label="Akun">
+        <button class="header-button account-button" id="accountButton" type="button" aria-label="Akun">
           <span class="account-avatar" id="accountAvatar">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <circle cx="12" cy="8" r="4"></circle>
               <path d="M4 21a8 8 0 0 1 16 0"></path>
             </svg>
           </span>
-        </a>
+        </button>
       </div>
     </header>
 
@@ -297,6 +297,51 @@
         <strong>Belum ada notifikasi</strong>
         <p>Aktivitas terbaru akan muncul di sini.</p>
       </div>
+    </section>
+  </div>
+
+
+  <div class="account-panel" id="accountPanel" aria-hidden="true">
+    <button class="panel-backdrop" id="accountBackdrop" type="button" aria-label="Tutup menu akun"></button>
+
+    <section class="account-sheet" role="dialog" aria-modal="true" aria-labelledby="accountPanelTitle">
+      <div class="panel-handle"></div>
+
+      <div class="account-sheet-header">
+        <div>
+          <span>SELAMAT DATANG</span>
+          <h2 id="accountPanelTitle">Masuk ke AdaAja</h2>
+          <p>Login untuk mulai menjual, membeli, dan mengelola aktivitas Anda.</p>
+        </div>
+
+        <button class="account-close" id="closeAccountPanel" type="button" aria-label="Tutup menu akun">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="account-actions">
+        <a class="account-primary" href="login.html">
+          <span>Masuk</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M10 17l5-5-5-5"></path>
+            <path d="M15 12H3"></path>
+            <path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"></path>
+          </svg>
+        </a>
+
+        <a class="account-secondary" href="register.html">
+          <span>Daftar akun baru</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M2 21a7 7 0 0 1 14 0"></path>
+            <path d="M19 8v6M16 11h6"></path>
+          </svg>
+        </a>
+      </div>
+
+      <p class="account-note">Dengan melanjutkan, Anda menyetujui ketentuan penggunaan dan kebijakan privasi AdaAja.</p>
     </section>
   </div>
 

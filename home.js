@@ -4,6 +4,7 @@ const productGrid=document.getElementById("productGrid");
 const searchInput=document.getElementById("searchInput");
 const topHeader=document.getElementById("topHeader");
 const notificationPanel=document.getElementById("notificationPanel");
+const accountPanel=document.getElementById("accountPanel");
 
 let products=[];
 
@@ -63,8 +64,6 @@ function setupAccount(){
   const accountAvatar=document.getElementById("accountAvatar");
 
   if(!user)return;
-
-  accountButton.href="profile.html";
 
   const photo=convertDriveImage(user.foto_profile||"");
 
@@ -195,6 +194,27 @@ function closeNotification(){
   document.body.classList.remove("panel-open");
 }
 
+function openAccountPanel(){
+  accountPanel.classList.add("active");
+  accountPanel.setAttribute("aria-hidden","false");
+  document.body.classList.add("panel-open");
+}
+
+function closeAccountPanel(){
+  accountPanel.classList.remove("active");
+  accountPanel.setAttribute("aria-hidden","true");
+  document.body.classList.remove("panel-open");
+}
+
+function handleAccountClick(){
+  if(getUser()){
+    window.location.href="profile.html";
+    return;
+  }
+
+  openAccountPanel();
+}
+
 searchInput.addEventListener("input",()=>{
   const keyword=searchInput.value.trim().toLowerCase();
 
@@ -221,6 +241,9 @@ searchInput.addEventListener("input",()=>{
 document.getElementById("notificationButton").onclick=openNotification;
 document.getElementById("closeNotification").onclick=closeNotification;
 document.getElementById("notificationBackdrop").onclick=closeNotification;
+document.getElementById("accountButton").onclick=handleAccountClick;
+document.getElementById("closeAccountPanel").onclick=closeAccountPanel;
+document.getElementById("accountBackdrop").onclick=closeAccountPanel;
 
 window.addEventListener("scroll",()=>{
   topHeader.classList.toggle("scrolled",window.scrollY>8);
@@ -228,3 +251,35 @@ window.addEventListener("scroll",()=>{
 
 setupAccount();
 loadProducts();
+
+/* =========================================================
+   AUTH GUARD — FITUR JUAL PRODUK
+   Semua tautan menuju upload.html hanya dapat dibuka
+   setelah pengguna login. Berlaku juga untuk tombol yang
+   dibuat secara dinamis, seperti tombol pada empty state.
+========================================================= */
+function setupSellAuthGuard(){
+  document.addEventListener("click",event=>{
+    const sellLink=event.target.closest('a[href]');
+
+    if(!sellLink)return;
+
+    const destination=new URL(sellLink.href,window.location.href);
+    const isUploadPage=destination.pathname.toLowerCase().endsWith("/upload.html");
+
+    if(!isUploadPage)return;
+
+    const user=getUser();
+
+    if(user)return;
+
+    event.preventDefault();
+    localStorage.setItem(
+      "redirectAfterLogin",
+      destination.pathname.split("/").pop()+destination.search+destination.hash
+    );
+    window.location.href="login.html";
+  });
+}
+
+setupSellAuthGuard();
