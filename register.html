@@ -2,11 +2,30 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#071e38">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
+
+  <meta
+    name="theme-color"
+    content="#071e38"
+  >
+
+  <meta
+    name="description"
+    content="Buat akun AdaAja dan mulai menjelajah, membeli, serta menjual produk."
+  >
+
   <title>Daftar AdaAja</title>
-  <link rel="stylesheet" href="register.css">
+
+  <link
+    rel="stylesheet"
+    href="register.css?v=20260805-3"
+  >
 </head>
+
 <body>
   <main class="register-shell">
     <div class="ambient ambient-one"></div>
@@ -14,114 +33,368 @@
 
     <section class="register-card">
       <header class="register-header">
-        <a class="back-button" href="home.html" aria-label="Kembali">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+        <a
+          class="back-button"
+          href="home.html"
+          aria-label="Kembali ke beranda"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path d="m15 18-6-6 6-6"></path>
+          </svg>
         </a>
 
         <div class="brand-logo">
-          <img src="assets/logo-adaaja.png" alt="Logo AdaAja">
+          <img
+            src="assets/logo-adaaja.png"
+            alt="Logo AdaAja"
+          >
         </div>
 
-        <span class="header-spacer" aria-hidden="true"></span>
+        <span
+          class="header-spacer"
+          aria-hidden="true"
+        ></span>
       </header>
 
-      <section class="progress-area" aria-label="Tahapan pendaftaran">
+      <section
+        class="progress-area"
+        aria-label="Tahapan pendaftaran"
+      >
         <div class="progress-track">
-          <span class="active"></span><span></span><span></span>
+          <span class="active"></span>
+          <span></span>
+          <span></span>
         </div>
+
         <div class="progress-labels">
-          <span class="active">Akun</span><span>Profil</span><span>Selesai</span>
+          <span class="active">Akun</span>
+          <span>Profil</span>
+          <span>Selesai</span>
         </div>
       </section>
 
       <section class="intro-card">
-        <div class="intro-badge"><i></i> LANGKAH 1 DARI 3</div>
+        <div class="intro-badge">
+          <i></i>
+          LANGKAH 1 DARI 3
+        </div>
+
         <h1>Buat akun AdaAja</h1>
-        <p>Mulai menjelajah, membeli, dan menjual barang dengan pengalaman yang lebih personal.</p>
+
+        <p>
+          Mulai menjelajah, membeli, dan menjual barang
+          dengan pengalaman yang lebih personal.
+        </p>
       </section>
 
-      <form id="registerForm" novalidate>
+      <form
+        id="registerForm"
+        novalidate
+      >
         <div class="form-heading">
           <span>INFORMASI AKUN</span>
+
           <h2>Lengkapi data utama</h2>
-          <p>Gunakan data aktif agar proses verifikasi berjalan lancar.</p>
+
+          <p>
+            Gunakan email aktif agar proses verifikasi
+            dapat berjalan dengan lancar.
+          </p>
         </div>
 
         <div class="field-group">
-          <label for="name">Nama lengkap</label>
+          <label for="name">
+            Nama lengkap
+          </label>
+
           <div class="input-shell">
             <span class="field-icon">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <circle
+                  cx="12"
+                  cy="8"
+                  r="4"
+                ></circle>
+
+                <path d="M4 21a8 8 0 0 1 16 0"></path>
+              </svg>
             </span>
-            <input id="name" type="text" placeholder="Masukkan nama lengkap" autocomplete="name">
+
+            <input
+              id="name"
+              name="name"
+              type="text"
+              placeholder="Masukkan nama lengkap"
+              autocomplete="name"
+              maxlength="100"
+              required
+            >
           </div>
         </div>
 
         <div class="field-group">
-          <label for="contact">Email atau nomor HP</label>
+          <label for="contact">
+            Email
+          </label>
+
           <div class="input-shell">
             <span class="field-icon">
-              <svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"></path><path d="m4 7 8 6 8-6"></path></svg>
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path d="M4 5h16v14H4z"></path>
+                <path d="m4 7 8 6 8-6"></path>
+              </svg>
             </span>
-            <input id="contact" type="text" placeholder="Masukkan email atau nomor HP" autocomplete="email">
+
+            <input
+              id="contact"
+              name="email"
+              type="email"
+              placeholder="Masukkan alamat email"
+              autocomplete="email"
+              inputmode="email"
+              maxlength="150"
+              required
+            >
           </div>
         </div>
 
         <div class="field-group">
-          <label for="password">Password</label>
+          <label for="password">
+            Password
+          </label>
+
           <div class="input-shell password-shell">
             <span class="field-icon">
-              <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <rect
+                  x="5"
+                  y="10"
+                  width="14"
+                  height="10"
+                  rx="2"
+                ></rect>
+
+                <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+              </svg>
             </span>
-            <input id="password" type="password" placeholder="Minimal 8 karakter" autocomplete="new-password">
-            <button class="toggle-password" type="button" data-target="password" aria-label="Tampilkan password">
-              <svg class="eye-open" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path><circle cx="12" cy="12" r="2.5"></circle></svg>
-              <svg class="eye-off" viewBox="0 0 24 24"><path d="m3 3 18 18"></path><path d="M10.6 6.2A9.7 9.7 0 0 1 12 6c6.5 0 10 6 10 6a16 16 0 0 1-3 3.8"></path><path d="M6.2 6.2C3.5 8 2 12 2 12s3.5 6 10 6a9.6 9.6 0 0 0 3.2-.5"></path></svg>
+
+            <input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="Minimal 8 karakter"
+              autocomplete="new-password"
+              minlength="8"
+              required
+            >
+
+            <button
+              class="toggle-password"
+              type="button"
+              data-target="password"
+              aria-label="Tampilkan password"
+            >
+              <svg
+                class="eye-open"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path>
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="2.5"
+                ></circle>
+              </svg>
+
+              <svg
+                class="eye-off"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path d="m3 3 18 18"></path>
+
+                <path d="M10.6 6.2A9.7 9.7 0 0 1 12 6c6.5 0 10 6 10 6a16 16 0 0 1-3 3.8"></path>
+
+                <path d="M6.2 6.2C3.5 8 2 12 2 12s3.5 6 10 6a9.6 9.6 0 0 0 3.2-.5"></path>
+              </svg>
             </button>
           </div>
-          <small>Gunakan minimal 8 karakter dengan kombinasi huruf dan angka.</small>
+
+          <small>
+            Gunakan minimal 8 karakter dengan kombinasi
+            huruf dan angka.
+          </small>
         </div>
 
         <div class="field-group">
-          <label for="confirm">Konfirmasi password</label>
+          <label for="confirm">
+            Konfirmasi password
+          </label>
+
           <div class="input-shell password-shell">
             <span class="field-icon">
-              <svg viewBox="0 0 24 24"><path d="m9 12 2 2 4-4"></path><rect x="5" y="4" width="14" height="16" rx="3"></rect></svg>
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path d="m9 12 2 2 4-4"></path>
+
+                <rect
+                  x="5"
+                  y="4"
+                  width="14"
+                  height="16"
+                  rx="3"
+                ></rect>
+              </svg>
             </span>
-            <input id="confirm" type="password" placeholder="Ulangi password" autocomplete="new-password">
-            <button class="toggle-password" type="button" data-target="confirm" aria-label="Tampilkan konfirmasi password">
-              <svg class="eye-open" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path><circle cx="12" cy="12" r="2.5"></circle></svg>
-              <svg class="eye-off" viewBox="0 0 24 24"><path d="m3 3 18 18"></path><path d="M10.6 6.2A9.7 9.7 0 0 1 12 6c6.5 0 10 6 10 6a16 16 0 0 1-3 3.8"></path><path d="M6.2 6.2C3.5 8 2 12 2 12s3.5 6 10 6a9.6 9.6 0 0 0 3.2-.5"></path></svg>
+
+            <input
+              id="confirm"
+              name="confirm-password"
+              type="password"
+              placeholder="Ulangi password"
+              autocomplete="new-password"
+              minlength="8"
+              required
+            >
+
+            <button
+              class="toggle-password"
+              type="button"
+              data-target="confirm"
+              aria-label="Tampilkan konfirmasi password"
+            >
+              <svg
+                class="eye-open"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path>
+
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="2.5"
+                ></circle>
+              </svg>
+
+              <svg
+                class="eye-off"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path d="m3 3 18 18"></path>
+
+                <path d="M10.6 6.2A9.7 9.7 0 0 1 12 6c6.5 0 10 6 10 6a16 16 0 0 1-3 3.8"></path>
+
+                <path d="M6.2 6.2C3.5 8 2 12 2 12s3.5 6 10 6a9.6 9.6 0 0 0 3.2-.5"></path>
+              </svg>
             </button>
           </div>
         </div>
 
-        <p id="message" role="status" aria-live="polite"></p>
+        <p
+          id="message"
+          role="status"
+          aria-live="polite"
+        ></p>
 
-        <label class="terms-row" for="agree">
-          <input type="checkbox" id="agree">
-          <span class="custom-check"><svg viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"></path></svg></span>
-          <span>Saya menyetujui <a href="terms.html">Syarat & Ketentuan</a> dan <a href="privacy.html">Kebijakan Privasi</a> AdaAja.</span>
+        <label
+          class="terms-row"
+          for="agree"
+        >
+          <input
+            type="checkbox"
+            id="agree"
+            required
+          >
+
+          <span class="custom-check">
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path d="m5 12 4 4 10-10"></path>
+            </svg>
+          </span>
+
+          <span>
+            Saya menyetujui
+            <a href="terms.html">
+              Syarat & Ketentuan
+            </a>
+            dan
+            <a href="privacy.html">
+              Kebijakan Privasi
+            </a>
+            AdaAja.
+          </span>
         </label>
 
-        <button class="primary-button" id="registerButton" type="submit">
+        <button
+          class="primary-button"
+          id="registerButton"
+          type="submit"
+        >
           <span>Buat Akun AdaAja</span>
-          <svg viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path d="M5 12h14"></path>
+            <path d="m13 6 6 6-6 6"></path>
+          </svg>
         </button>
 
-        <div class="divider"><span>atau lanjutkan dengan</span></div>
-
-        <div class="google-auth" aria-label="Daftar atau masuk dengan Google">
-          <div id="googleButtonContainer"></div>
-          <p class="google-status" id="googleStatus" aria-live="polite"></p>
+        <div class="divider">
+          <span>atau lanjutkan dengan</span>
         </div>
 
-        <p class="login-link">Sudah punya akun? <a href="login.html">Masuk sekarang</a></p>
+        <div
+          class="google-auth"
+          aria-label="Daftar atau masuk dengan Google"
+        >
+          <div id="googleButtonContainer"></div>
+
+          <p
+            class="google-status"
+            id="googleStatus"
+            role="status"
+            aria-live="polite"
+          ></p>
+        </div>
+
+        <p class="login-link">
+          Sudah punya akun?
+          <a href="login.html">
+            Masuk sekarang
+          </a>
+        </p>
       </form>
     </section>
   </main>
 
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="register.js"></script>
+  <script
+    src="https://accounts.google.com/gsi/client"
+    async
+    defer
+  ></script>
+
+  <script src="register.js?v=20260805-3"></script>
 </body>
 </html>
