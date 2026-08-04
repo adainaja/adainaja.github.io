@@ -1,7 +1,7 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbx0VQGRZ9bXUSp8nTdgttqyD5VNOtTavrB0iqpS91gWjqTstIZzd189uIxtTQHD6FI/exec";
 
 // Ganti dengan OAuth 2.0 Client ID jenis Web Application dari Google Cloud Console.
-const GOOGLE_CLIENT_ID = "GANTI_DENGAN_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = "670578392878-jarugitvplh7mep4qamh2o7qrn6jmldf.apps.googleusercontent.com";
 
 const form = document.getElementById("registerForm");
 const registerButton = document.getElementById("registerButton");
