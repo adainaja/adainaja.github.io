@@ -34,8 +34,20 @@ form{margin-top:18px;padding:22px 18px 24px;border:1px solid rgba(9,37,68,.06);b
 .terms-row{position:relative;display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;align-items:flex-start;margin-top:18px;color:#657181;font-size:8px;line-height:1.6;cursor:pointer}.terms-row input{position:absolute;opacity:0;pointer-events:none}.custom-check{display:grid;width:22px;height:22px;place-items:center;border:1.5px solid #cfd6df;border-radius:7px;background:#fff;color:#fff;transition:.18s ease}.custom-check svg{width:14px;height:14px;stroke-width:2.4}.terms-row input:checked+.custom-check{border-color:var(--orange);background:var(--orange);box-shadow:0 7px 16px rgba(255,122,0,.22)}.terms-row a{color:var(--navy);font-weight:800;text-decoration:none}
 .primary-button{display:flex;width:100%;height:56px;align-items:center;justify-content:center;gap:10px;margin-top:20px;border:0;border-radius:18px;background:linear-gradient(145deg,var(--orange),var(--orange-2));color:#fff;font-size:10.5px;font-weight:800;box-shadow:0 15px 30px rgba(255,122,0,.3);transition:.18s ease}.primary-button:active{transform:scale(.985)}.primary-button:disabled{opacity:.65;cursor:not-allowed;box-shadow:none}.primary-button svg{width:18px;height:18px}
 .divider{display:flex;align-items:center;gap:11px;margin:23px 0;color:#9ba5b1;font-size:7.5px;font-weight:700}.divider::before,.divider::after{height:1px;flex:1;background:#e9edf1;content:""}
-.google-button{display:flex;width:100%;height:54px;align-items:center;justify-content:center;gap:10px;border:1px solid var(--line);border-radius:17px;background:#fff;color:var(--navy);font-size:9.5px;font-weight:800;box-shadow:0 8px 20px rgba(9,37,68,.04)}.google-button:active{transform:scale(.985)}
+
 .login-link{margin:22px 0 0;text-align:center;color:#798493;font-size:8.5px}.login-link a{color:var(--orange);font-weight:800;text-decoration:none}
 
 @media(min-width:431px){.register-shell{min-height:100vh}}
 @media(max-width:360px){.register-card{padding-right:12px;padding-left:12px}.brand-logo img{max-width:120px}.intro-card{padding:20px 18px}.intro-card h1{font-size:24px}form{padding-right:15px;padding-left:15px}}
+
+
+/* GOOGLE IDENTITY SERVICES */
+.google-auth{width:100%;min-height:54px}
+#googleButtonContainer{display:flex;width:100%;min-height:54px;align-items:center;justify-content:center;overflow:hidden;border-radius:17px}
+#googleButtonContainer>div{width:100%!important}
+#googleButtonContainer iframe{width:100%!important}
+.google-setup-button{width:100%;height:54px;border:1px solid var(--line);border-radius:17px;background:#fff;color:var(--navy);font-size:9.5px;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(9,37,68,.04)}
+.google-setup-button:active{transform:scale(.985)}
+.google-status{min-height:16px;margin:7px 4px 0;color:var(--muted);font-size:8px;line-height:1.45;text-align:center}
+.google-status.error{color:#d43b43}
+.google-status.success{color:#168a50}
