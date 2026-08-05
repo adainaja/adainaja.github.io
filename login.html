@@ -1,46 +1,121 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Masuk AdaAja</title>
-<link rel="stylesheet" href="login.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Masuk ke akun AdaAja menggunakan kode OTP.">
+  <title>Masuk — AdaAja</title>
+  <link rel="stylesheet" href="login.css?v=20260805-1">
 </head>
 <body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="header-button" href="home.html" aria-label="Kembali ke beranda">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+      </a>
+      <div class="brand-logo"><img src="assets/logo-adaaja.png" alt="AdaAja"></div>
+      <span class="header-spacer" aria-hidden="true"></span>
+    </header>
 
-<div class="app">
+    <main class="content">
+      <section class="welcome-card">
+        <div class="welcome-glow welcome-glow-one"></div>
+        <div class="welcome-glow welcome-glow-two"></div>
+        <div class="welcome-badge"><i></i> MASUK KE ADAAJA</div>
+        <h1>Selamat datang kembali</h1>
+        <p>Masuk dengan email aktif untuk melanjutkan aktivitas jual beli Anda di AdaAja.</p>
 
-<header>
-<img src="logo.png" class="logo">
-</header>
+        <div class="security-note">
+          <span class="security-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"></path>
+              <path d="m9 12 2 2 4-4"></path>
+            </svg>
+          </span>
+          <div>
+            <strong>Masuk aman tanpa password</strong>
+            <span>Kami akan mengirimkan kode OTP ke email Anda.</span>
+          </div>
+        </div>
+      </section>
 
-<section class="login-box">
+      <section class="login-card">
+        <div class="card-heading">
+          <span class="card-label">AKSES AKUN</span>
+          <h2>Masukkan email Anda</h2>
+          <p>Pastikan email yang dimasukkan sesuai dengan akun AdaAja Anda.</p>
+        </div>
 
-<h1>Selamat datang kembali</h1>
+        <label class="field-group" for="email">
+          <span>Email</span>
+          <div class="input-shell">
+            <span class="field-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 5h16v14H4z"></path>
+                <path d="m4 7 8 6 8-6"></path>
+              </svg>
+            </span>
+            <input id="email" type="email" placeholder="Masukkan alamat email" autocomplete="email" inputmode="email">
+          </div>
+        </label>
 
-<p>Masuk untuk melanjutkan ke AdaAja</p>
+        <p id="message" class="message" role="status" aria-live="polite"></p>
 
-<label>Email</label>
-<input id="email" type="email" placeholder="Masukkan email">
+        <button class="main-button" id="sendOtpButton" type="button">
+          <span class="button-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 5h16v14H4z"></path>
+              <path d="m4 7 8 6 8-6"></path>
+            </svg>
+          </span>
+          <span class="button-copy"><strong>Kirim Kode OTP</strong><small>Verifikasi melalui email</small></span>
+          <svg class="button-arrow" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>
+          </svg>
+        </button>
 
-<p id="message"></p>
+        <div class="divider"><span>atau</span></div>
 
-<button class="main-btn" onclick="sendOTP()">
-Kirim Kode OTP
-</button>
+        <a class="register-button" href="register.html">
+          <span class="register-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="9" cy="8" r="4"></circle>
+              <path d="M3 21a6 6 0 0 1 12 0"></path>
+              <path d="M19 8v6M16 11h6"></path>
+            </svg>
+          </span>
+          <span><strong>Buat akun baru</strong><small>Daftar dan mulai gunakan AdaAja</small></span>
+          <svg class="register-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+        </a>
 
-<div class="divider">atau</div>
+        <p class="terms-copy">Dengan melanjutkan, Anda menyetujui <a href="terms.html">Syarat & Ketentuan</a> dan <a href="privacy.html">Kebijakan Privasi</a> AdaAja.</p>
+      </section>
+    </main>
 
-<p class="register">
-Belum punya akun?
-<a href="register.html">Daftar</a>
-</p>
+    <nav class="bottom-nav" aria-label="Navigasi utama">
+      <a href="home.html" class="nav-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-8 9 8"></path><path d="M5 10v10h14V10"></path></svg>
+        <span>Beranda</span>
+      </a>
+      <a href="explore.html" class="nav-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+        <span>Jelajah</span>
+      </a>
+      <a href="upload.html" class="nav-create" data-auth-required="true" aria-label="Jual barang">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+      </a>
+      <a href="my-orders.html" class="nav-item" data-auth-required="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path><path d="M4 8v10l8 3 8-3V8"></path></svg>
+        <span>Aktivitas</span>
+      </a>
+      <a href="profile.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+        <span>Akun</span>
+      </a>
+    </nav>
+  </div>
 
-</section>
-
-</div>
-
-<script src="login.js"></script>
-
+  <script src="login.js?v=20260805-1"></script>
 </body>
 </html>

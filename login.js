@@ -1,194 +1,120 @@
 const API_URL =
-"https://script.google.com/macros/s/AKfycbx0VQGRZ9bXUSp8nTdgttqyD5VNOtTavrB0iqpS91gWjqTstIZzd189uIxtTQHD6FI/exec";
+  "https://script.google.com/macros/s/AKfycbx0VQGRZ9bXUSp8nTdgttqyD5VNOtTavrB0iqpS91gWjqTstIZzd189uIxtTQHD6FI/exec";
 
+const emailInput = document.getElementById("email");
+const message = document.getElementById("message");
+const sendOtpButton = document.getElementById("sendOtpButton");
+
+function getUser(){
+  try{
+    return JSON.parse(localStorage.getItem("user") || "null");
+  }catch{
+    return null;
+  }
+}
+
+function setMessage(text="",type=""){
+  message.className = `message ${type}`.trim();
+  message.textContent = text;
+}
+
+function setLoading(isLoading){
+  sendOtpButton.disabled = isLoading;
+
+  const title = sendOtpButton.querySelector(".button-copy strong");
+  const subtitle = sendOtpButton.querySelector(".button-copy small");
+
+  if(title){
+    title.textContent = isLoading ? "Mengirim kode..." : "Kirim Kode OTP";
+  }
+
+  if(subtitle){
+    subtitle.textContent = isLoading ? "Mohon tunggu sebentar" : "Verifikasi melalui email";
+  }
+}
+
+function isValidEmail(email){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
 async function sendOTP(){
+  const email = emailInput.value.trim().toLowerCase();
 
-    const emailInput =
-    document.getElementById("email");
+  if(!email){
+    setMessage("Masukkan email terlebih dahulu.","error");
+    emailInput.focus();
+    return;
+  }
 
-    const message =
-    document.getElementById("message");
+  if(!isValidEmail(email)){
+    setMessage("Masukkan alamat email yang valid.","error");
+    emailInput.focus();
+    return;
+  }
 
-    const email =
-    emailInput.value.trim();
+  setLoading(true);
+  setMessage("Mengirim kode OTP ke email Anda...");
 
+  try{
+    const response = await fetch(API_URL,{
+      method:"POST",
+      redirect:"follow",
+      headers:{
+        "Content-Type":"text/plain;charset=utf-8"
+      },
+      body:JSON.stringify({
+        action:"sendOTP",
+        email
+      })
+    });
 
-    if(!email){
-
-        message.className = "error";
-
-        message.textContent =
-        "Masukkan email terlebih dahulu";
-
-        emailInput.focus();
-
-        return;
-
+    if(!response.ok){
+      throw new Error(`Server merespons dengan status ${response.status}.`);
     }
 
+    const result = await response.json();
 
-    const emailPattern =
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-
-    if(!emailPattern.test(email)){
-
-        message.className = "error";
-
-        message.textContent =
-        "Format email tidak valid";
-
-        emailInput.focus();
-
-        return;
-
+    if(result.status !== "success"){
+      throw new Error(result.message || "Kode OTP gagal dikirim.");
     }
 
+    localStorage.setItem("login_email",email);
+    setMessage("Kode OTP berhasil dikirim.","success");
 
-    message.className = "";
+    setTimeout(()=>{
+      location.href="otp-login.html";
+    },900);
 
-    message.textContent =
-    "Mengirim OTP...";
+  }catch(error){
+    console.error("Login OTP error:",error);
+    setMessage(error.message || "Gagal terhubung ke server.","error");
+    setLoading(false);
+  }
+}
 
+sendOtpButton.addEventListener("click",sendOTP);
 
-    try{
+emailInput.addEventListener("keydown",(event)=>{
+  if(event.key === "Enter"){
+    event.preventDefault();
+    sendOTP();
+  }
+});
 
-        const response =
-        await fetch(API_URL,{
+document.querySelectorAll("[data-auth-required='true']").forEach((link)=>{
+  link.addEventListener("click",(event)=>{
+    if(getUser()) return;
 
-            method:"POST",
+    event.preventDefault();
+    localStorage.setItem("redirectAfterLogin",link.getAttribute("href"));
+    location.href="login.html";
+  });
+});
 
-            redirect:"follow",
+const existingUser = getUser();
 
-            headers:{
-
-                "Content-Type":
-                "text/plain;charset=utf-8"
-
-            },
-
-            body:JSON.stringify({
-
-                action:"sendOTP",
-
-                email:email
-
-            })
-
-        });
-
-
-        const responseText =
-        await response.text();
-
-
-        if(!response.ok){
-
-            console.error(
-                "HTTP Error:",
-                response.status,
-                responseText
-            );
-
-            throw new Error(
-                "HTTP " + response.status
-            );
-
-        }
-
-
-        let result;
-
-
-        try{
-
-            result =
-            JSON.parse(responseText);
-
-        }catch(parseError){
-
-            console.error(
-                "Respons server bukan JSON:",
-                responseText
-            );
-
-            throw new Error(
-                "Respons server tidak valid"
-            );
-
-        }
-
-
-        if(result.status === "success"){
-
-            localStorage.setItem(
-                "login_email",
-                email
-            );
-
-
-            message.className =
-            "success";
-
-            message.textContent =
-            "OTP berhasil dikirim";
-
-
-            setTimeout(function(){
-
-                location.href =
-                "otp-login.html";
-
-            },1000);
-
-        }else{
-
-            message.className =
-            "error";
-
-            message.textContent =
-            result.message ||
-            "OTP gagal dikirim";
-
-        }
-
-
-    }catch(error){
-
-        console.error(
-            "Gagal mengirim OTP:",
-            error
-        );
-
-
-        message.className =
-        "error";
-
-
-        if(
-            error.message.includes("404")
-        ){
-
-            message.textContent =
-            "Endpoint server tidak ditemukan";
-
-        }else if(
-            error.message.includes(
-                "Respons server tidak valid"
-            )
-        ){
-
-            message.textContent =
-            "Respons server tidak valid";
-
-        }else{
-
-            message.textContent =
-            "Gagal terhubung server";
-
-        }
-
-    }
-
+if(existingUser){
+  document.querySelector(".welcome-card h1").textContent = "Akun Anda sudah aktif";
+  document.querySelector(".welcome-card > p").textContent =
+    "Anda sudah masuk ke AdaAja. Gunakan navigasi di bawah untuk melanjutkan.";
 }
