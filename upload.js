@@ -1,3 +1,34 @@
+const ADAAJA_CATEGORIES = {
+  all: "Semua produk",
+  electronics: "Elektronik",
+  fashion: "Fashion",
+  home: "Rumah Tangga",
+  automotive: "Otomotif",
+  beauty: "Kecantikan",
+  hobby: "Hobi & Koleksi",
+  baby: "Bayi & Anak",
+  books: "Buku",
+  sports: "Olahraga",
+  food: "Makanan & Minuman",
+  pets: "Hewan Peliharaan",
+  services: "Jasa",
+  property: "Properti",
+  event: "Event & Tiket",
+  other: "Lainnya"
+};
+
+const UPLOAD_LEGACY_CATEGORY_MAP = {
+  CAT_ELEKTRONIK: "electronics",
+  CAT_FASHION: "fashion",
+  CAT_RUMAH: "home",
+  CAT_KENDARAAN: "automotive",
+  CAT_MAKANAN: "food",
+  CAT_JASA: "services",
+  CAT_EVENT: "event",
+  CAT_LAINNYA: "other",
+  CAT_BARANG: "other"
+};
+
 const API_URL =
   "https://script.google.com/macros/s/AKfycbx0VQGRZ9bXUSp8nTdgttqyD5VNOtTavrB0iqpS91gWjqTstIZzd189uIxtTQHD6FI/exec";
 
@@ -280,6 +311,8 @@ function collectFormData(includeImages = true) {
     seller_id: user?.user_id || "",
     category_id:
       document.getElementById("category").value,
+    category_label:
+      ADAAJA_CATEGORIES[document.getElementById("category").value] || "",
     brand:
       document.getElementById("brand").value.trim(),
     nama_produk:
@@ -393,8 +426,19 @@ form.addEventListener("submit", async (event) => {
         body: JSON.stringify(data)
       });
 
-    const result =
-      await response.json();
+    const responseText =
+      await response.text();
+
+    let result;
+
+    try {
+      result = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error("Respons upload bukan JSON:", responseText);
+      throw new Error(
+        "Server sedang sibuk. Silakan coba terbitkan produk kembali."
+      );
+    }
 
     if (result.status !== "success") {
       throw new Error(
@@ -466,8 +510,13 @@ form.addEventListener("submit", async (event) => {
     description.value =
       draft.deskripsi || "";
 
+    const restoredCategory =
+      UPLOAD_LEGACY_CATEGORY_MAP[String(draft.category_id || "").toUpperCase()] ||
+      draft.category_id ||
+      "";
+
     document.getElementById("category").value =
-      draft.category_id || "";
+      restoredCategory;
 
     document.getElementById("brand").value =
       draft.brand || "";
