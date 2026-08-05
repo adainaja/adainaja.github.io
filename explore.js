@@ -77,7 +77,7 @@ function formatCondition(value) {
   if (condition === "bekas") return "Bekas";
 
   return "";
-})[value]||value||"";}
+}
 function categoryLabel(value){
   return ADAAJA_CATEGORIES[value] || "Semua produk";
 }
