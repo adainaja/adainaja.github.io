@@ -51,7 +51,33 @@ function getUser(){try{return JSON.parse(localStorage.getItem("user")||"null");}
 function escapeHtml(value){return String(value||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");}
 function formatRupiah(value){return new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0}).format(Number(value||0));}
 function convertDriveImage(url){if(!url)return"";if(url.includes("drive.google.com")){const id=url.match(/[-\w]{25,}/);if(id)return "https://drive.google.com/thumbnail?id="+id[0]+"&sz=w700";}return url;}
-function formatCondition(value){return({new:"Baru",like_new:"Seperti baru",good:"Kondisi baik",fair:"Bekas pemakaian",poor:"Ada kerusakan",very_poor:"Kurang baik"})[value]||value||"";}
+function normalizeCondition(value) {
+  const condition = String(value || "").trim().toLowerCase();
+
+  if (!condition) return "";
+
+  if (condition === "baru" || condition === "new") {
+    return "baru";
+  }
+
+  if (
+    condition === "bekas" ||
+    ["like_new", "good", "fair", "poor", "very_poor"].includes(condition)
+  ) {
+    return "bekas";
+  }
+
+  return condition;
+}
+
+function formatCondition(value) {
+  const condition = normalizeCondition(value);
+
+  if (condition === "baru") return "Baru";
+  if (condition === "bekas") return "Bekas";
+
+  return "";
+})[value]||value||"";}
 function categoryLabel(value){
   return ADAAJA_CATEGORIES[value] || "Semua produk";
 }
@@ -76,7 +102,7 @@ function setupAccount(){const user=getUser();const accountAvatar=document.getEle
 
 function renderProductCard(product){const image=convertDriveImage(product.image_url||"");const imageHtml=image?`<img src="${image}" alt="${escapeHtml(product.nama_produk||"Produk")}" loading="lazy">`:`<div class="product-image-placeholder">Foto tidak tersedia</div>`;const condition=formatCondition(product.kondisi);return `<a href="product-detail.html?id=${encodeURIComponent(product.product_id||"")}" class="product-card"><div class="product-image">${imageHtml}${condition?`<span class="product-condition">${escapeHtml(condition)}</span>`:""}<span class="favorite-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"></path></svg></span></div><div class="product-body"><h3>${escapeHtml(product.nama_produk||"Produk")}</h3><strong>${formatRupiah(product.harga)}</strong><div class="product-footer"><span>${escapeHtml(product.ship_from_region||"Lokasi belum tersedia")}</span><span>Stok ${Number(product.stok||0)}</span></div></div></a>`;}
 
-function getFilteredProducts(){const keyword=searchInput.value.trim().toLowerCase();let data=products.filter(product=>{const price=Number(product.harga||0);const categoryMatch=activeCategory==="all"||normalizeCategory(product)===activeCategory;const conditionMatch=activeCondition==="all"||String(product.kondisi||"")===activeCondition;const priceMatch=price>=minPrice&&price<=maxPrice;const searchMatch=!keyword||[product.nama_produk,product.brand,product.ship_from_region,product.kondisi,product.category_id,product.category,product.kategori].some(value=>String(value||"").toLowerCase().includes(keyword));return categoryMatch&&conditionMatch&&priceMatch&&searchMatch;});
+function getFilteredProducts(){const keyword=searchInput.value.trim().toLowerCase();let data=products.filter(product=>{const price=Number(product.harga||0);const categoryMatch=activeCategory==="all"||normalizeCategory(product)===activeCategory;const conditionMatch=activeCondition==="all"||normalizeCondition(product.kondisi)===activeCondition;const priceMatch=price>=minPrice&&price<=maxPrice;const searchMatch=!keyword||[product.nama_produk,product.brand,product.ship_from_region,normalizeCondition(product.kondisi),formatCondition(product.kondisi),product.category_id,product.category,product.kategori].some(value=>String(value||"").toLowerCase().includes(keyword));return categoryMatch&&conditionMatch&&priceMatch&&searchMatch;});
   if(sortSelect.value==="price_low")data.sort((a,b)=>Number(a.harga||0)-Number(b.harga||0));
   if(sortSelect.value==="price_high")data.sort((a,b)=>Number(b.harga||0)-Number(a.harga||0));
   if(sortSelect.value==="stock")data.sort((a,b)=>Number(b.stok||0)-Number(a.stok||0));

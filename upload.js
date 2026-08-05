@@ -29,6 +29,25 @@ const UPLOAD_LEGACY_CATEGORY_MAP = {
   CAT_BARANG: "other"
 };
 
+function normalizeUploadCondition(value) {
+  const condition = String(value || "").trim().toLowerCase();
+
+  if (!condition) return "";
+
+  if (condition === "baru" || condition === "new") {
+    return "baru";
+  }
+
+  if (
+    condition === "bekas" ||
+    ["like_new", "good", "fair", "poor", "very_poor"].includes(condition)
+  ) {
+    return "bekas";
+  }
+
+  return "";
+}
+
 const API_URL =
   "https://script.google.com/macros/s/AKfycbx0VQGRZ9bXUSp8nTdgttqyD5VNOtTavrB0iqpS91gWjqTstIZzd189uIxtTQHD6FI/exec";
 
@@ -361,8 +380,8 @@ function validate(data) {
     return "Pilih kategori produk.";
   }
 
-  if (!data.kondisi) {
-    return "Pilih kondisi produk.";
+  if (!["baru", "bekas"].includes(data.kondisi)) {
+    return "Pilih kondisi Baru atau Bekas.";
   }
 
   if (!data.shipping_payer) {
@@ -522,7 +541,7 @@ form.addEventListener("submit", async (event) => {
       draft.brand || "";
 
     document.getElementById("condition").value =
-      draft.kondisi || "";
+      normalizeUploadCondition(draft.kondisi);
 
     document.getElementById("shippingMethod").value =
       draft.shipping_method || "";
