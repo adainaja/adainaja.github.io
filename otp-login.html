@@ -1,37 +1,153 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Verifikasi OTP AdaAja</title>
-<link rel="stylesheet" href="otp-login.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Verifikasi kode OTP untuk masuk ke AdaAja.">
+  <title>Verifikasi OTP — AdaAja</title>
+  <link rel="stylesheet" href="otp-login.css?v=20260805-1">
 </head>
 <body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="header-button" href="login.html" aria-label="Kembali ke halaman masuk">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m15 18-6-6 6-6"></path>
+        </svg>
+      </a>
 
-<div class="app">
+      <div class="brand-logo">
+        <img src="assets/logo-adaaja.png" alt="AdaAja">
+      </div>
 
-<header>
-<img src="assets/logo-adaaja.png" class="logo">
-</header>
+      <span class="header-spacer" aria-hidden="true"></span>
+    </header>
 
-<section class="box">
+    <main class="content">
+      <section class="verification-hero">
+        <div class="hero-glow hero-glow-one"></div>
+        <div class="hero-glow hero-glow-two"></div>
 
-<h1>Verifikasi OTP</h1>
-<p>Kode verifikasi telah dikirim ke email Anda.</p>
+        <span class="hero-badge">
+          <i></i>
+          VERIFIKASI AMAN
+        </span>
 
-<input id="otp" maxlength="6" placeholder="Masukkan 6 digit kode OTP">
+        <span class="mail-illustration">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 5h16v14H4z"></path>
+            <path d="m4 7 8 6 8-6"></path>
+            <circle cx="18" cy="6" r="3"></circle>
+            <path d="m17 6 1 1 2-2"></path>
+          </svg>
+        </span>
 
-<p id="message"></p>
+        <h1>Masukkan kode OTP</h1>
 
-<button class="main-btn" onclick="verifyLogin()">
-Verifikasi & Masuk
-</button>
+        <p>
+          Kami telah mengirimkan kode verifikasi 6 digit ke
+          <strong id="maskedEmail">email Anda</strong>.
+        </p>
+      </section>
 
-</section>
+      <section class="otp-card">
+        <div class="card-heading">
+          <span class="card-label">KODE VERIFIKASI</span>
+          <h2>Konfirmasi akses akun</h2>
+          <p>Kode OTP hanya berlaku selama 5 menit.</p>
+        </div>
 
-</div>
+        <div class="otp-inputs" id="otpInputs" aria-label="Masukkan kode OTP 6 digit">
+          <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" aria-label="Digit OTP 1">
+          <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" aria-label="Digit OTP 2">
+          <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" aria-label="Digit OTP 3">
+          <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" aria-label="Digit OTP 4">
+          <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" aria-label="Digit OTP 5">
+          <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" aria-label="Digit OTP 6">
+        </div>
 
-<script src="otp-login.js"></script>
+        <input id="otp" type="hidden">
 
+        <p id="message" class="message" role="status" aria-live="polite"></p>
+
+        <button class="main-button" id="verifyButton" type="button">
+          <span class="button-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"></path>
+              <path d="m9 12 2 2 4-4"></path>
+            </svg>
+          </span>
+
+          <span class="button-copy">
+            <strong>Verifikasi & Masuk</strong>
+            <small>Lanjutkan ke akun AdaAja</small>
+          </span>
+
+          <svg class="button-arrow" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 12h14"></path>
+            <path d="m13 6 6 6-6 6"></path>
+          </svg>
+        </button>
+
+        <div class="resend-area">
+          <span>Belum menerima kode?</span>
+          <button id="resendButton" type="button">Kirim ulang</button>
+          <small id="resendTimer"></small>
+        </div>
+
+        <div class="security-note">
+          <span>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"></path>
+            </svg>
+          </span>
+          <p>Jangan bagikan kode OTP kepada siapa pun, termasuk pihak yang mengaku dari AdaAja.</p>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navigasi utama">
+      <a href="home.html" class="nav-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m3 11 9-8 9 8"></path>
+          <path d="M5 10v10h14V10"></path>
+        </svg>
+        <span>Beranda</span>
+      </a>
+
+      <a href="explore.html" class="nav-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.5-3.5"></path>
+        </svg>
+        <span>Jelajah</span>
+      </a>
+
+      <a href="upload.html" class="nav-create" data-auth-required="true" aria-label="Jual barang">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 5v14M5 12h14"></path>
+        </svg>
+      </a>
+
+      <a href="my-orders.html" class="nav-item" data-auth-required="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path>
+          <path d="M4 8v10l8 3 8-3V8"></path>
+        </svg>
+        <span>Aktivitas</span>
+      </a>
+
+      <a href="profile.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 21a8 8 0 0 1 16 0"></path>
+        </svg>
+        <span>Akun</span>
+      </a>
+    </nav>
+  </div>
+
+  <script src="otp-login.js?v=20260805-1"></script>
 </body>
 </html>
