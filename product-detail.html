@@ -1,40 +1,123 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Detail Produk - AdaAja</title>
-<link rel="stylesheet" href="product-detail.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Lihat detail produk di AdaAja.">
+  <title>Detail Produk — AdaAja</title>
+  <link rel="stylesheet" href="product-detail.css?v=20260805-2">
 </head>
 <body>
-<div class="app-shell">
-<header class="topbar">
-<a href="home.html" class="icon-button">‹</a>
-<strong>Detail Produk</strong>
-<button class="icon-button" id="shareButton" type="button">↗</button>
-</header>
-<main id="detailContent">
-<section class="loading-state"><div class="loading-image"></div><div class="loading-line wide"></div><div class="loading-line medium"></div></section>
-</main>
-<section class="error-state hidden" id="errorState"><div class="error-icon">!</div><strong>Produk tidak dapat dimuat</strong><span id="errorMessage"></span><a href="home.html">Kembali ke Home</a></section>
-</div>
-<div class="bottom-action hidden" id="bottomAction">
-<button class="favorite-button" id="favoriteButton">♡</button>
-<button class="offer-button" id="offerButton">Ajukan Harga</button>
-<button class="buy-button" id="buyButton">Beli Sekarang</button>
-</div>
-<div class="modal" id="offerModal">
-<div class="modal-backdrop" data-close-modal></div>
-<div class="modal-sheet">
-<div class="modal-handle"></div>
-<div class="modal-header"><div><span>AJUKAN HARGA</span><h2>Buat penawaran</h2></div><button class="modal-close" data-close-modal>×</button></div>
-<p class="modal-copy">Masukkan harga yang ingin Anda ajukan. Penjual dapat menerima atau menolak penawaran.</p>
-<div class="current-price"><span>Harga sekarang</span><strong id="modalCurrentPrice">Rp0</strong></div>
-<label class="offer-input"><span>Harga penawaran</span><div><b>Rp</b><input id="offerPrice" inputmode="numeric" placeholder="0"></div></label>
-<p class="offer-hint" id="offerHint"></p><p class="modal-message" id="modalMessage"></p>
-<button class="submit-offer" id="submitOffer">Kirim Penawaran</button>
-</div>
-</div>
-<script src="product-detail.js"></script>
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="icon-button" id="backButton" type="button" aria-label="Kembali">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m15 18-6-6 6-6"></path>
+        </svg>
+      </button>
+
+      <div class="topbar-title">
+        <span>ADAAJA MARKETPLACE</span>
+        <strong>Detail Produk</strong>
+      </div>
+
+      <button class="icon-button" id="shareButton" type="button" aria-label="Bagikan produk">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 3v12"></path>
+          <path d="m7 8 5-5 5 5"></path>
+          <path d="M5 14v7h14v-7"></path>
+        </svg>
+      </button>
+    </header>
+
+    <main id="detailContent">
+      <section class="loading-state">
+        <div class="loading-image shimmer"></div>
+        <div class="loading-block">
+          <div class="loading-line wide shimmer"></div>
+          <div class="loading-line medium shimmer"></div>
+          <div class="loading-line short shimmer"></div>
+        </div>
+      </section>
+    </main>
+
+    <section class="error-state hidden" id="errorState">
+      <div class="error-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M12 7v6M12 17h.01"></path>
+        </svg>
+      </div>
+      <strong>Produk tidak dapat dimuat</strong>
+      <span id="errorMessage"></span>
+      <a href="home.html">Kembali ke Beranda</a>
+    </section>
+  </div>
+
+  <div class="bottom-action hidden" id="bottomAction">
+    <button class="favorite-button" id="favoriteButton" type="button" aria-label="Simpan produk">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"></path>
+      </svg>
+    </button>
+
+    <button class="offer-button" id="offerButton" type="button">
+      <span>Ajukan Harga</span>
+      <small>Negosiasi dengan penjual</small>
+    </button>
+
+    <button class="buy-button" id="buyButton" type="button">
+      <span>Beli Sekarang</span>
+      <small>Lanjut ke checkout</small>
+    </button>
+  </div>
+
+  <div class="modal" id="offerModal" aria-hidden="true">
+    <button class="modal-backdrop" data-close-modal type="button" aria-label="Tutup"></button>
+
+    <section class="modal-sheet">
+      <div class="modal-handle"></div>
+
+      <div class="modal-header">
+        <div>
+          <span>AJUKAN HARGA</span>
+          <h2>Buat penawaran</h2>
+        </div>
+
+        <button class="modal-close" data-close-modal type="button" aria-label="Tutup">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18"></path>
+          </svg>
+        </button>
+      </div>
+
+      <p class="modal-copy">
+        Masukkan harga yang ingin Anda ajukan. Penjual dapat menerima atau menolak penawaran.
+      </p>
+
+      <div class="current-price">
+        <span>Harga sekarang</span>
+        <strong id="modalCurrentPrice">Rp0</strong>
+      </div>
+
+      <label class="offer-input">
+        <span>Harga penawaran</span>
+        <div>
+          <b>Rp</b>
+          <input id="offerPrice" inputmode="numeric" placeholder="0">
+        </div>
+      </label>
+
+      <p class="offer-hint" id="offerHint"></p>
+      <p class="modal-message" id="modalMessage"></p>
+
+      <button class="submit-offer" id="submitOffer" type="button">
+        Kirim Penawaran
+      </button>
+    </section>
+  </div>
+
+  <script src="product-detail.js?v=20260805-2"></script>
 </body>
 </html>
