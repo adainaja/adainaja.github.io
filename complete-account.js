@@ -385,7 +385,16 @@ saveButton.addEventListener("click", async () => {
       body: JSON.stringify(payload)
     });
 
-    const result = await response.json();
+    const responseText = await response.text();
+
+    let result;
+
+    try {
+      result = JSON.parse(responseText);
+    } catch (e) {
+      console.error("Server response:", responseText);
+      throw new Error("Server sedang sibuk. Silakan coba beberapa detik lagi.");
+    }
 
     if (result.status !== "success") {
       throw new Error(result.message || "Profil gagal disimpan.");
@@ -396,8 +405,8 @@ saveButton.addEventListener("click", async () => {
     if (user) {
       user.username = validation.username;
 
-      if (fotoProfile) {
-        user.foto_profile = fotoProfile;
+      if (result.foto) {
+        user.foto_profile = result.foto;
       }
 
       localStorage.setItem("user", JSON.stringify(user));
@@ -438,7 +447,7 @@ if (user?.username) {
   document.getElementById("usernameInput").value = user.username;
 }
 
-if (user?.foto_profile) {
+if (user?.foto_profile && user.foto_profile.startsWith("http")) {
   fotoProfile = user.foto_profile;
   avatar.innerHTML =
     `<img src="${fotoProfile}" alt="Foto profil">`;
