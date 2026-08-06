@@ -16,7 +16,7 @@ CSS:
 
 PENGATURAN SUPABASE WAJIB:
 Authentication > URL Configuration
-
+ 
 Site URL:
 https://adainaja.github.io
 
