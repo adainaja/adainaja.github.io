@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#ffffff">
-  <meta name="description" content="Masuk ke akun AdaAja menggunakan kode OTP.">
+  <meta name="description" content="Masuk ke akun AdaAja dengan email dan password.">
   <title>Masuk — AdaAja</title>
   <link rel="stylesheet" href="login.css?v=20260805-1">
 </head>
@@ -12,9 +12,15 @@
   <div class="app-shell">
     <header class="topbar">
       <a class="header-button" href="home.html" aria-label="Kembali ke beranda">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m15 18-6-6 6-6"></path>
+        </svg>
       </a>
-      <div class="brand-logo"><img src="assets/logo-adaaja.png" alt="AdaAja"></div>
+
+      <div class="brand-logo">
+        <img src="assets/logo-adaaja.png" alt="AdaAja">
+      </div>
+
       <span class="header-spacer" aria-hidden="true"></span>
     </header>
 
@@ -24,7 +30,7 @@
         <div class="welcome-glow welcome-glow-two"></div>
         <div class="welcome-badge"><i></i> MASUK KE ADAAJA</div>
         <h1>Selamat datang kembali</h1>
-        <p>Masuk dengan email aktif untuk melanjutkan aktivitas jual beli Anda di AdaAja.</p>
+        <p>Masuk menggunakan akun Supabase Anda untuk melanjutkan aktivitas jual beli.</p>
 
         <div class="security-note">
           <span class="security-icon">
@@ -33,47 +39,70 @@
               <path d="m9 12 2 2 4-4"></path>
             </svg>
           </span>
+
           <div>
-            <strong>Masuk aman tanpa password</strong>
-            <span>Kami akan mengirimkan kode OTP ke email Anda.</span>
+            <strong>Sesi login dikelola secara aman</strong>
+            <span>Supabase menyimpan dan memperbarui sesi akun secara otomatis.</span>
           </div>
         </div>
       </section>
 
       <section class="login-card">
-        <div class="card-heading">
-          <span class="card-label">AKSES AKUN</span>
-          <h2>Masukkan email Anda</h2>
-          <p>Pastikan email yang dimasukkan sesuai dengan akun AdaAja Anda.</p>
-        </div>
+        <form id="loginForm" novalidate>
+          <div class="card-heading">
+            <span class="card-label">AKSES AKUN</span>
+            <h2>Masukkan data akun</h2>
+            <p>Gunakan email yang sudah dikonfirmasi dan password Anda.</p>
+          </div>
 
-        <label class="field-group" for="email">
-          <span>Email</span>
-          <div class="input-shell">
-            <span class="field-icon">
+          <label class="field-group" for="email">
+            <span>Email</span>
+            <div class="input-shell">
+              <span class="field-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 5h16v14H4z"></path>
+                  <path d="m4 7 8 6 8-6"></path>
+                </svg>
+              </span>
+              <input id="email" type="email" placeholder="Masukkan alamat email" autocomplete="email" inputmode="email">
+            </div>
+          </label>
+
+          <label class="field-group" for="password">
+            <span>Password</span>
+            <div class="input-shell">
+              <span class="field-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="5" y="10" width="14" height="10" rx="2"></rect>
+                  <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+                </svg>
+              </span>
+              <input id="password" type="password" placeholder="Masukkan password" autocomplete="current-password">
+            </div>
+          </label>
+
+          <p id="message" class="message" role="status" aria-live="polite"></p>
+
+          <button class="main-button" id="loginButton" type="submit">
+            <span class="button-icon">
               <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4 5h16v14H4z"></path>
-                <path d="m4 7 8 6 8-6"></path>
+                <path d="M10 17l5-5-5-5"></path>
+                <path d="M15 12H3"></path>
+                <path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"></path>
               </svg>
             </span>
-            <input id="email" type="email" placeholder="Masukkan alamat email" autocomplete="email" inputmode="email">
-          </div>
-        </label>
 
-        <p id="message" class="message" role="status" aria-live="polite"></p>
+            <span class="button-copy">
+              <strong>Masuk ke AdaAja</strong>
+              <small>Gunakan email dan password</small>
+            </span>
 
-        <button class="main-button" id="sendOtpButton" type="button">
-          <span class="button-icon">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4 5h16v14H4z"></path>
-              <path d="m4 7 8 6 8-6"></path>
+            <svg class="button-arrow" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12h14"></path>
+              <path d="m13 6 6 6-6 6"></path>
             </svg>
-          </span>
-          <span class="button-copy"><strong>Kirim Kode OTP</strong><small>Verifikasi melalui email</small></span>
-          <svg class="button-arrow" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>
-          </svg>
-        </button>
+          </button>
+        </form>
 
         <div class="divider"><span>atau</span></div>
 
@@ -85,37 +114,57 @@
               <path d="M19 8v6M16 11h6"></path>
             </svg>
           </span>
-          <span><strong>Buat akun baru</strong><small>Daftar dan mulai gunakan AdaAja</small></span>
-          <svg class="register-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+
+          <span>
+            <strong>Buat akun baru</strong>
+            <small>Daftar dan mulai gunakan AdaAja</small>
+          </span>
+
+          <svg class="register-arrow" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m9 18 6-6-6-6"></path>
+          </svg>
         </a>
 
-        <p class="terms-copy">Dengan melanjutkan, Anda menyetujui <a href="terms.html">Syarat & Ketentuan</a> dan <a href="privacy.html">Kebijakan Privasi</a> AdaAja.</p>
+        <p class="terms-copy">
+          Dengan melanjutkan, Anda menyetujui
+          <a href="terms.html">Syarat & Ketentuan</a>
+          dan
+          <a href="privacy.html">Kebijakan Privasi</a>
+          AdaAja.
+        </p>
       </section>
     </main>
 
     <nav class="bottom-nav" aria-label="Navigasi utama">
       <a href="home.html" class="nav-item">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-8 9 8"></path><path d="M5 10v10h14V10"></path></svg>
+        <svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"></path><path d="M5 10v10h14V10"></path></svg>
         <span>Beranda</span>
       </a>
+
       <a href="explore.html" class="nav-item">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
         <span>Jelajah</span>
       </a>
+
       <a href="upload.html" class="nav-create" data-auth-required="true" aria-label="Jual barang">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
       </a>
+
       <a href="my-orders.html" class="nav-item" data-auth-required="true">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path><path d="M4 8v10l8 3 8-3V8"></path></svg>
+        <svg viewBox="0 0 24 24"><path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path><path d="M4 8v10l8 3 8-3V8"></path></svg>
         <span>Aktivitas</span>
       </a>
+
       <a href="profile.html" class="nav-item active">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
         <span>Akun</span>
       </a>
     </nav>
   </div>
 
-  <script src="login.js?v=20260805-1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=20260807-1"></script>
+  <script src="auth-session.js?v=20260807-1"></script>
+  <script src="login.js?v=20260807-1"></script>
 </body>
 </html>

@@ -1,120 +1,146 @@
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbx0VQGRZ9bXUSp8nTdgttqyD5VNOtTavrB0iqpS91gWjqTstIZzd189uIxtTQHD6FI/exec";
-
+const loginForm = document.getElementById("loginForm");
 const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
 const message = document.getElementById("message");
-const sendOtpButton = document.getElementById("sendOtpButton");
+const loginButton = document.getElementById("loginButton");
 
-function getUser(){
-  try{
-    return JSON.parse(localStorage.getItem("user") || "null");
-  }catch{
-    return null;
-  }
-}
-
-function setMessage(text="",type=""){
+function setMessage(text = "", type = "") {
   message.className = `message ${type}`.trim();
   message.textContent = text;
 }
 
-function setLoading(isLoading){
-  sendOtpButton.disabled = isLoading;
+function setLoading(isLoading) {
+  loginButton.disabled = isLoading;
 
-  const title = sendOtpButton.querySelector(".button-copy strong");
-  const subtitle = sendOtpButton.querySelector(".button-copy small");
+  const title = loginButton.querySelector(".button-copy strong");
+  const subtitle = loginButton.querySelector(".button-copy small");
 
-  if(title){
-    title.textContent = isLoading ? "Mengirim kode..." : "Kirim Kode OTP";
+  if (title) {
+    title.textContent = isLoading
+      ? "Memverifikasi akun..."
+      : "Masuk ke AdaAja";
   }
 
-  if(subtitle){
-    subtitle.textContent = isLoading ? "Mohon tunggu sebentar" : "Verifikasi melalui email";
+  if (subtitle) {
+    subtitle.textContent = isLoading
+      ? "Mohon tunggu sebentar"
+      : "Gunakan email dan password";
   }
 }
 
-function isValidEmail(email){
+function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-async function sendOTP(){
+async function loginWithSupabase() {
   const email = emailInput.value.trim().toLowerCase();
+  const password = passwordInput.value;
 
-  if(!email){
-    setMessage("Masukkan email terlebih dahulu.","error");
-    emailInput.focus();
+  if (!email || !password) {
+    setMessage("Masukkan email dan password.", "error");
     return;
   }
 
-  if(!isValidEmail(email)){
-    setMessage("Masukkan alamat email yang valid.","error");
-    emailInput.focus();
+  if (!isValidEmail(email)) {
+    setMessage("Masukkan alamat email yang valid.", "error");
     return;
   }
 
   setLoading(true);
-  setMessage("Mengirim kode OTP ke email Anda...");
+  setMessage("Memverifikasi akun Anda...");
 
-  try{
-    const response = await fetch(API_URL,{
-      method:"POST",
-      redirect:"follow",
-      headers:{
-        "Content-Type":"text/plain;charset=utf-8"
-      },
-      body:JSON.stringify({
-        action:"sendOTP",
-        email
-      })
-    });
+  try {
+    const { data, error } =
+      await window.adaajaSupabase.auth.signInWithPassword({
+        email,
+        password
+      });
 
-    if(!response.ok){
-      throw new Error(`Server merespons dengan status ${response.status}.`);
+    if (error) {
+      throw error;
     }
 
-    const result = await response.json();
-
-    if(result.status !== "success"){
-      throw new Error(result.message || "Kode OTP gagal dikirim.");
+    if (!data.user || !data.session) {
+      throw new Error("Sesi login tidak berhasil dibuat.");
     }
 
-    localStorage.setItem("login_email",email);
-    setMessage("Kode OTP berhasil dikirim.","success");
+    await window.AdaAjaAuth.syncLegacyUser(data.user);
 
-    setTimeout(()=>{
-      location.href="otp-login.html";
-    },900);
+    const redirectPage =
+      localStorage.getItem("redirectAfterLogin") ||
+      "home.html";
 
-  }catch(error){
-    console.error("Login OTP error:",error);
-    setMessage(error.message || "Gagal terhubung ke server.","error");
+    localStorage.removeItem("redirectAfterLogin");
+    localStorage.removeItem("login_email");
+
+    setMessage("Login berhasil. Mengalihkan...", "success");
+
+    window.setTimeout(() => {
+      location.href = redirectPage;
+    }, 600);
+  } catch (error) {
+    console.error("Supabase login error:", error);
+
+    const rawMessage = String(error?.message || "");
+    const normalized = rawMessage.toLowerCase();
+
+    if (
+      normalized.includes("invalid login credentials") ||
+      normalized.includes("invalid credentials")
+    ) {
+      setMessage("Email atau password tidak sesuai.", "error");
+    } else if (
+      normalized.includes("email not confirmed")
+    ) {
+      setMessage(
+        "Email belum dikonfirmasi. Buka email Anda dan klik tautan konfirmasi.",
+        "error"
+      );
+    } else {
+      setMessage(
+        rawMessage || "Login belum berhasil. Silakan coba kembali.",
+        "error"
+      );
+    }
+  } finally {
     setLoading(false);
   }
 }
 
-sendOtpButton.addEventListener("click",sendOTP);
-
-emailInput.addEventListener("keydown",(event)=>{
-  if(event.key === "Enter"){
-    event.preventDefault();
-    sendOTP();
-  }
+loginForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  loginWithSupabase();
 });
 
-document.querySelectorAll("[data-auth-required='true']").forEach((link)=>{
-  link.addEventListener("click",(event)=>{
-    if(getUser()) return;
+document.querySelectorAll("[data-auth-required='true']").forEach((link) => {
+  link.addEventListener("click", async (event) => {
+    const session = await window.AdaAjaAuth.getSession();
+
+    if (session?.user) return;
 
     event.preventDefault();
-    localStorage.setItem("redirectAfterLogin",link.getAttribute("href"));
-    location.href="login.html";
+    localStorage.setItem(
+      "redirectAfterLogin",
+      link.getAttribute("href")
+    );
   });
 });
 
-const existingUser = getUser();
+window.addEventListener("load", async () => {
+  try {
+    const session = await window.AdaAjaAuth.getSession();
 
-if(existingUser){
-  document.querySelector(".welcome-card h1").textContent = "Akun Anda sudah aktif";
-  document.querySelector(".welcome-card > p").textContent =
-    "Anda sudah masuk ke AdaAja. Gunakan navigasi di bawah untuk melanjutkan.";
-}
+    if (!session?.user) return;
+
+    await window.AdaAjaAuth.syncLegacyUser(session.user);
+
+    const redirectPage =
+      localStorage.getItem("redirectAfterLogin") ||
+      "home.html";
+
+    localStorage.removeItem("redirectAfterLogin");
+    location.replace(redirectPage);
+  } catch (error) {
+    console.warn("Pemeriksaan sesi gagal:", error.message);
+  }
+});
