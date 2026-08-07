@@ -5,7 +5,7 @@ FILE YANG HARUS DIUPLOAD KE ROOT GITHUB:
 2. register.js
 3. login.html
 4. login.js
-5. supabase-config.js
+5. supabase-config.js 
 6. auth-session.js
 7. auth-callback.html
 8. auth-callback.js
