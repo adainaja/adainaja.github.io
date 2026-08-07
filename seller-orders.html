@@ -1,1 +1,179 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pesanan Masuk - AdaAja</title><link rel="stylesheet" href="seller-orders.css"></head><body><div class="app"><header><button onclick="history.back()">‹</button><div><small>AKTIVITAS PENJUAL</small><h1>Pesanan Masuk</h1></div><button id="refresh">↻</button></header><section class="hero"><small>RINGKASAN TOKO</small><h2>Kelola pesanan dengan cepat dan rapi.</h2><div class="stats"><div><b id="baru">0</b><span>Baru</span></div><div><b id="proses">0</b><span>Diproses</span></div><div><b id="kirim">0</b><span>Dikirim</span></div></div></section><nav><button class="active" data-f="all">Semua</button><button data-f="paid">Baru</button><button data-f="processing">Diproses</button><button data-f="shipped">Dikirim</button><button data-f="completed">Selesai</button></nav><main id="list"><section class="state">Memuat pesanan...</section></main></div><div class="modal" id="modal"><div class="backdrop" data-close></div><section class="sheet"><i></i><h2 id="mtitle">Perbarui pesanan</h2><p id="mtext"></p><div id="resiWrap" class="hidden"><label>Nomor resi</label><input id="resi" placeholder="Masukkan nomor resi"></div><div class="mact"><button data-close>Batal</button><button id="confirm">Lanjutkan</button></div></section></div><script src="seller-orders.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Kelola pesanan masuk Anda di AdaAja.">
+  <title>Pesanan Masuk — AdaAja</title>
+  <link rel="stylesheet" href="seller-orders.css?v=20260807-1">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="top-header" id="topHeader">
+      <div class="top-header-inner">
+        <div class="header-copy">
+          <span>SELLER CENTER</span>
+          <h1>Pesanan Masuk</h1>
+        </div>
+
+        <button class="header-button" id="refreshButton" type="button" aria-label="Muat ulang">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 11a8 8 0 1 0 2 5"></path>
+            <path d="M20 4v7h-7"></path>
+          </svg>
+        </button>
+
+        <a class="header-button" href="profile.html" aria-label="Akun">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M4 21a8 8 0 0 1 16 0"></path>
+          </svg>
+        </a>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="hero-card">
+        <div class="hero-glow glow-one"></div>
+        <div class="hero-glow glow-two"></div>
+
+        <div class="hero-copy">
+          <span class="eyebrow"><i></i> PENJUALAN SAYA</span>
+          <h2>Pesanan baru, proses rapi, pelanggan lebih tenang.</h2>
+          <p>Pantau pembayaran, siapkan barang, dan kelola pengiriman dari satu halaman.</p>
+        </div>
+
+        <div class="hero-stats">
+          <div>
+            <span>Perlu Diproses</span>
+            <strong id="needProcessCount">0</strong>
+          </div>
+          <div>
+            <span>Dikirim</span>
+            <strong id="shippedCount">0</strong>
+          </div>
+          <div>
+            <span>Selesai</span>
+            <strong id="completedCount">0</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="toolbar-card">
+        <label class="search-shell" for="searchInput">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="m20 20-3.5-3.5"></path>
+          </svg>
+          <input
+            id="searchInput"
+            type="search"
+            placeholder="Cari pembeli, produk, atau nomor pesanan"
+            autocomplete="off"
+          >
+        </label>
+
+        <div class="status-tabs" id="statusTabs">
+          <button class="active" type="button" data-status="all">Semua</button>
+          <button type="button" data-status="new">Pesanan Baru</button>
+          <button type="button" data-status="processing">Diproses</button>
+          <button type="button" data-status="shipped">Dikirim</button>
+          <button type="button" data-status="completed">Selesai</button>
+          <button type="button" data-status="cancelled">Dibatalkan</button>
+        </div>
+
+        <div class="sort-row">
+          <div>
+            <span>DAFTAR PESANAN</span>
+            <strong id="resultCount">Memuat...</strong>
+          </div>
+
+          <label class="sort-select">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 6h12M8 12h9M8 18h6"></path>
+              <path d="M4 5v14"></path>
+            </svg>
+            <select id="sortSelect" aria-label="Urutkan pesanan">
+              <option value="latest">Terbaru</option>
+              <option value="oldest">Terlama</option>
+              <option value="total_high">Nilai terbesar</option>
+              <option value="total_low">Nilai terkecil</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section id="ordersList" class="orders-list" aria-live="polite">
+        <article class="skeleton-card shimmer"></article>
+        <article class="skeleton-card shimmer"></article>
+        <article class="skeleton-card shimmer"></article>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navigasi utama">
+      <a href="home.html" class="nav-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m3 11 9-8 9 8"></path>
+          <path d="M5 10v10h14V10"></path>
+        </svg>
+        <span>Beranda</span>
+      </a>
+
+      <a href="explore.html" class="nav-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.5-3.5"></path>
+        </svg>
+        <span>Jelajah</span>
+      </a>
+
+      <a href="upload.html" class="nav-create" aria-label="Jual barang">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 5v14M5 12h14"></path>
+        </svg>
+      </a>
+
+      <a href="my-orders.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path>
+          <path d="M4 8v10l8 3 8-3V8"></path>
+        </svg>
+        <span>Aktivitas</span>
+      </a>
+
+      <a href="profile.html" class="nav-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 21a8 8 0 0 1 16 0"></path>
+        </svg>
+        <span>Akun</span>
+      </a>
+    </nav>
+  </div>
+
+  <div class="sheet" id="orderSheet" aria-hidden="true">
+    <button class="sheet-backdrop" id="orderSheetBackdrop" type="button" aria-label="Tutup"></button>
+    <section class="sheet-card">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <div>
+          <span>DETAIL PESANAN</span>
+          <h2 id="sheetTitle">Pesanan</h2>
+        </div>
+        <button id="closeOrderSheet" type="button" aria-label="Tutup">
+          <svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg>
+        </button>
+      </div>
+      <div id="orderSheetContent"></div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=20260807-1"></script>
+  <script src="auth-session.js?v=20260807-3"></script>
+  <script src="seller-orders.js?v=20260807-1"></script>
+</body>
+</html>
