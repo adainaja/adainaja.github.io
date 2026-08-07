@@ -34,6 +34,7 @@ const maxPriceInput = document.getElementById("maxPrice");
 const accountAvatar = document.getElementById("accountAvatar");
 
 let products = [];
+let favoriteProductIds = new Set();
 let activeCategory = "all";
 let activeCondition = "all";
 let minPrice = 0;
@@ -203,11 +204,16 @@ function renderProductCard(product) {
             : ""
         }
 
-        <span class="favorite-mark" aria-hidden="true">
+        <button
+          class="favorite-mark ${favoriteProductIds.has(product.id) ? "active" : ""}"
+          type="button"
+          data-favorite-product="${escapeHtml(product.id)}"
+          aria-label="${favoriteProductIds.has(product.id) ? "Hapus dari favorit" : "Simpan ke favorit"}"
+        >
           <svg viewBox="0 0 24 24">
             <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"></path>
           </svg>
-        </span>
+        </button>
       </div>
 
       <div class="product-body">
@@ -352,12 +358,82 @@ function renderProducts() {
 
   productGrid.innerHTML =
     data.map(renderProductCard).join("");
+
+  bindFavoriteButtons();
+}
+
+async function loadFavorites() {
+  const user = await window.AdaAjaAuth.getCurrentUser();
+  favoriteProductIds = new Set();
+
+  if (!user) return;
+
+  const { data, error } = await window.adaajaSupabase
+    .from("favorites")
+    .select("product_id")
+    .eq("user_id", user.id);
+
+  if (error) {
+    console.warn("Favorit gagal dimuat:", error);
+    return;
+  }
+
+  favoriteProductIds = new Set((data || []).map((row) => row.product_id));
+}
+
+async function toggleFavorite(productId, button) {
+  const user = await window.AdaAjaAuth.getCurrentUser();
+
+  if (!user) {
+    localStorage.setItem("redirectAfterLogin", location.href);
+    location.href = "login.html";
+    return;
+  }
+
+  button.disabled = true;
+
+  try {
+    if (favoriteProductIds.has(productId)) {
+      const { error } = await window.adaajaSupabase
+        .from("favorites")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("product_id", productId);
+
+      if (error) throw error;
+      favoriteProductIds.delete(productId);
+    } else {
+      const { error } = await window.adaajaSupabase
+        .from("favorites")
+        .insert({ user_id: user.id, product_id: productId });
+
+      if (error && error.code !== "23505") throw error;
+      favoriteProductIds.add(productId);
+    }
+
+    renderProducts();
+  } catch (error) {
+    console.error("Gagal memperbarui favorit:", error);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+function bindFavoriteButtons() {
+  productGrid.querySelectorAll("[data-favorite-product]").forEach((button) => {
+    button.addEventListener("click", async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      await toggleFavorite(button.dataset.favoriteProduct, button);
+    });
+  });
 }
 
 async function loadProducts() {
   resultCount.textContent = "Memuat produk...";
 
   try {
+    await loadFavorites();
     const { data, error } = await window.adaajaSupabase
       .from("products")
       .select(`

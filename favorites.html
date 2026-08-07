@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Produk favorit Anda di AdaAja.">
+  <title>Favorit — AdaAja</title>
+  <link rel="stylesheet" href="favorites.css?v=20260808-1">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="top-header">
+      <div class="header-copy"><span>KOLEKSI SAYA</span><h1>Favorit</h1></div>
+      <button class="header-button" id="refreshButton" type="button" aria-label="Muat ulang">
+        <svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0 2 5"></path><path d="M20 4v7h-7"></path></svg>
+      </button>
+      <a class="header-button" href="profile.html" aria-label="Akun">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+      </a>
+    </header>
+
+    <main class="content">
+      <section class="hero-card">
+        <div class="hero-glow"></div>
+        <div class="hero-copy">
+          <span class="eyebrow"><i></i> PRODUK TERSIMPAN</span>
+          <h2>Simpan yang menarik, temukan kembali kapan saja.</h2>
+          <p>Koleksi produk pilihan Anda tersinkron otomatis dengan akun AdaAja.</p>
+        </div>
+        <div class="hero-stat">
+          <span>Total Favorit</span>
+          <strong id="favoriteCount">0</strong>
+        </div>
+      </section>
+
+      <section class="toolbar-card">
+        <label class="search-shell">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+          <input id="searchInput" type="search" placeholder="Cari produk favorit" autocomplete="off">
+        </label>
+        <div class="toolbar-bottom">
+          <div><span>KOLEKSI</span><strong id="resultCount">Memuat...</strong></div>
+          <label class="sort-select">
+            <select id="sortSelect">
+              <option value="latest">Terbaru disimpan</option>
+              <option value="price_low">Harga terendah</option>
+              <option value="price_high">Harga tertinggi</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="product-grid" id="favoriteGrid" aria-live="polite">
+        <article class="skeleton-card shimmer"></article>
+        <article class="skeleton-card shimmer"></article>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navigasi utama">
+      <a href="home.html" class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"></path><path d="M5 10v10h14V10"></path></svg><span>Beranda</span>
+      </a>
+      <a href="explore.html" class="nav-item">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><span>Jelajah</span>
+      </a>
+      <a href="upload.html" class="nav-create" aria-label="Jual barang">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+      </a>
+      <a href="activity.html" class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path><path d="M4 8v10l8 3 8-3V8"></path></svg><span>Aktivitas</span>
+      </a>
+      <a href="profile.html" class="nav-item active">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg><span>Akun</span>
+      </a>
+    </nav>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=20260807-1"></script>
+  <script src="auth-session.js?v=20260807-3"></script>
+  <script src="favorites.js?v=20260808-1"></script>
+</body>
+</html>

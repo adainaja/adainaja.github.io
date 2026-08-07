@@ -843,3 +843,15 @@ svg{
 .product-price-row .product-price{margin-top:0}
 .product-unit{color:#7d8794;font-size:10px;font-weight:800}
 .min-order-chip{background:#eef6ff;color:#23558a}
+
+/* FAVORITE ACTIVE */
+.favorite-button.active{
+  background:#fff0f3;
+  border-color:#ffd7df;
+  color:#e6425d;
+}
+.favorite-button.active svg{
+  fill:currentColor;
+  stroke:currentColor;
+}
+.favorite-button:disabled{opacity:.55}

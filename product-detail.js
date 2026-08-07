@@ -299,14 +299,10 @@ async function loadProduct() {
 
     bottomAction.classList.remove("hidden");
 
-    /*
-      Favorite dan Offer belum memiliki tabel pada database saat ini.
-      Tombol tetap dipertahankan secara visual, tetapi belum menulis data.
-    */
-    favoriteButton.classList.add("feature-pending");
     offerButton.classList.add("feature-pending");
 
     await getCurrentUser();
+    await syncFavoriteState();
   } catch (error) {
     console.error("Gagal memuat produk:", error);
 
@@ -659,15 +655,69 @@ document
     }
   });
 
+async function syncFavoriteState() {
+  favoriteButton.classList.remove("active");
+
+  if (!currentUser || !currentProduct) return;
+
+  const { data, error } = await window.adaajaSupabase
+    .from("favorites")
+    .select("id")
+    .eq("user_id", currentUser.id)
+    .eq("product_id", currentProduct.id)
+    .maybeSingle();
+
+  if (error) {
+    console.warn("Status favorit gagal dimuat:", error);
+    return;
+  }
+
+  favoriteButton.classList.toggle("active", Boolean(data));
+  favoriteButton.setAttribute(
+    "aria-label",
+    data ? "Hapus dari favorit" : "Simpan produk"
+  );
+}
+
 favoriteButton.addEventListener(
   "click",
   async () => {
     const user = await requireLogin();
-    if (!user) return;
+    if (!user || !currentProduct) return;
 
-    showFeatureToast(
-      "Fitur Favorit segera hadir."
-    );
+    favoriteButton.disabled = true;
+
+    try {
+      const isActive = favoriteButton.classList.contains("active");
+
+      if (isActive) {
+        const { error } = await window.adaajaSupabase
+          .from("favorites")
+          .delete()
+          .eq("user_id", user.id)
+          .eq("product_id", currentProduct.id);
+
+        if (error) throw error;
+        showFeatureToast("Dihapus dari Favorit.");
+      } else {
+        const { error } = await window.adaajaSupabase
+          .from("favorites")
+          .insert({
+            user_id: user.id,
+            product_id: currentProduct.id
+          });
+
+        if (error && error.code !== "23505") throw error;
+        showFeatureToast("Disimpan ke Favorit.");
+      }
+
+      await syncFavoriteState();
+    } catch (error) {
+      console.error("Favorit gagal diperbarui:", error);
+      showFeatureToast(error.message || "Favorit gagal diperbarui.");
+    } finally {
+      favoriteButton.disabled = false;
+    }
   }
 );
 

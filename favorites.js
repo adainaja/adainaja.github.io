@@ -1,0 +1,26 @@
+const grid=document.getElementById("favoriteGrid"),searchInput=document.getElementById("searchInput"),sortSelect=document.getElementById("sortSelect"),refreshButton=document.getElementById("refreshButton"),toast=document.getElementById("toast");
+let currentUser=null,items=[],toastTimer=null;
+const esc=v=>String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+const money=v=>new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0}).format(Number(v||0));
+function url(path){if(!path)return"";return window.adaajaSupabase.storage.from("product-images").getPublicUrl(path).data?.publicUrl||""}
+function condition(v){const x=String(v||"").toLowerCase();return x==="baru"||x==="new"?"Baru":"Bekas"}
+function showToast(m){toast.textContent=m;toast.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove("show"),2200)}
+async function requireUser(){const u=await window.AdaAjaAuth.getCurrentUser();if(!u){localStorage.setItem("redirectAfterLogin","favorites.html");location.replace("login.html");return null}currentUser=u;return u}
+async function load(){
+ const u=await requireUser();if(!u)return;
+ grid.innerHTML='<article class="skeleton-card shimmer"></article><article class="skeleton-card shimmer"></article>';
+ try{
+  const {data:favs,error}=await window.adaajaSupabase.from("favorites").select("id,product_id,created_at").eq("user_id",u.id).order("created_at",{ascending:false});if(error)throw error;
+  const ids=(favs||[]).map(f=>f.product_id);if(!ids.length){items=[];render();return}
+  const {data:products,error:pe}=await window.adaajaSupabase.from("products").select(`id,name,price,stock,unit,minimum_order,condition,status,ship_from_region,product_images(storage_path,sort_order,is_cover)`).in("id",ids);if(pe)throw pe;
+  const pmap=new Map((products||[]).map(p=>{const imgs=[...(p.product_images||[])].sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0));const cover=imgs.find(i=>i.is_cover)||imgs[0];return[p.id,{...p,cover:cover?.storage_path||""}]}));
+  items=(favs||[]).map(f=>({favorite_id:f.id,saved_at:f.created_at,product:pmap.get(f.product_id)})).filter(x=>x.product);
+  render();
+ }catch(e){console.error(e);grid.innerHTML=`<section class="empty-state"><strong>Favorit belum dapat dimuat</strong><p>${esc(e.message||"Silakan coba kembali.")}</p></section>`}
+}
+function filtered(){const q=searchInput.value.trim().toLowerCase();let d=items.filter(x=>!q||[x.product.name,x.product.ship_from_region,x.product.unit].some(v=>String(v||"").toLowerCase().includes(q)));if(sortSelect.value==="price_low")d.sort((a,b)=>Number(a.product.price)-Number(b.product.price));else if(sortSelect.value==="price_high")d.sort((a,b)=>Number(b.product.price)-Number(a.product.price));else d.sort((a,b)=>new Date(b.saved_at)-new Date(a.saved_at));return d}
+function render(){const data=filtered();document.getElementById("favoriteCount").textContent=items.length;document.getElementById("resultCount").textContent=`${data.length} produk`;if(!data.length){grid.innerHTML=`<section class="empty-state"><span class="empty-icon"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"></path></svg></span><strong>${items.length?"Produk tidak ditemukan":"Belum ada favorit"}</strong><p>${items.length?"Coba kata pencarian lain.":"Tekan ikon hati pada produk yang ingin Anda simpan."}</p>${items.length?"":'<a href="explore.html">Jelajahi Produk</a>'}</section>`;return}
+ grid.innerHTML=data.map(x=>{const p=x.product,img=url(p.cover);return`<article class="product-card"><a href="product-detail.html?id=${encodeURIComponent(p.id)}"><div class="product-image">${img?`<img src="${esc(img)}" alt="${esc(p.name)}">`:""}<span class="condition">${esc(condition(p.condition))}</span></div><div class="product-body"><h3>${esc(p.name)}</h3><div class="price-line"><strong>${money(p.price)}</strong><span>/ ${esc(p.unit||"pcs")}</span></div><div class="product-meta"><span>Stok ${Number(p.stock||0)} ${esc(p.unit||"pcs")}</span><span>Min. ${Math.max(1,Number(p.minimum_order||1))} ${esc(p.unit||"pcs")}</span></div></div></a><button class="remove-button" data-remove="${esc(p.id)}" type="button" aria-label="Hapus favorit"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"></path></svg></button></article>`}).join("");
+ grid.querySelectorAll("[data-remove]").forEach(b=>b.onclick=async()=>{b.disabled=true;const {error}=await window.adaajaSupabase.from("favorites").delete().eq("user_id",currentUser.id).eq("product_id",b.dataset.remove);if(error){showToast(error.message||"Gagal menghapus favorit.");b.disabled=false;return}items=items.filter(x=>x.product.id!==b.dataset.remove);render();showToast("Dihapus dari Favorit.")})
+}
+searchInput.oninput=render;sortSelect.onchange=render;refreshButton.onclick=async()=>{refreshButton.disabled=true;await load();refreshButton.disabled=false;showToast("Favorit diperbarui.")};window.adaajaSupabase.auth.onAuthStateChange((e,s)=>{if(e==="SIGNED_OUT"||!s?.user)location.replace("login.html")});load();
