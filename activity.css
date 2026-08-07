@@ -256,63 +256,6 @@ button.activity-card{width:100%}
 }
 .nav-create svg{width:25px;height:25px;stroke-width:2.3}
 
-.notification-panel{
-  position:fixed;z-index:100;inset:0;display:none;
-  align-items:flex-end;justify-content:center
-}
-.notification-panel.active{display:flex}
-.panel-backdrop{
-  position:absolute;inset:0;border:0;background:rgba(9,37,68,.52);
-  backdrop-filter:blur(5px)
-}
-.panel-sheet{
-  position:relative;z-index:1;width:100%;max-width:430px;
-  max-height:80vh;overflow:auto;
-  padding:12px 18px calc(24px + env(safe-area-inset-bottom));
-  border-radius:30px 30px 0 0;background:#fff;
-  box-shadow:0 -24px 60px rgba(9,37,68,.18)
-}
-.panel-handle{
-  width:44px;height:5px;margin:0 auto 18px;border-radius:999px;background:#d7dde5
-}
-.panel-header{
-  display:flex;align-items:flex-start;justify-content:space-between;gap:14px
-}
-.panel-header span{
-  color:var(--orange);font-size:7px;font-weight:800;letter-spacing:1px
-}
-.panel-header h2{
-  margin:4px 0 0;color:var(--navy);font-size:20px
-}
-.panel-header button{
-  display:grid;width:40px;height:40px;place-items:center;
-  border:0;border-radius:14px;background:#f3f6f9;color:var(--navy)
-}
-.notification-list{margin-top:16px}
-.notification-row{
-  display:grid;grid-template-columns:38px minmax(0,1fr);
-  gap:10px;padding:12px 0;border-bottom:1px solid #f0f2f5
-}
-.notification-row:last-child{border-bottom:0}
-.notification-row.unread .notification-dot{background:var(--orange)}
-.notification-dot{
-  display:grid;width:38px;height:38px;place-items:center;
-  border-radius:13px;background:#f3f6f9;color:var(--navy)
-}
-.notification-dot svg{width:17px;height:17px}
-.notification-row strong{
-  display:block;color:var(--navy);font-size:8px
-}
-.notification-row p{
-  margin:4px 0 0;color:var(--muted);font-size:6.5px;line-height:1.5
-}
-.notification-row small{
-  display:block;margin-top:5px;color:#a0a9b4;font-size:5.8px
-}
-.notification-empty{
-  padding:30px 10px;text-align:center;color:var(--muted);font-size:7px
-}
-
 .toast{
   position:fixed;z-index:130;right:16px;bottom:94px;left:16px;
   max-width:398px;margin:auto;padding:12px 14px;border-radius:14px;
