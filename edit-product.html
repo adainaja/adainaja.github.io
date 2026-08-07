@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Edit produk Anda di AdaAja.">
+  <title>Edit Produk — AdaAja</title>
+  <link rel="stylesheet" href="edit-product.css?v=20260807-1">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="page-header">
+      <a class="header-button" id="backButton" href="my-products.html" aria-label="Kembali">
+        <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"></path></svg>
+      </a>
+
+      <div class="header-title">
+        <span>SELLER CENTER</span>
+        <h1>Edit Produk</h1>
+      </div>
+
+      <button class="header-button accent" id="saveHeaderButton" type="button" aria-label="Simpan perubahan">
+        <svg viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7.5"></path></svg>
+      </button>
+    </header>
+
+    <main class="content">
+      <section class="hero-card">
+        <div class="hero-ring"></div>
+        <span class="eyebrow"><i></i> PERBARUI LISTING</span>
+        <h2>Buat produk Anda tetap menarik</h2>
+        <p>Perbarui foto, informasi, harga, stok, dan pengiriman tanpa membuat listing baru.</p>
+        <div class="progress-row">
+          <span>Kelengkapan</span>
+          <strong id="formProgress">0%</strong>
+        </div>
+        <div class="progress-track"><i id="progressBar"></i></div>
+      </section>
+
+      <form id="editProductForm" novalidate>
+        <section class="form-card">
+          <div class="section-heading">
+            <div>
+              <span>FOTO PRODUK</span>
+              <h2>Tampilkan produk terbaik Anda</h2>
+            </div>
+            <small><b id="photoCount">0</b>/10</small>
+          </div>
+
+          <div class="photo-grid" id="photoGrid">
+            <label class="photo-add" for="photoInput">
+              <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+              <span>Tambah</span>
+            </label>
+          </div>
+
+          <input id="photoInput" class="hidden-input" type="file" accept="image/*" multiple>
+          <p class="helper">Foto pertama digunakan sebagai cover produk.</p>
+        </section>
+
+        <section class="form-card">
+          <div class="section-heading">
+            <div>
+              <span>INFORMASI PRODUK</span>
+              <h2>Detail utama listing</h2>
+            </div>
+          </div>
+
+          <label class="field">
+            <span>Nama produk</span>
+            <div class="input-shell">
+              <input id="productName" type="text" maxlength="100" placeholder="Contoh: Dell PowerEdge R760">
+              <small><b id="nameCount">0</b>/100</small>
+            </div>
+          </label>
+
+          <label class="field">
+            <span>Kategori</span>
+            <select id="category">
+              <option value="">Pilih kategori</option>
+              <option value="electronics">Elektronik</option>
+              <option value="fashion">Fashion</option>
+              <option value="home">Rumah Tangga</option>
+              <option value="automotive">Otomotif</option>
+              <option value="beauty">Kecantikan</option>
+              <option value="hobby">Hobi & Koleksi</option>
+              <option value="baby">Bayi & Anak</option>
+              <option value="books">Buku</option>
+              <option value="sports">Olahraga</option>
+              <option value="food">Makanan & Minuman</option>
+              <option value="pets">Hewan Peliharaan</option>
+              <option value="services">Jasa</option>
+              <option value="property">Properti</option>
+              <option value="event">Event & Tiket</option>
+              <option value="other">Lainnya</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Merek</span>
+            <input id="brand" type="text" maxlength="80" placeholder="Opsional">
+          </label>
+
+          <label class="field">
+            <span>Deskripsi</span>
+            <div class="textarea-shell">
+              <textarea id="description" maxlength="1500" rows="7" placeholder="Jelaskan kondisi, kelengkapan, spesifikasi, dan informasi penting lainnya."></textarea>
+              <small><b id="descriptionCount">0</b>/1500</small>
+            </div>
+          </label>
+
+          <div class="field">
+            <span>Kondisi</span>
+            <div class="condition-group" id="conditionGroup">
+              <button type="button" data-value="baru">Baru</button>
+              <button type="button" data-value="bekas">Bekas</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-card">
+          <div class="section-heading">
+            <div>
+              <span>HARGA & STOK</span>
+              <h2>Atur nilai produk</h2>
+            </div>
+          </div>
+
+          <label class="field">
+            <span>Harga jual</span>
+            <div class="price-shell">
+              <b>Rp</b>
+              <input id="price" inputmode="numeric" placeholder="0">
+            </div>
+          </label>
+
+          <div class="field">
+            <span>Stok</span>
+            <div class="stock-control">
+              <button id="decreaseStock" type="button">−</button>
+              <input id="stock" type="number" min="0" max="9999" value="1">
+              <button id="increaseStock" type="button">+</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-card">
+          <div class="section-heading">
+            <div>
+              <span>PENGIRIMAN</span>
+              <h2>Informasi fulfillment</h2>
+            </div>
+          </div>
+
+          <div class="field">
+            <span>Biaya pengiriman</span>
+            <div class="payer-group" id="shippingPayerGroup">
+              <button type="button" data-value="buyer">Ditanggung pembeli</button>
+              <button type="button" data-value="seller">Ditanggung penjual</button>
+            </div>
+          </div>
+
+          <label class="field">
+            <span>Metode pengiriman</span>
+            <select id="shippingMethod">
+              <option value="">Pilih metode</option>
+              <option value="Kurir">Kurir</option>
+              <option value="Ambil di tempat">Ambil di tempat</option>
+              <option value="Kurir / Ambil di tempat">Kurir / Ambil di tempat</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Dikirim dari</span>
+            <input id="shipFromRegion" type="text" maxlength="100" placeholder="Contoh: Batam">
+          </label>
+
+          <label class="field">
+            <span>Waktu proses</span>
+            <select id="processingTime">
+              <option value="">Pilih waktu proses</option>
+              <option value="2">1–2 hari</option>
+              <option value="3">2–3 hari</option>
+              <option value="7">4–7 hari</option>
+            </select>
+          </label>
+        </section>
+
+        <section class="save-card">
+          <div>
+            <span>SIAP MEMPERBARUI?</span>
+            <strong>Simpan perubahan listing</strong>
+            <p>Perubahan akan langsung diterapkan pada produk Anda.</p>
+          </div>
+          <button id="saveButton" type="submit">
+            Simpan Perubahan
+            <svg viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+          </button>
+          <p id="formMessage" class="form-message"></p>
+        </section>
+      </form>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navigasi utama">
+      <a href="home.html" class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"></path><path d="M5 10v10h14V10"></path></svg>
+        <span>Beranda</span>
+      </a>
+      <a href="explore.html" class="nav-item">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+        <span>Jelajah</span>
+      </a>
+      <a href="upload.html" class="nav-create" aria-label="Jual barang">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+      </a>
+      <a href="my-orders.html" class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path><path d="M4 8v10l8 3 8-3V8"></path></svg>
+        <span>Aktivitas</span>
+      </a>
+      <a href="profile.html" class="nav-item active">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+        <span>Akun</span>
+      </a>
+    </nav>
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay" aria-hidden="true">
+    <div class="loader-card">
+      <span class="spinner"></span>
+      <strong>Menyimpan perubahan</strong>
+      <small>Mohon tunggu sebentar...</small>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=20260807-1"></script>
+  <script src="auth-session.js?v=20260807-3"></script>
+  <script src="edit-product.js?v=20260807-1"></script>
+</body>
+</html>
