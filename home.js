@@ -25,6 +25,9 @@ function formatRupiah(value) {
   }).format(Number(value || 0));
 }
 
+function formatUnit(v){return String(v||'pcs').toLowerCase()||'pcs';}
+function formatMin(v){return Math.max(1,Number(v||1));}
+
 function formatCondition(value) {
   const normalized = String(value || "").trim().toLowerCase();
 
@@ -154,11 +157,11 @@ function renderProductCard(product) {
 
       <div class="product-body">
         <h3>${escapeHtml(product.name || "Produk")}</h3>
-        <strong>${formatRupiah(product.price)}</strong>
+        <div class="product-price-line"><strong>${formatRupiah(product.price)}</strong><span class="product-unit">/ ${escapeHtml(formatUnit(product.unit))}</span></div>
 
         <div class="product-footer">
           <span>${escapeHtml(product.ship_from_region || "Lokasi belum tersedia")}</span>
-          <span>Stok ${Number(product.stock || 0)}</span>
+          <span>Stok ${Number(product.stock || 0)} ${escapeHtml(formatUnit(product.unit))}</span><span class="product-min">Min. ${formatMin(product.minimum_order)} ${escapeHtml(formatUnit(product.unit))}</span>
         </div>
       </div>
     </a>
@@ -199,6 +202,8 @@ async function loadProducts() {
         brand,
         condition,
         price,
+        unit,
+        minimum_order,
         stock,
         shipping_payer,
         shipping_method,
@@ -311,7 +316,8 @@ searchInput.addEventListener("input", () => {
         product.brand,
         product.ship_from_region,
         product.condition,
-        product.category_id
+        product.category_id,
+        product.unit
       ].some((value) =>
         String(value || "").toLowerCase().includes(keyword)
       )
