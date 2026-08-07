@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>Pesan — AdaAja</title>
+  <link rel="stylesheet" href="messages.css?v=20260808-1">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="top-header">
+      <div class="header-copy">
+        <span>AKTIVITAS</span>
+        <h1>Pesan</h1>
+      </div>
+
+      <button class="header-button" id="refreshButton" type="button" aria-label="Muat ulang">
+        <svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0 2 5"></path><path d="M20 4v7h-7"></path></svg>
+      </button>
+
+      <a class="header-button" href="profile.html" aria-label="Akun">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+      </a>
+    </header>
+
+    <main class="content">
+      <section class="hero-card">
+        <div class="hero-glow glow-one"></div>
+        <div class="hero-glow glow-two"></div>
+
+        <div class="hero-copy">
+          <span class="eyebrow"><i></i> KOMUNIKASI</span>
+          <h2>Terhubung cepat dengan pembeli dan penjual.</h2>
+          <p>Semua percakapan produk dan transaksi tersusun rapi, realtime, dan mudah ditindaklanjuti.</p>
+        </div>
+
+        <div class="hero-stats">
+          <div><span>Percakapan</span><strong id="conversationCount">0</strong></div>
+          <div><span>Belum Dibaca</span><strong id="unreadCount">0</strong></div>
+          <div><span>Hari Ini</span><strong id="todayCount">0</strong></div>
+        </div>
+      </section>
+
+      <section class="toolbar-card">
+        <label class="search-shell">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+          <input id="searchInput" type="search" placeholder="Cari nama, produk, atau pesan" autocomplete="off">
+        </label>
+
+        <div class="toolbar-bottom">
+          <div>
+            <span>PERCAKAPAN</span>
+            <strong id="resultCount">Memuat...</strong>
+          </div>
+
+          <label class="sort-select">
+            <svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h9M8 18h6"></path><path d="M4 5v14"></path></svg>
+            <select id="sortSelect">
+              <option value="latest">Terbaru</option>
+              <option value="unread">Belum dibaca</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section id="conversationList" class="conversation-list" aria-live="polite">
+        <article class="skeleton-card shimmer"></article>
+        <article class="skeleton-card shimmer"></article>
+        <article class="skeleton-card shimmer"></article>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navigasi utama">
+      <a href="home.html" class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"></path><path d="M5 10v10h14V10"></path></svg>
+        <span>Beranda</span>
+      </a>
+
+      <a href="explore.html" class="nav-item">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+        <span>Jelajah</span>
+      </a>
+
+      <a href="upload.html" class="nav-create" aria-label="Jual barang">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+      </a>
+
+      <a href="activity.html" class="nav-item active">
+        <svg viewBox="0 0 24 24"><path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path><path d="M4 8v10l8 3 8-3V8"></path></svg>
+        <span>Aktivitas</span>
+      </a>
+
+      <a href="profile.html" class="nav-item">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+        <span>Akun</span>
+      </a>
+    </nav>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=20260807-1"></script>
+  <script src="auth-session.js?v=20260807-3"></script>
+  <script src="messages.js?v=20260808-1"></script>
+</body>
+</html>
