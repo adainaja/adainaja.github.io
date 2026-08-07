@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#ffffff">
   <meta name="description" content="Jual produk di AdaAja dengan mudah.">
   <title>Jual Produk — AdaAja</title>
-  <link rel="stylesheet" href="upload.css?v=20260805-2">
+  <link rel="stylesheet" href="upload.css?v=20260807-3">
 </head>
 <body>
   <div class="app-shell">
@@ -342,6 +342,69 @@
             <small class="field-hint">Masukkan harga yang kompetitif dan sesuai kondisi produk.</small>
           </label>
 
+          <div class="sales-grid">
+            <div class="field">
+              <span class="field-label">
+                Satuan produk
+                <em>Wajib</em>
+              </span>
+              <div class="select-shell">
+                <span class="field-icon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 6h16M4 12h16M4 18h10"></path>
+                  </svg>
+                </span>
+                <select id="unit">
+                  <option value="">Pilih satuan</option>
+                  <option value="unit">Unit</option>
+                  <option value="pcs">Pcs</option>
+                  <option value="kg">Kg</option>
+                  <option value="gram">Gram</option>
+                  <option value="ton">Ton</option>
+                  <option value="meter">Meter</option>
+                  <option value="cm">Cm</option>
+                  <option value="mm">Mm</option>
+                  <option value="liter">Liter</option>
+                  <option value="ml">Ml</option>
+                  <option value="botol">Botol</option>
+                  <option value="dus">Dus</option>
+                  <option value="box">Box</option>
+                  <option value="pack">Pack</option>
+                  <option value="sak">Sak</option>
+                  <option value="lembar">Lembar</option>
+                  <option value="roll">Roll</option>
+                  <option value="pasang">Pasang</option>
+                  <option value="set">Set</option>
+                  <option value="karung">Karung</option>
+                  <option value="tray">Tray</option>
+                  <option value="bungkus">Bungkus</option>
+                  <option value="kaleng">Kaleng</option>
+                  <option value="galon">Galon</option>
+                  <option value="tabung">Tabung</option>
+                  <option value="buah">Buah</option>
+                  <option value="ekor">Ekor</option>
+                  <option value="ikat">Ikat</option>
+                  <option value="kodi">Kodi</option>
+                  <option value="lusin">Lusin</option>
+                  <option value="lainnya">Lainnya</option>
+                </select>
+              </div>
+            </div>
+
+            <label class="field">
+              <span class="field-label">
+                Minimum order
+                <em>Wajib</em>
+              </span>
+              <div class="stock-input compact-stepper">
+                <button type="button" id="decreaseMinimumOrder" aria-label="Kurangi minimum order">−</button>
+                <input id="minimumOrder" type="number" min="1" max="9999" value="1">
+                <button type="button" id="increaseMinimumOrder" aria-label="Tambah minimum order">+</button>
+              </div>
+              <small class="field-hint" id="minimumOrderHint">Minimal pembelian 1 satuan.</small>
+            </label>
+          </div>
+
           <label class="field">
             <span class="field-label">
               Stok tersedia
@@ -441,6 +504,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=20260807-1"></script>
   <script src="auth-session.js?v=20260807-1"></script>
-  <script src="upload.js?v=20260807-1"></script>
+  <script src="upload.js?v=20260807-3"></script>
 </body>
 </html>

@@ -964,3 +964,19 @@ svg{
     padding:16px;
   }
 }
+
+
+/* === UNIT & MINIMUM ORDER === */
+.sales-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  align-items:start;
+}
+.sales-grid .field{margin-top:18px}
+.compact-stepper{grid-template-columns:44px 1fr 44px}
+.compact-stepper button{font-size:20px}
+.compact-stepper input{font-size:10px}
+@media(max-width:360px){
+  .sales-grid{grid-template-columns:1fr;gap:0}
+}

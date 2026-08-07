@@ -44,6 +44,9 @@ const productName = document.getElementById("productName");
 const description = document.getElementById("description");
 const price = document.getElementById("price");
 const stock = document.getElementById("stock");
+const unit = document.getElementById("unit");
+const minimumOrder = document.getElementById("minimumOrder");
+const minimumOrderHint = document.getElementById("minimumOrderHint");
 const message = document.getElementById("formMessage");
 const publishButton = document.getElementById("publishButton");
 const loadingOverlay = document.getElementById("loadingOverlay");
@@ -114,7 +117,9 @@ function updateProgress() {
     document.getElementById("shippingMethod").value,
     document.getElementById("shipFromRegion").value.trim(),
     document.getElementById("processingTime").value,
-    Number(price.dataset.value || 0) > 0
+    Number(price.dataset.value || 0) > 0,
+    unit.value,
+    Number(minimumOrder.value || 0) >= 1
   ];
   const progress = Math.round((checks.filter(Boolean).length / checks.length) * 100);
   formProgress.textContent = `${progress}%`;
@@ -154,6 +159,36 @@ document.getElementById("decreaseStock").addEventListener("click", () => {
 
 document.getElementById("increaseStock").addEventListener("click", () => {
   stock.value = Math.min(9999, Number(stock.value || 1) + 1);
+});
+
+function updateMinimumOrderHint() {
+  const value = Math.max(1, Number(minimumOrder.value || 1));
+  const unitLabel = unit.value || "satuan";
+  minimumOrderHint.textContent = `Minimal pembelian ${value} ${unitLabel}.`;
+}
+
+document.getElementById("decreaseMinimumOrder").addEventListener("click", () => {
+  minimumOrder.value = Math.max(1, Number(minimumOrder.value || 1) - 1);
+  updateMinimumOrderHint();
+  updateProgress();
+});
+
+document.getElementById("increaseMinimumOrder").addEventListener("click", () => {
+  minimumOrder.value = Math.min(9999, Number(minimumOrder.value || 1) + 1);
+  updateMinimumOrderHint();
+  updateProgress();
+});
+
+minimumOrder.addEventListener("input", () => {
+  const value = Math.max(1, Math.min(9999, Number(minimumOrder.value || 1)));
+  minimumOrder.value = value;
+  updateMinimumOrderHint();
+  updateProgress();
+});
+
+unit.addEventListener("change", () => {
+  updateMinimumOrderHint();
+  updateProgress();
 });
 
 photoInput.addEventListener("change", async (event) => {
@@ -279,6 +314,8 @@ function collectFormData() {
     processing_time_days: processingTimeToDays(processingTime),
     processing_time_label: processingTime,
     price: Number(price.dataset.value || 0),
+    unit: unit.value,
+    minimum_order: Number(minimumOrder.value || 1),
     stock: Number(stock.value || 1)
   };
 }
@@ -295,7 +332,10 @@ function validate(data) {
   if (!data.ship_from_region) return "Isi wilayah asal pengiriman.";
   if (!data.processing_time_days) return "Pilih waktu proses.";
   if (data.price <= 0) return "Masukkan harga jual yang benar.";
+  if (!data.unit) return "Pilih satuan produk.";
+  if (data.minimum_order < 1) return "Minimum order minimal 1.";
   if (data.stock < 1) return "Stok minimal satu.";
+  if (data.minimum_order > data.stock) return "Minimum order tidak boleh melebihi stok tersedia.";
   return "";
 }
 
@@ -411,6 +451,8 @@ form.addEventListener("submit", async (event) => {
       brand: data.brand || null,
       condition: data.condition,
       price: data.price,
+      unit: data.unit,
+      minimum_order: data.minimum_order,
       stock: data.stock,
       shipping_payer: data.shipping_payer,
       shipping_method: data.shipping_method,
@@ -464,7 +506,7 @@ form.addEventListener("submit", async (event) => {
   }
 });
 
-["category", "condition", "shippingMethod", "shipFromRegion", "processingTime"].forEach((id) => {
+["category", "condition", "shippingMethod", "shipFromRegion", "processingTime", "unit"].forEach((id) => {
   const element = document.getElementById(id);
   element.addEventListener(
     element.tagName === "SELECT" ? "change" : "input",
@@ -499,7 +541,10 @@ form.addEventListener("submit", async (event) => {
       draft.processing_time_label ||
       ({ 2: "1-2 hari", 3: "2-3 hari", 7: "4-7 hari" }[Number(draft.processing_time_days)] || "");
 
+    unit.value = draft.unit || "pcs";
+    minimumOrder.value = Math.max(1, Number(draft.minimum_order || 1));
     stock.value = draft.stock || draft.stok || 1;
+    updateMinimumOrderHint();
 
     const restoredPrice = draft.price || draft.harga || 0;
     if (restoredPrice) {
@@ -552,5 +597,6 @@ window.addEventListener("beforeunload", () => {
     console.warn("Profile validation failed:", error);
   }
 
+  updateMinimumOrderHint();
   updateProgress();
 })();
