@@ -174,9 +174,14 @@ function getFilteredProducts() {
   let filtered = products.filter((product) => {
     const status = String(product.status || "").toLowerCase();
 
+    const statusForFilter =
+      activeStatus === "inactive"
+        ? "draft"
+        : activeStatus;
+
     const matchesStatus =
       activeStatus === "all" ||
-      status === activeStatus;
+      status === statusForFilter;
 
     const matchesKeyword =
       !keyword ||
@@ -265,7 +270,13 @@ function renderProducts() {
         ? "Stok habis"
         : status === "active"
           ? "Aktif"
-          : "Nonaktif";
+          : status === "draft"
+            ? "Disembunyikan"
+            : status === "reserved"
+              ? "Dipesan"
+              : status === "sold"
+                ? "Terjual"
+                : "Tidak aktif";
 
     const statusClass =
       isSoldOut
@@ -326,16 +337,28 @@ function openActionSheet(productId) {
     ? `<img src="${escapeHtml(imageUrl)}" alt="">`
     : "";
 
-  const isActive =
-    String(selectedProduct.status || "").toLowerCase() === "active";
+  const currentStatus =
+    String(selectedProduct.status || "").toLowerCase();
 
-  toggleActionTitle.textContent =
-    isActive ? "Nonaktifkan produk" : "Aktifkan produk";
+  const isActive = currentStatus === "active";
+  const isDraft = currentStatus === "draft";
 
-  toggleActionSubtitle.textContent =
-    isActive
-      ? "Sembunyikan dari marketplace"
-      : "Tampilkan kembali di marketplace";
+  if (isActive) {
+    toggleActionTitle.textContent = "Nonaktifkan produk";
+    toggleActionSubtitle.textContent = "Sembunyikan dari marketplace";
+  } else if (isDraft) {
+    toggleActionTitle.textContent = "Aktifkan produk";
+    toggleActionSubtitle.textContent = "Tampilkan kembali di marketplace";
+  } else if (currentStatus === "reserved") {
+    toggleActionTitle.textContent = "Produk sedang dipesan";
+    toggleActionSubtitle.textContent = "Status ini tidak dapat diubah manual";
+  } else if (currentStatus === "sold") {
+    toggleActionTitle.textContent = "Produk sudah terjual";
+    toggleActionSubtitle.textContent = "Status ini tidak dapat diubah manual";
+  } else {
+    toggleActionTitle.textContent = "Kelola status";
+    toggleActionSubtitle.textContent = "Status produk tidak dapat diubah manual";
+  }
 
   actionSheet.classList.add("active");
   actionSheet.setAttribute("aria-hidden", "false");
@@ -355,9 +378,20 @@ async function toggleSelectedProduct() {
   const oldStatus =
     String(selectedProduct.status || "").toLowerCase();
 
+  if (!["active", "draft"].includes(oldStatus)) {
+    showToast(
+      oldStatus === "reserved"
+        ? "Produk sedang dipesan dan tidak dapat dinonaktifkan."
+        : oldStatus === "sold"
+          ? "Produk sudah terjual dan statusnya tidak dapat diubah."
+          : "Status produk ini tidak dapat diubah manual."
+    );
+    return;
+  }
+
   const newStatus =
     oldStatus === "active"
-      ? "inactive"
+      ? "draft"
       : "active";
 
   try {
@@ -380,8 +414,8 @@ async function toggleSelectedProduct() {
 
     showToast(
       newStatus === "active"
-        ? "Produk berhasil diaktifkan."
-        : "Produk berhasil dinonaktifkan."
+        ? "Produk berhasil ditampilkan kembali."
+        : "Produk berhasil disembunyikan dari marketplace."
     );
   } catch (error) {
     console.error("Gagal mengubah status:", error);
