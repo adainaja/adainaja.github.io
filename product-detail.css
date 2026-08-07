@@ -794,3 +794,45 @@ svg{
   cursor:not-allowed;
   opacity:.65;
 }
+
+
+/* =========================================
+   SUPABASE PRODUCT DETAIL
+========================================= */
+.bottom-action button:disabled{
+  cursor:not-allowed;
+  opacity:.58;
+}
+
+.offer-button.feature-pending,
+.favorite-button.feature-pending{
+  position:relative;
+}
+
+.feature-toast{
+  position:fixed;
+  z-index:120;
+  right:14px;
+  bottom:92px;
+  left:14px;
+  max-width:402px;
+  margin:auto;
+  padding:12px 14px;
+  border-radius:14px;
+  background:rgba(9,37,68,.96);
+  color:#fff;
+  font-size:8px;
+  font-weight:700;
+  line-height:1.45;
+  text-align:center;
+  box-shadow:0 14px 30px rgba(9,37,68,.24);
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(8px);
+  transition:.18s ease;
+}
+
+.feature-toast.show{
+  opacity:1;
+  transform:translateY(0);
+}
