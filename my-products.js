@@ -35,6 +35,16 @@ function formatRupiah(value) {
   }).format(Number(value || 0));
 }
 
+
+function formatUnit(value) {
+  const unit = String(value || "pcs").trim().toLowerCase();
+  return unit || "pcs";
+}
+
+function formatMinimumOrder(value) {
+  return Math.max(1, Number(value || 1));
+}
+
 function formatDate(value) {
   if (!value) return "Tanggal tidak tersedia";
 
@@ -99,6 +109,8 @@ async function loadProducts() {
         brand,
         condition,
         price,
+        unit,
+        minimum_order,
         stock,
         status,
         published_at,
@@ -189,7 +201,8 @@ function getFilteredProducts() {
         product.name,
         product.brand,
         product.category_id,
-        product.condition
+        product.condition,
+        product.unit
       ].some((value) =>
         String(value || "").toLowerCase().includes(keyword)
       );
@@ -300,11 +313,15 @@ function renderProducts() {
 
         <div class="product-copy">
           <h3>${escapeHtml(product.name || "Produk")}</h3>
-          <strong class="product-price">${formatRupiah(product.price)}</strong>
+          <div class="product-price-line">
+            <strong class="product-price">${formatRupiah(product.price)}</strong>
+            <span class="product-unit">/ ${escapeHtml(formatUnit(product.unit))}</span>
+          </div>
 
           <div class="product-meta">
             <span class="accent">${escapeHtml(conditionLabel(product.condition))}</span>
-            <span>Stok ${Number(product.stock || 0)}</span>
+            <span>Stok ${Number(product.stock || 0)} ${escapeHtml(formatUnit(product.unit))}</span>
+            <span class="minimum-order-meta">Min. ${formatMinimumOrder(product.minimum_order)} ${escapeHtml(formatUnit(product.unit))}</span>
             <span>${escapeHtml(product.category_id || "Lainnya")}</span>
           </div>
 

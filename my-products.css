@@ -366,3 +366,25 @@ svg{
   transition:.18s ease;box-shadow:0 14px 30px rgba(9,37,68,.22)
 }
 .toast.show{opacity:1;transform:translateY(0)}
+
+/* UNIT & MINIMUM ORDER */
+.product-price-line{
+  display:flex;
+  align-items:baseline;
+  gap:5px;
+  margin-top:5px;
+  flex-wrap:wrap;
+}
+.product-price-line .product-price{
+  margin-top:0;
+}
+.product-unit{
+  color:#7b8795;
+  font-size:6.8px;
+  font-weight:800;
+}
+.product-meta span.minimum-order-meta{
+  background:#eef6ff;
+  color:#245a91;
+}
+
