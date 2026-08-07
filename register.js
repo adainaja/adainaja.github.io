@@ -94,7 +94,6 @@ async function registerWithSupabase() {
         email,
         password,
         options: {
-          emailRedirectTo: window.ADAAJA_AUTH_CALLBACK_URL,
           data: {
             full_name: fullName,
             name: fullName
@@ -115,22 +114,19 @@ async function registerWithSupabase() {
 
     if (data.session?.user) {
       await window.AdaAjaAuth.syncLegacyUser(data.session.user);
-      setMessage("Akun berhasil dibuat. Mengalihkan...", "success");
+
+      sessionStorage.setItem("new_user", "1");
+      setMessage("Akun berhasil dibuat. Lengkapi profil Anda...", "success");
 
       window.setTimeout(() => {
-        location.href =
-          localStorage.getItem("redirectAfterLogin") ||
-          "home.html";
-      }, 800);
+        location.replace("complete-account.html");
+      }, 650);
 
       return;
     }
 
-    form.reset();
-
-    setMessage(
-      "Akun berhasil dibuat. Buka email Anda dan klik tautan konfirmasi dari AdaAja.",
-      "success"
+    throw new Error(
+      "Akun dibuat tetapi sesi belum tersedia. Pastikan Confirm email di Supabase sudah dinonaktifkan."
     );
   } catch (error) {
     console.error("Supabase registration error:", error);
@@ -162,10 +158,37 @@ window.addEventListener("load", async () => {
   try {
     const session = await window.AdaAjaAuth.getSession();
 
-    if (session?.user) {
-      await window.AdaAjaAuth.syncLegacyUser(session.user);
-      location.replace("home.html");
-    }
+    if (!session?.user) return;
+
+    await window.AdaAjaAuth.syncLegacyUser(session.user);
+
+    const userId = session.user.id;
+
+    const [profileResult, addressResult] = await Promise.all([
+      window.adaajaSupabase
+        .from("profiles")
+        .select("username")
+        .eq("id", userId)
+        .maybeSingle(),
+      window.adaajaSupabase
+        .from("addresses")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("is_primary", true)
+        .limit(1)
+        .maybeSingle()
+    ]);
+
+    if (profileResult.error) throw profileResult.error;
+    if (addressResult.error) throw addressResult.error;
+
+    const profileComplete = Boolean(
+      profileResult.data?.username && addressResult.data?.id
+    );
+
+    location.replace(
+      profileComplete ? "home.html" : "complete-account.html"
+    );
   } catch (error) {
     console.warn("Pemeriksaan sesi gagal:", error.message);
   }
