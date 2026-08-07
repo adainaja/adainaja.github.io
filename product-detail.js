@@ -48,6 +48,21 @@ function formatRupiah(value) {
   }).format(Number(value || 0));
 }
 
+function formatUnit(value) {
+  const unit = String(value || "pcs").trim().toLowerCase();
+  const labels = {
+    unit:"unit", pcs:"pcs", kg:"kg", gram:"gram", ton:"ton", meter:"meter", cm:"cm", mm:"mm", liter:"liter", ml:"ml",
+    botol:"botol", dus:"dus", box:"box", pack:"pack", sak:"sak", lembar:"lembar", roll:"roll", pasang:"pasang", set:"set",
+    karung:"karung", tray:"tray", bungkus:"bungkus", kaleng:"kaleng", galon:"galon", tabung:"tabung", buah:"buah", ekor:"ekor",
+    ikat:"ikat", kodi:"kodi", lusin:"lusin", lainnya:"satuan"
+  };
+  return labels[unit] || unit || "pcs";
+}
+
+function formatMinimumOrder(value) {
+  return Math.max(1, Number(value || 1));
+}
+
 function escapeHtml(value) {
   return String(value || "")
     .replaceAll("&", "&amp;")
@@ -213,6 +228,8 @@ async function loadProduct() {
           brand,
           condition,
           price,
+          unit,
+          minimum_order,
           stock,
           shipping_payer,
           shipping_method,
@@ -368,9 +385,10 @@ function renderProduct(product) {
           ${escapeHtml(product.name)}
         </h1>
 
-        <strong class="product-price">
-          ${formatRupiah(product.price)}
-        </strong>
+        <div class="product-price-row">
+          <strong class="product-price">${formatRupiah(product.price)}</strong>
+          <span class="product-unit">/ ${escapeHtml(formatUnit(product.unit))}</span>
+        </div>
 
         <div class="product-meta">
           <span class="meta-chip primary">
@@ -382,7 +400,12 @@ function renderProduct(product) {
               <path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path>
               <path d="M4 8v10l8 3 8-3V8"></path>
             </svg>
-            Stok ${Number(product.stock || 0)}
+            Stok ${Number(product.stock || 0)} ${escapeHtml(formatUnit(product.unit))}
+          </span>
+
+          <span class="meta-chip min-order-chip">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l1 12H5L6 8Z"></path><path d="M9 8a3 3 0 0 1 6 0"></path></svg>
+            Min. ${formatMinimumOrder(product.minimum_order)} ${escapeHtml(formatUnit(product.unit))}
           </span>
 
           <span class="meta-chip">
@@ -460,6 +483,18 @@ function renderProduct(product) {
           </span>
           <span>Merek</span>
           <strong>${escapeHtml(product.brand || "Tidak ada merek")}</strong>
+        </div>
+
+        <div class="info-row">
+          <span class="info-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"></path></svg></span>
+          <span>Satuan</span>
+          <strong>${escapeHtml(formatUnit(product.unit))}</strong>
+        </div>
+
+        <div class="info-row">
+          <span class="info-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l1 12H5L6 8Z"></path><path d="M9 8a3 3 0 0 1 6 0"></path></svg></span>
+          <span>Minimum pembelian</span>
+          <strong>${formatMinimumOrder(product.minimum_order)} ${escapeHtml(formatUnit(product.unit))}</strong>
         </div>
 
         <div class="info-row">
@@ -543,7 +578,7 @@ function renderProduct(product) {
   document
     .getElementById("modalCurrentPrice")
     .textContent =
-    formatRupiah(product.price);
+    `${formatRupiah(product.price)} / ${formatUnit(product.unit)}`;
 
   setupGallery();
 }
@@ -730,10 +765,16 @@ buyButton.addEventListener(
       return;
     }
 
-    if (Number(currentProduct.stock || 0) < 1) {
-      showFeatureToast(
-        "Stok produk sedang habis."
-      );
+    const minimumOrder = formatMinimumOrder(currentProduct.minimum_order);
+    const stockValue = Number(currentProduct.stock || 0);
+
+    if (stockValue < 1) {
+      showFeatureToast("Stok produk sedang habis.");
+      return;
+    }
+
+    if (stockValue < minimumOrder) {
+      showFeatureToast(`Stok tersedia belum memenuhi minimum pembelian ${minimumOrder} ${formatUnit(currentProduct.unit)}.`);
       return;
     }
 
