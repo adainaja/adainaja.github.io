@@ -90,10 +90,11 @@ async function loadCurrentProfile() {
 
 async function setupAccount() {
   const accountAvatar = document.getElementById("accountAvatar");
-  const profile = await loadCurrentProfile();
-  const session = currentSession;
+  const user = await window.AdaAjaAuth.getCurrentUser();
 
-  if (!session?.user) {
+  if (!user) {
+    currentSession = null;
+    currentProfile = null;
     accountAvatar.innerHTML = `
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="12" cy="8" r="4"></circle>
@@ -102,6 +103,9 @@ async function setupAccount() {
     `;
     return;
   }
+
+  currentSession = { user };
+  const profile = await loadCurrentProfile();
 
   if (profile?.avatar_url) {
     accountAvatar.innerHTML = `
@@ -113,8 +117,8 @@ async function setupAccount() {
   const sourceName =
     profile?.username ||
     profile?.full_name ||
-    session.user.user_metadata?.full_name ||
-    session.user.email ||
+    user.user_metadata?.full_name ||
+    user.email ||
     "A";
 
   const initial = String(sourceName).charAt(0).toUpperCase();
@@ -280,13 +284,14 @@ function closeAccountPanel() {
 }
 
 async function handleAccountClick() {
-  const session = await getSession(true);
+  const user = await window.AdaAjaAuth.getCurrentUser();
 
-  if (session?.user) {
+  if (user) {
     location.href = "profile.html";
     return;
   }
 
+  currentSession = null;
   currentProfile = null;
   openAccountPanel();
 }
@@ -342,9 +347,9 @@ document.addEventListener("click", async (event) => {
 
   if (!isUploadPage) return;
 
-  const session = await getSession(true);
+  const user = await window.AdaAjaAuth.getCurrentUser();
 
-  if (session?.user) return;
+  if (user) return;
 
   event.preventDefault();
 
@@ -378,12 +383,13 @@ window.adaajaSupabase.auth.onAuthStateChange(async (event, session) => {
 window.addEventListener("pageshow", async () => {
   currentSession = null;
   currentProfile = null;
-  await getSession(true);
   await setupAccount();
 });
 
 (async function initHome() {
-  await getSession();
+  currentSession = null;
+  currentProfile = null;
+
   await Promise.all([
     setupAccount(),
     loadProducts()

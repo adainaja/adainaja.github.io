@@ -49,20 +49,17 @@ async function getSession() {
 }
 
 async function requireLogin() {
-  try {
-    const session = await getSession();
+  const user = await window.AdaAjaAuth.getCurrentUser();
 
-    if (session?.user) return session;
-
-    localStorage.setItem("redirectAfterLogin", "profile.html");
-    location.replace("login.html");
-    return null;
-  } catch (error) {
-    console.error("Profile auth check failed:", error);
-    localStorage.setItem("redirectAfterLogin", "profile.html");
-    location.replace("login.html");
-    return null;
+  if (user) {
+    currentSession = { user };
+    return currentSession;
   }
+
+  currentSession = null;
+  localStorage.setItem("redirectAfterLogin", "profile.html");
+  location.replace("login.html");
+  return null;
 }
 
 async function loadProfile(userId) {
@@ -256,51 +253,18 @@ async function logout() {
   confirmLogoutButton.textContent = "Keluar...";
 
   try {
-    const { error } = await window.adaajaSupabase.auth.signOut({
-      scope: "local"
-    });
-
-    if (error) {
-      console.warn("Supabase signOut warning:", error);
-    }
-  } catch (error) {
-    console.warn("Supabase signOut failed:", error);
+    await window.AdaAjaAuth.signOut();
   } finally {
     currentSession = null;
     currentProfile = null;
 
-    [
-      "user",
-      "login_email",
-      "register_email",
-      "register_username",
-      "register_password",
-      "pending_registration_email",
-      "pending_registration_name",
-      "new_user",
-      "redirectAfterLogin"
-    ].forEach((key) => {
-      localStorage.removeItem(key);
-      sessionStorage.removeItem(key);
-    });
+    localStorage.removeItem("redirectAfterLogin");
 
     /*
-      Fallback untuk membersihkan token Supabase yang mungkin masih
-      tertinggal di browser jika signOut gagal karena token/server.
+      Gunakan query cache-buster agar Home tidak dikembalikan dari
+      snapshot browser lama setelah logout.
     */
-    Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith("sb-") && key.endsWith("-auth-token")) {
-        localStorage.removeItem(key);
-      }
-    });
-
-    Object.keys(sessionStorage).forEach((key) => {
-      if (key.startsWith("sb-") && key.endsWith("-auth-token")) {
-        sessionStorage.removeItem(key);
-      }
-    });
-
-    location.replace("home.html?logged_out=1");
+    location.replace(`home.html?logout=${Date.now()}`);
   }
 }
 
