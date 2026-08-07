@@ -1,385 +1,53 @@
-const API_URL="https://script.google.com/macros/s/AKfycbx0VQGRZ9bXUSp8nTdgttqyD5VNOtTavrB0iqpS91gWjqTstIZzd189uIxtTQHD6FI/exec";
+const BUCKET="product-images";
+const ordersList=document.getElementById("ordersList"),searchInput=document.getElementById("searchInput"),sortSelect=document.getElementById("sortSelect"),statusTabs=document.getElementById("statusTabs"),resultCount=document.getElementById("resultCount"),refreshButton=document.getElementById("refreshButton"),trackingSheet=document.getElementById("trackingSheet"),trackingContent=document.getElementById("trackingContent"),toast=document.getElementById("toast");
+let currentUser=null,orders=[],activeStatus="all",toastTimer=null,realtimeChannel=null;
 
-const ordersContainer=document.getElementById("ordersContainer");
-const refreshButton=document.getElementById("refreshButton");
-
-let allOrders=[];
-let activeFilter="all";
-
-function getUser(){
-  try{
-    return JSON.parse(localStorage.getItem("user")||"null");
-  }catch{
-    return null;
-  }
-}
-
-function formatRupiah(value){
-  return new Intl.NumberFormat("id-ID",{
-    style:"currency",
-    currency:"IDR",
-    maximumFractionDigits:0
-  }).format(Number(value||0));
-}
-
-function escapeHtml(value){
-  return String(value||"")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
-function convertDriveImage(url){
-  if(!url)return"";
-
-  if(url.includes("drive.google.com")){
-    const id=url.match(/[-\w]{25,}/);
-
-    if(id){
-      return "https://drive.google.com/thumbnail?id="+id[0]+"&sz=w500";
-    }
-  }
-
-  return url;
-}
-
-function formatDate(value){
-  const date=new Date(value);
-
-  if(Number.isNaN(date.getTime())){
-    return "-";
-  }
-
-  return new Intl.DateTimeFormat("id-ID",{
-    day:"2-digit",
-    month:"short",
-    year:"numeric"
-  }).format(date);
-}
-
-function statusLabel(status){
-  const labels={
-    waiting_payment:"Menunggu Pembayaran",
-    paid:"Sudah Dibayar",
-    packed:"Sedang Dikemas",
-    shipped:"Sedang Dikirim",
-    completed:"Selesai",
-    cancelled:"Dibatalkan"
-  };
-
-  return labels[status]||status||"-";
-}
-
-function paymentLabel(status){
-  const labels={
-    unpaid:"Belum dibayar",
-    pending:"Menunggu verifikasi",
-    paid:"Lunas",
-    failed:"Gagal",
-    expired:"Kedaluwarsa"
-  };
-
-  return labels[status]||status||"-";
-}
-
-function progressValue(status){
-  const values={
-    waiting_payment:0,
-    paid:33,
-    packed:50,
-    shipped:66,
-    completed:100,
-    cancelled:0
-  };
-
-  return values[status]??0;
-}
-
-function progressClass(status,index){
-  const map={
-    waiting_payment:0,
-    paid:1,
-    packed:1,
-    shipped:2,
-    completed:3
-  };
-
-  const current=map[status]??0;
-
-  if(index<current)return"done";
-  if(index===current)return"active";
-  return"";
-}
-
-function statusNote(status){
-  const notes={
-    waiting_payment:"Pesanan sudah dibuat. Selesaikan pembayaran agar penjual dapat memproses barang.",
-    paid:"Pembayaran diterima. Penjual akan segera menyiapkan pesanan Anda.",
-    packed:"Pesanan sedang dikemas oleh penjual.",
-    shipped:"Pesanan sedang dalam perjalanan menuju alamat Anda.",
-    completed:"Pesanan selesai. Terima kasih telah bertransaksi di AdaAja.",
-    cancelled:"Pesanan ini telah dibatalkan."
-  };
-
-  return notes[status]||"Status pesanan sedang diperbarui.";
-}
-
-async function apiPost(payload){
-  const response=await fetch(
-    API_URL+"?t="+Date.now(),
-    {
-      method:"POST",
-      redirect:"follow",
-      headers:{
-        "Content-Type":"text/plain;charset=utf-8"
-      },
-      body:JSON.stringify(payload)
-    }
-  );
-
-  const responseText=await response.text();
-
-  if(!response.ok){
-    throw new Error("Server mengembalikan HTTP "+response.status);
-  }
-
-  try{
-    return JSON.parse(responseText);
-  }catch{
-    console.error("Respons server:",responseText);
-
-    throw new Error(
-      responseText.trim().startsWith("<")
-      ? "Server mengirim halaman HTML, bukan JSON."
-      : "Respons server tidak valid."
-    );
-  }
-}
+const esc=v=>String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+const money=v=>new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0}).format(Number(v||0));
+function date(v){if(!v)return"-";const d=new Date(v);return isNaN(d)?"-":new Intl.DateTimeFormat("id-ID",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(d)}
+const orderNo=id=>`ADA-${String(id||"").replaceAll("-","").slice(0,10).toUpperCase()}`;
+const norm=s=>({paid:"processing",delivered:"shipped",refunded:"cancelled"})[String(s||"").toLowerCase()]||String(s||"").toLowerCase();
+function statusInfo(s){return({pending_payment:["Belum Bayar","status-pending"],paid:["Pembayaran Berhasil","status-paid"],processing:["Diproses","status-processing"],shipped:["Dikirim","status-shipped"],delivered:["Sudah Sampai","status-delivered"],completed:["Selesai","status-completed"],cancelled:["Dibatalkan","status-cancelled"],refunded:["Refund","status-refunded"]})[String(s||"").toLowerCase()]||[s||"-","status-pending"]}
+function publicUrl(path){if(!path)return"";return window.adaajaSupabase.storage.from(BUCKET).getPublicUrl(path).data?.publicUrl||""}
+function showToast(m){toast.textContent=m;toast.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove("show"),2200)}
+async function requireUser(){const u=await window.AdaAjaAuth.getCurrentUser();if(!u){localStorage.setItem("redirectAfterLogin","my-orders.html");location.replace("login.html");return null}currentUser=u;return u}
+function loading(){ordersList.innerHTML='<article class="skeleton-card shimmer"></article><article class="skeleton-card shimmer"></article>';resultCount.textContent="Memuat..."}
+function errorState(m){ordersList.innerHTML=`<section class="empty-state"><span class="empty-icon">!</span><strong>Pembelian belum dapat dimuat</strong><p>${esc(m)}</p><button class="retry-button" id="retryButton">Muat ulang</button></section>`;document.getElementById("retryButton")?.addEventListener("click",loadOrders)}
 
 async function loadOrders(){
-  const user=getUser();
-
-  if(!user?.user_id){
-    location.href="login.html";
-    return;
-  }
-
-  ordersContainer.innerHTML=`
-    <section class="state-card">
-      <div class="spinner"></div>
-      <strong>Memuat pesanan...</strong>
-      <span>Mohon tunggu sebentar.</span>
-    </section>
-  `;
-
-  try{
-    const result=await apiPost({
-      action:"getBuyerOrders",
-      buyer_id:user.user_id
-    });
-
-    if(result.status!=="success"||!Array.isArray(result.orders)){
-      throw new Error(result.message||"Pesanan gagal dimuat.");
-    }
-
-    allOrders=result.orders;
-    updateSummary();
-    renderOrders();
-
-  }catch(error){
-    ordersContainer.innerHTML=`
-      <section class="state-card">
-        <strong>Pesanan belum dapat dimuat</strong>
-        <span>${escapeHtml(error.message||"Server tidak terhubung.")}</span>
-      </section>
-    `;
-  }
+ const u=await requireUser();if(!u)return;loading();
+ try{
+  const {data,error}=await window.adaajaSupabase.from("orders").select("*").eq("buyer_id",u.id).order("created_at",{ascending:false});if(error)throw error;
+  const raw=data||[],ids=raw.map(x=>x.id);
+  const [itemsRes,payRes,shipRes,sellerRes]=await Promise.all([
+   ids.length?window.adaajaSupabase.from("order_items").select("*").in("order_id",ids):Promise.resolve({data:[]}),
+   ids.length?window.adaajaSupabase.from("payments").select("order_id,transaction_status,payment_method,gross_amount,paid_at").in("order_id",ids):Promise.resolve({data:[]}),
+   ids.length?window.adaajaSupabase.from("shipments").select("id,order_id,courier_code,courier_name,courier_service,tracking_number,status,estimated_delivery_at").in("order_id",ids):Promise.resolve({data:[]}),
+   raw.length?window.adaajaSupabase.from("profiles").select("id,username,full_name").in("id",[...new Set(raw.map(x=>x.seller_id))]):Promise.resolve({data:[]})
+  ]);
+  for(const r of [itemsRes,payRes,shipRes,sellerRes])if(r.error)console.warn(r.error);
+  const items=itemsRes.data||[],productIds=[...new Set(items.map(x=>x.product_id).filter(Boolean))];
+  const prodRes=productIds.length?await window.adaajaSupabase.from("products").select("id,name,unit,product_images(storage_path,sort_order,is_cover)").in("id",productIds):{data:[]};
+  const prodMap=new Map((prodRes.data||[]).map(p=>{const imgs=[...(p.product_images||[])].sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0));const cover=imgs.find(i=>i.is_cover)||imgs[0];return[p.id,{...p,cover:cover?.storage_path||""}]}));
+  const itemMap=new Map();items.forEach(i=>{if(!itemMap.has(i.order_id))itemMap.set(i.order_id,[]);itemMap.get(i.order_id).push({...i,product:prodMap.get(i.product_id)||null})});
+  const payMap=new Map((payRes.data||[]).map(x=>[x.order_id,x])),shipMap=new Map((shipRes.data||[]).map(x=>[x.order_id,x])),sellerMap=new Map((sellerRes.data||[]).map(x=>[x.id,x.username||x.full_name||"Penjual AdaAja"]));
+  orders=raw.map(o=>({...o,items:itemMap.get(o.id)||[],payment:payMap.get(o.id)||null,shipment:shipMap.get(o.id)||null,seller_name:sellerMap.get(o.seller_id)||"Penjual AdaAja"}));
+  stats();render();subscribe();
+ }catch(e){console.error(e);errorState(e.message||"Gagal memuat pembelian.")}
 }
-
-function updateSummary(){
-  document.getElementById("unpaidCount").textContent=
-    allOrders.filter(item=>item.status==="waiting_payment").length;
-
-  document.getElementById("processCount").textContent=
-    allOrders.filter(item=>["paid","packed","shipped"].includes(item.status)).length;
-
-  document.getElementById("completedCount").textContent=
-    allOrders.filter(item=>item.status==="completed").length;
-}
-
-function renderOrders(){
-  let filtered=allOrders;
-
-  if(activeFilter==="waiting_payment"){
-    filtered=allOrders.filter(item=>item.status==="waiting_payment");
-  }
-
-  if(activeFilter==="process"){
-    filtered=allOrders.filter(item=>["paid","packed","shipped"].includes(item.status));
-  }
-
-  if(activeFilter==="completed"){
-    filtered=allOrders.filter(item=>item.status==="completed");
-  }
-
-  if(activeFilter==="cancelled"){
-    filtered=allOrders.filter(item=>item.status==="cancelled");
-  }
-
-  if(filtered.length===0){
-    ordersContainer.innerHTML=`
-      <section class="state-card">
-        <strong>Belum ada pesanan</strong>
-        <span>Transaksi yang Anda buat akan tampil di sini.</span>
-      </section>
-    `;
-    return;
-  }
-
-  ordersContainer.innerHTML=filtered.map(renderOrderCard).join("");
-}
-
-function renderOrderCard(order){
-  const image=convertDriveImage(order.image_url||"");
-
-  const imageContent=image
-    ? `<img src="${image}" alt="${escapeHtml(order.nama_produk)}">`
-    : `<div class="product-placeholder">Foto tidak tersedia</div>`;
-
-  let actions=`
-    <div class="actions">
-      <a class="secondary-button" href="order-detail.html?id=${encodeURIComponent(order.order_id)}">
-        Lihat Detail
-      </a>
-    </div>
-  `;
-
-  if(order.status==="waiting_payment"){
-    actions=`
-      <div class="actions two">
-        <a class="secondary-button" href="order-detail.html?id=${encodeURIComponent(order.order_id)}">
-          Lihat Detail
-        </a>
-
-        <a class="primary-button" href="payment.html?order_id=${encodeURIComponent(order.order_id)}">
-          Bayar Sekarang
-        </a>
-      </div>
-    `;
-  }
-
-  if(order.status==="completed"){
-    actions=`
-      <div class="actions two">
-        <a class="secondary-button" href="order-detail.html?id=${encodeURIComponent(order.order_id)}">
-          Lihat Detail
-        </a>
-
-        <a class="primary-button" href="review.html?order_id=${encodeURIComponent(order.order_id)}">
-          Beri Ulasan
-        </a>
-      </div>
-    `;
-  }
-
-  return `
-    <article class="order-card">
-
-      <div class="order-head">
-        <div class="order-code">
-          <span>ID Pesanan</span>
-          <strong>${escapeHtml(order.order_id)}</strong>
-        </div>
-
-        <span class="status-badge status-${escapeHtml(order.status)}">
-          ${escapeHtml(statusLabel(order.status))}
-        </span>
-      </div>
-
-      <div class="order-main">
-
-        <div class="product-image">
-          ${imageContent}
-        </div>
-
-        <div class="product-copy">
-          <h2>${escapeHtml(order.nama_produk||"Produk")}</h2>
-
-          <div class="seller-name">
-            Penjual: ${escapeHtml(order.seller_name||order.seller_id||"Penjual")}
-          </div>
-
-          <div class="price-block">
-            <span>Total pembayaran</span>
-            <strong>${formatRupiah(order.total_bayar)}</strong>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="order-meta">
-
-        <div class="meta-box">
-          <span>Pembayaran</span>
-          <strong>${escapeHtml(paymentLabel(order.payment_status))}</strong>
-        </div>
-
-        <div class="meta-box">
-          <span>Dibuat</span>
-          <strong>${escapeHtml(formatDate(order.created_at))}</strong>
-        </div>
-
-      </div>
-
-      <div class="progress-wrap">
-        <div class="progress-track" style="--progress:${progressValue(order.status)}%">
-
-          <div class="progress-step ${progressClass(order.status,0)}">
-            <div class="progress-dot"></div>
-            <span>Dibuat</span>
-          </div>
-
-          <div class="progress-step ${progressClass(order.status,1)}">
-            <div class="progress-dot"></div>
-            <span>Diproses</span>
-          </div>
-
-          <div class="progress-step ${progressClass(order.status,2)}">
-            <div class="progress-dot"></div>
-            <span>Dikirim</span>
-          </div>
-
-          <div class="progress-step ${progressClass(order.status,3)}">
-            <div class="progress-dot"></div>
-            <span>Selesai</span>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="status-note ${escapeHtml(order.status)}">
-        ${escapeHtml(statusNote(order.status))}
-      </div>
-
-      ${actions}
-
-    </article>
-  `;
-}
-
-document.querySelectorAll(".filter-tabs button").forEach(button=>{
-  button.onclick=()=>{
-    document.querySelectorAll(".filter-tabs button")
-      .forEach(item=>item.classList.remove("active"));
-
-    button.classList.add("active");
-    activeFilter=button.dataset.status;
-    renderOrders();
-  };
-});
-
-refreshButton.onclick=loadOrders;
-
-loadOrders();
+function stats(){document.getElementById("activeCount").textContent=orders.filter(o=>["pending_payment","paid","processing","shipped","delivered"].includes(String(o.status).toLowerCase())).length;document.getElementById("shippedCount").textContent=orders.filter(o=>["shipped","delivered"].includes(String(o.status).toLowerCase())).length;document.getElementById("completedCount").textContent=orders.filter(o=>String(o.status).toLowerCase()==="completed").length}
+function filtered(){const q=searchInput.value.trim().toLowerCase();let d=orders.filter(o=>(activeStatus==="all"||norm(o.status)===activeStatus)&&(!q||[o.id,orderNo(o.id),o.seller_name,...o.items.map(i=>i.product_name||i.product?.name||""),o.shipment?.tracking_number].some(v=>String(v||"").toLowerCase().includes(q))));if(sortSelect.value==="oldest")d.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));else if(sortSelect.value==="total_high")d.sort((a,b)=>Number(b.total)-Number(a.total));else if(sortSelect.value==="total_low")d.sort((a,b)=>Number(a.total)-Number(b.total));else d.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));return d}
+function card(o){
+ const [label,klass]=statusInfo(o.status),i=o.items[0]||{},p=i.product||{},img=publicUrl(p.cover||""),qty=Number(i.quantity||1),unit=i.unit||p.unit||"pcs",name=i.product_name||p.name||"Produk",track=o.shipment?.tracking_number||o.tracking_number||"";
+ return `<article class="order-card">
+ <div class="order-head"><div><strong class="order-number">${esc(orderNo(o.id))}</strong><span class="order-date">${esc(date(o.created_at))}</span></div><span class="status-badge ${klass}">${esc(label)}</span></div>
+ <div class="order-product"><div class="order-thumb">${img?`<img src="${esc(img)}" alt="${esc(name)}">`:'<div class="order-thumb-placeholder">Foto tidak tersedia</div>'}</div><div class="order-product-copy"><h3>${esc(name)}</h3><div class="seller-name">${esc(o.seller_name)}</div><div class="item-meta"><span class="accent">${qty} ${esc(unit)}</span>${o.items.length>1?`<span>+${o.items.length-1} produk lain</span>`:""}${track?`<span>Resi ${esc(track)}</span>`:""}</div></div></div>
+ <div class="order-summary"><div><span>${o.items.length||1} produk</span><strong>${esc(o.payment?.payment_method||"Pembayaran belum dipilih")}</strong></div><div class="total"><span>Total pembayaran</span><strong>${money(o.total)}</strong></div></div>
+ <div class="order-actions"><a class="secondary" href="${i.product_id?`product-detail.html?id=${encodeURIComponent(i.product_id)}`:"explore.html"}">Lihat Produk</a>${o.shipment?.id&&["shipped","delivered","completed"].includes(String(o.status).toLowerCase())?`<button class="primary track-button" data-order-id="${esc(o.id)}">Lacak Paket</button>`:""}</div>
+ </article>`}
+function render(){const d=filtered();resultCount.textContent=`${d.length} pembelian`;if(!d.length){ordersList.innerHTML=`<section class="empty-state"><span class="empty-icon">□</span><strong>${activeStatus!=="all"||searchInput.value?"Tidak ada pembelian yang cocok":"Belum ada pembelian"}</strong><p>${activeStatus!=="all"||searchInput.value?"Coba ubah pencarian atau status.":"Produk yang Anda beli akan tampil di halaman ini."}</p><a href="explore.html">Mulai Belanja</a></section>`;return}ordersList.innerHTML=d.map(card).join("");ordersList.querySelectorAll(".track-button").forEach(b=>b.onclick=()=>openTracking(b.dataset.orderId))}
+async function openTracking(id){const o=orders.find(x=>x.id===id);if(!o?.shipment?.id)return showToast("Data pengiriman belum tersedia.");trackingSheet.classList.add("active");document.body.classList.add("sheet-open");trackingContent.innerHTML=`<div class="tracking-summary"><span>${esc(o.shipment.courier_name||o.shipment.courier_code||"KURIR")}</span><strong>${esc(o.shipment.tracking_number||"Resi belum tersedia")}</strong><small>${esc(o.shipment.courier_service||"Layanan pengiriman")}</small></div><div class="timeline"><div class="timeline-item"><span class="timeline-dot"></span><div class="timeline-copy"><strong>Memuat perjalanan paket...</strong></div></div></div>`;
+ const {data,error}=await window.adaajaSupabase.from("shipment_tracking").select("status,description,location,event_time,created_at").eq("shipment_id",o.shipment.id).order("event_time",{ascending:false});if(error)return trackingContent.insertAdjacentHTML("beforeend",`<p>${esc(error.message)}</p>`);const rows=data||[];trackingContent.innerHTML+=rows.length?`<div class="timeline">${rows.map(r=>`<div class="timeline-item"><span class="timeline-dot"></span><div class="timeline-copy"><strong>${esc(r.description||r.status||"Pembaruan")}</strong>${r.location?`<span>${esc(r.location)}</span>`:""}<small>${esc(date(r.event_time||r.created_at))}</small></div></div>`).join("")}</div>`:'<section class="empty-state"><strong>Belum ada riwayat perjalanan</strong><p>Pembaruan dari kurir akan tampil otomatis.</p></section>'}
+function closeTracking(){trackingSheet.classList.remove("active");document.body.classList.remove("sheet-open")}
+function subscribe(){if(!currentUser)return;if(realtimeChannel)window.adaajaSupabase.removeChannel(realtimeChannel);realtimeChannel=window.adaajaSupabase.channel(`buyer-orders-${currentUser.id}`).on("postgres_changes",{event:"*",schema:"public",table:"orders",filter:`buyer_id=eq.${currentUser.id}`},loadOrders).on("postgres_changes",{event:"*",schema:"public",table:"shipments",filter:`buyer_id=eq.${currentUser.id}`},loadOrders).subscribe()}
+searchInput.oninput=render;sortSelect.onchange=render;statusTabs.querySelectorAll("button").forEach(b=>b.onclick=()=>{activeStatus=b.dataset.status;statusTabs.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===b));render()});refreshButton.onclick=async()=>{refreshButton.disabled=true;await loadOrders();refreshButton.disabled=false;showToast("Pembelian diperbarui.")};document.getElementById("trackingBackdrop").onclick=closeTracking;document.getElementById("closeTracking").onclick=closeTracking;window.adaajaSupabase.auth.onAuthStateChange((e,s)=>{if(e==="SIGNED_OUT"||!s?.user)location.replace("login.html")});window.addEventListener("beforeunload",()=>{if(realtimeChannel)window.adaajaSupabase.removeChannel(realtimeChannel)});loadOrders();
