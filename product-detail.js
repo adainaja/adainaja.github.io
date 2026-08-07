@@ -542,28 +542,104 @@ function renderProduct(product) {
         </span>
       </div>
 
-      <a
-        href="seller-profile.html?id=${encodeURIComponent(product.seller_id || "")}"
-        class="seller-card"
-      >
-        <div class="seller-avatar">
-          ${
-            sellerPhoto
-              ? `<img src="${escapeHtml(sellerPhoto)}" alt="${escapeHtml(sellerName)}">`
-              : escapeHtml(sellerName.charAt(0).toUpperCase())
-          }
+      <div class="seller-profile-card">
+        <div class="seller-profile-head">
+          <div class="seller-avatar">
+            ${
+              sellerPhoto
+                ? `<img src="${escapeHtml(sellerPhoto)}" alt="${escapeHtml(sellerName)}">`
+                : escapeHtml(sellerName.charAt(0).toUpperCase())
+            }
+          </div>
+
+          <div class="seller-profile-copy">
+            <small>SELLER ADAAJA</small>
+            <strong>${escapeHtml(sellerName)}</strong>
+            <span>${escapeHtml(product.seller?.bio || "Penjual aktif di AdaAja.")}</span>
+          </div>
+
+          <span class="seller-status ${
+            String(product.seller?.status || "active").toLowerCase() === "active"
+              ? "active"
+              : ""
+          }">
+            ${escapeHtml(product.seller?.status || "active")}
+          </span>
         </div>
 
-        <div class="seller-copy">
-          <small>SELLER ADAAJA</small>
-          <strong>${escapeHtml(sellerName)}</strong>
-          <span>Lihat profil dan produk lain dari penjual ini.</span>
+        <div class="seller-profile-meta">
+          <div>
+            <span>Status</span>
+            <strong>${escapeHtml(product.seller?.status || "Aktif")}</strong>
+          </div>
+          <div>
+            <span>Sejak</span>
+            <strong>${escapeHtml(formatJoinDate(product.seller?.created_at))}</strong>
+          </div>
         </div>
 
-        <svg class="seller-chevron" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="m9 18 6-6-6-6"></path>
-        </svg>
-      </a>
+        <div class="seller-actions">
+          <a
+            href="seller-profile.html?id=${encodeURIComponent(product.seller_id || "")}"
+            class="seller-profile-link"
+          >
+            Lihat Profil
+          </a>
+
+          <button
+            class="seller-chat-button"
+            id="chatSellerButton"
+            type="button"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 5h16v11H8l-4 4V5Z"></path>
+              <path d="M8 9h8"></path>
+              <path d="M8 12h5"></path>
+            </svg>
+            Chat Penjual
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-section comment-section">
+      <div class="section-title">
+        <div>
+          <span>KOMENTAR</span>
+          <h2>Tanya tentang produk</h2>
+        </div>
+
+        <span class="section-title-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 5h16v11H8l-4 4V5Z"></path>
+          </svg>
+        </span>
+      </div>
+
+      <div class="comment-compose">
+        <div class="comment-compose-head">
+          <strong>Tulis komentar</strong>
+          <span><b id="commentCount">0</b>/500</span>
+        </div>
+
+        <textarea
+          id="commentInput"
+          maxlength="500"
+          rows="3"
+          placeholder="Tanyakan kondisi, spesifikasi, ketersediaan, atau detail lain kepada penjual."
+        ></textarea>
+
+        <button
+          id="submitCommentButton"
+          type="button"
+        >
+          Kirim
+        </button>
+      </div>
+
+      <div class="comment-list" id="commentList">
+        <div class="comment-loading">Memuat komentar...</div>
+      </div>
     </section>
   `;
 
@@ -576,6 +652,426 @@ function renderProduct(product) {
     `${formatRupiah(product.price)} / ${formatUnit(product.unit)}`;
 
   setupGallery();
+  bindSellerAndCommentActions();
+  loadProductComments();
+}
+
+
+function formatJoinDate(value) {
+  if (!value) return "Bergabung di AdaAja";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "Bergabung di AdaAja";
+  }
+
+  return `Bergabung ${new Intl.DateTimeFormat("id-ID", {
+    month: "long",
+    year: "numeric"
+  }).format(date)}`;
+}
+
+async function startSellerChat() {
+  const user = await requireLogin();
+
+  if (!user || !currentProduct) return;
+
+  const sellerId = currentProduct.seller_id;
+
+  if (!sellerId) {
+    showFeatureToast("Data penjual tidak tersedia.");
+    return;
+  }
+
+  if (String(user.id) === String(sellerId)) {
+    showFeatureToast("Ini adalah produk Anda sendiri.");
+    return;
+  }
+
+  const chatButton = document.getElementById("chatSellerButton");
+
+  if (chatButton) {
+    chatButton.disabled = true;
+    chatButton.dataset.originalText = chatButton.innerHTML;
+    chatButton.innerHTML = "Membuka chat...";
+  }
+
+  try {
+    const {
+      data: myMemberships,
+      error: membershipError
+    } = await window.adaajaSupabase
+      .from("conversation_members")
+      .select("conversation_id")
+      .eq("user_id", user.id);
+
+    if (membershipError) throw membershipError;
+
+    const myConversationIds =
+      (myMemberships || [])
+        .map((row) => row.conversation_id)
+        .filter(Boolean);
+
+    let conversationId = null;
+
+    if (myConversationIds.length) {
+      const {
+        data: candidates,
+        error: candidateError
+      } = await window.adaajaSupabase
+        .from("conversations")
+        .select("id,product_id")
+        .in("id", myConversationIds)
+        .eq("product_id", currentProduct.id);
+
+      if (candidateError) throw candidateError;
+
+      const candidateIds =
+        (candidates || []).map((row) => row.id);
+
+      if (candidateIds.length) {
+        const {
+          data: sellerMemberships,
+          error: sellerMemberError
+        } = await window.adaajaSupabase
+          .from("conversation_members")
+          .select("conversation_id")
+          .eq("user_id", sellerId)
+          .in("conversation_id", candidateIds);
+
+        if (sellerMemberError) throw sellerMemberError;
+
+        conversationId =
+          sellerMemberships?.[0]?.conversation_id || null;
+      }
+    }
+
+    if (!conversationId) {
+      const {
+        data: conversation,
+        error: conversationError
+      } = await window.adaajaSupabase
+        .from("conversations")
+        .insert({
+          product_id: currentProduct.id,
+          order_id: null,
+          conversation_type: "product",
+          last_message_at: new Date().toISOString()
+        })
+        .select("id")
+        .single();
+
+      if (conversationError) throw conversationError;
+
+      conversationId = conversation.id;
+
+      const {
+        error: membersError
+      } = await window.adaajaSupabase
+        .from("conversation_members")
+        .insert([
+          {
+            conversation_id: conversationId,
+            user_id: user.id,
+            role: "buyer",
+            last_read_at: new Date().toISOString()
+          },
+          {
+            conversation_id: conversationId,
+            user_id: sellerId,
+            role: "seller",
+            last_read_at: null
+          }
+        ]);
+
+      if (membersError) throw membersError;
+    }
+
+    location.href =
+      `chat.html?conversation_id=${encodeURIComponent(conversationId)}`;
+  } catch (error) {
+    console.error("Chat penjual gagal dibuka:", error);
+
+    showFeatureToast(
+      error.message ||
+      "Chat belum dapat dibuka."
+    );
+  } finally {
+    if (chatButton) {
+      chatButton.disabled = false;
+      chatButton.innerHTML =
+        chatButton.dataset.originalText ||
+        "Chat Penjual";
+    }
+  }
+}
+
+async function loadProductComments() {
+  const list =
+    document.getElementById("commentList");
+
+  if (!list || !currentProduct) return;
+
+  list.innerHTML = `
+    <div class="comment-loading">
+      Memuat komentar...
+    </div>
+  `;
+
+  try {
+    const {
+      data: rows,
+      error
+    } = await window.adaajaSupabase
+      .from("product_reviews")
+      .select("*")
+      .eq("product_id", currentProduct.id)
+      .order("created_at", { ascending: false })
+      .limit(50);
+
+    if (error) throw error;
+
+    const userIds = [
+      ...new Set(
+        (rows || [])
+          .map((row) =>
+            row.user_id ||
+            row.buyer_id ||
+            row.reviewer_id
+          )
+          .filter(Boolean)
+      )
+    ];
+
+    let profiles = [];
+
+    if (userIds.length) {
+      const profileResult =
+        await window.adaajaSupabase
+          .from("profiles")
+          .select("id,username,full_name,avatar_url")
+          .in("id", userIds);
+
+      profiles = profileResult.data || [];
+    }
+
+    const profileMap =
+      new Map(
+        profiles.map((profile) => [
+          profile.id,
+          profile
+        ])
+      );
+
+    if (!(rows || []).length) {
+      list.innerHTML = `
+        <div class="comment-empty">
+          <strong>Belum ada komentar</strong>
+          <span>Jadilah yang pertama menanyakan produk ini.</span>
+        </div>
+      `;
+      return;
+    }
+
+    list.innerHTML =
+      rows.map((row) => {
+        const userId =
+          row.user_id ||
+          row.buyer_id ||
+          row.reviewer_id;
+
+        const profile =
+          profileMap.get(userId) || {};
+
+        const name =
+          profile.username ||
+          profile.full_name ||
+          "Pengguna AdaAja";
+
+        const text =
+          row.comment ||
+          row.review_text ||
+          row.content ||
+          row.message ||
+          "";
+
+        const dateText =
+          row.created_at
+            ? new Intl.DateTimeFormat("id-ID", {
+                day: "numeric",
+                month: "short",
+                year: "numeric"
+              }).format(new Date(row.created_at))
+            : "";
+
+        return `
+          <article class="comment-item">
+            <div class="comment-avatar">
+              ${
+                profile.avatar_url
+                  ? `<img src="${escapeHtml(profile.avatar_url)}" alt="${escapeHtml(name)}">`
+                  : escapeHtml(name.charAt(0).toUpperCase())
+              }
+            </div>
+
+            <div class="comment-copy">
+              <div class="comment-topline">
+                <strong>${escapeHtml(name)}</strong>
+                <span>${escapeHtml(dateText)}</span>
+              </div>
+
+              <p>${escapeHtml(text || "Komentar")}</p>
+            </div>
+          </article>
+        `;
+      }).join("");
+  } catch (error) {
+    console.warn("Komentar gagal dimuat:", error);
+
+    list.innerHTML = `
+      <div class="comment-empty">
+        <strong>Kolom komentar siap digunakan</strong>
+        <span>Komentar akan muncul setelah tabel ulasan menerima data komentar.</span>
+      </div>
+    `;
+  }
+}
+
+async function submitProductComment() {
+  const user = await requireLogin();
+
+  if (!user || !currentProduct) return;
+
+  const input =
+    document.getElementById("commentInput");
+
+  const button =
+    document.getElementById("submitCommentButton");
+
+  const text =
+    String(input?.value || "").trim();
+
+  if (!text) {
+    showFeatureToast("Tulis komentar terlebih dahulu.");
+    return;
+  }
+
+  if (text.length > 500) {
+    showFeatureToast("Komentar maksimal 500 karakter.");
+    return;
+  }
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Mengirim...";
+  }
+
+  const attempts = [
+    {
+      product_id: currentProduct.id,
+      user_id: user.id,
+      comment: text
+    },
+    {
+      product_id: currentProduct.id,
+      buyer_id: user.id,
+      review_text: text,
+      rating: 5
+    },
+    {
+      product_id: currentProduct.id,
+      user_id: user.id,
+      review_text: text,
+      rating: 5
+    }
+  ];
+
+  let lastError = null;
+  let success = false;
+
+  for (const payload of attempts) {
+    const { error } =
+      await window.adaajaSupabase
+        .from("product_reviews")
+        .insert(payload);
+
+    if (!error) {
+      success = true;
+      break;
+    }
+
+    lastError = error;
+  }
+
+  if (!success) {
+    console.error("Komentar gagal dikirim:", lastError);
+
+    showFeatureToast(
+      lastError?.message ||
+      "Komentar belum dapat dikirim."
+    );
+
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Kirim";
+    }
+
+    return;
+  }
+
+  input.value = "";
+  document
+    .getElementById("commentCount")
+    .textContent = "0";
+
+  showFeatureToast("Komentar berhasil dikirim.");
+
+  await loadProductComments();
+
+  if (button) {
+    button.disabled = false;
+    button.textContent = "Kirim";
+  }
+}
+
+function bindSellerAndCommentActions() {
+  const chatButton =
+    document.getElementById("chatSellerButton");
+
+  if (chatButton) {
+    chatButton.addEventListener(
+      "click",
+      startSellerChat
+    );
+  }
+
+  const commentInput =
+    document.getElementById("commentInput");
+
+  if (commentInput) {
+    commentInput.addEventListener(
+      "input",
+      () => {
+        const counter =
+          document.getElementById("commentCount");
+
+        if (counter) {
+          counter.textContent =
+            String(commentInput.value.length);
+        }
+      }
+    );
+  }
+
+  const submitButton =
+    document.getElementById("submitCommentButton");
+
+  if (submitButton) {
+    submitButton.addEventListener(
+      "click",
+      submitProductComment
+    );
+  }
 }
 
 function setupGallery() {
@@ -611,6 +1107,84 @@ function closeOfferModal() {
   offerModal.setAttribute("aria-hidden", "true");
   document.body.classList.remove("modal-open");
 }
+
+function openOfferModal() {
+  if (!currentProduct) return;
+
+  modalMessage.textContent = "";
+  modalMessage.style.color = "";
+  offerHint.textContent = "Masukkan nominal di bawah harga produk.";
+
+  document
+    .getElementById("modalCurrentPrice")
+    .textContent =
+      `${formatRupiah(currentProduct.price)} / ${formatUnit(currentProduct.unit)}`;
+
+  offerModal.classList.add("active");
+  offerModal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+
+  requestAnimationFrame(() => offerPrice.focus());
+}
+
+function parseOfferValue(value) {
+  return Number(String(value || "").replace(/[^\d]/g, "")) || 0;
+}
+
+function updateOfferInput() {
+  const numericValue = parseOfferValue(offerPrice.value);
+
+  offerPrice.dataset.value = numericValue
+    ? String(numericValue)
+    : "";
+
+  offerPrice.value = numericValue
+    ? new Intl.NumberFormat("id-ID").format(numericValue)
+    : "";
+
+  if (!numericValue || !currentProduct) {
+    offerHint.textContent =
+      "Masukkan nominal di bawah harga produk.";
+    return;
+  }
+
+  const current = Number(currentProduct.price || 0);
+
+  if (numericValue >= current) {
+    offerHint.textContent =
+      "Harga penawaran harus lebih rendah dari harga produk.";
+    return;
+  }
+
+  const difference = current - numericValue;
+  const percent = current
+    ? Math.round((difference / current) * 100)
+    : 0;
+
+  offerHint.textContent =
+    `${formatRupiah(difference)} lebih rendah (${percent}%).`;
+}
+
+offerPrice.addEventListener("input", () => {
+  modalMessage.textContent = "";
+  modalMessage.style.color = "";
+  updateOfferInput();
+});
+
+document
+  .querySelectorAll("[data-close-modal]")
+  .forEach((button) => {
+    button.addEventListener("click", closeOfferModal);
+  });
+
+document.addEventListener("keydown", (event) => {
+  if (
+    event.key === "Escape" &&
+    offerModal.classList.contains("active")
+  ) {
+    closeOfferModal();
+  }
+});
 
 document
   .getElementById("backButton")
@@ -735,7 +1309,6 @@ offerButton.addEventListener(
     modalMessage.style.color = "";
     offerPrice.value = "";
     offerPrice.dataset.value = "";
-    offerHint.textContent = "";
 
     openOfferModal();
   }
