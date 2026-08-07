@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#ffffff">
   <title>AdaAja - Beranda</title>
-  <link rel="stylesheet" href="home.css?v=20260808-1">
+  <link rel="stylesheet" href="home.css?v=20260808-2">
 </head>
 <body>
   <div class="app-shell">
@@ -94,18 +94,6 @@
           <span>Jual</span>
         </a>
 
-        <a href="explore.html" class="quick-item">
-          <span class="quick-icon">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <rect x="3" y="3" width="7" height="7" rx="2"></rect>
-              <rect x="14" y="3" width="7" height="7" rx="2"></rect>
-              <rect x="3" y="14" width="7" height="7" rx="2"></rect>
-              <rect x="14" y="14" width="7" height="7" rx="2"></rect>
-            </svg>
-          </span>
-          <span>Kategori</span>
-        </a>
-
         <a href="my-orders.html" class="quick-item">
           <span class="quick-icon">
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -113,7 +101,19 @@
               <path d="M4 8v10l8 3 8-3V8"></path>
             </svg>
           </span>
-          <span>Pesanan</span>
+          <span>Pembelian</span>
+        </a>
+
+        <a href="seller-orders.html" class="quick-item">
+          <span class="quick-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 9h16"></path>
+              <path d="M5 9l1-5h12l1 5"></path>
+              <path d="M6 9v11h12V9"></path>
+              <path d="M9 20v-6h6v6"></path>
+            </svg>
+          </span>
+          <span>Pesanan Masuk</span>
         </a>
 
         <a href="my-offers.html" class="quick-item">
@@ -124,9 +124,32 @@
               <path d="M8 14h5"></path>
             </svg>
           </span>
-          <span>Penawaran</span>
+          <span>Negosiasi</span>
         </a>
       </section>
+
+      <a href="messages.html" class="quick-chat" aria-label="Buka Chat">
+        <span class="quick-chat-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 5h16v11H8l-4 4V5Z"></path>
+            <path d="M8 9h8"></path>
+            <path d="M8 12h5"></path>
+          </svg>
+          <i class="quick-chat-online"></i>
+        </span>
+
+        <span class="quick-chat-copy">
+          <small>CHAT REALTIME</small>
+          <strong>Pesan</strong>
+          <span>Hubungi pembeli & penjual dengan cepat</span>
+        </span>
+
+        <span class="quick-chat-action">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m9 18 6-6-6-6"></path>
+          </svg>
+        </span>
+      </a>
 
       <section class="section">
         <div class="section-header">
@@ -348,6 +371,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=20260807-1"></script>
   <script src="auth-session.js?v=20260807-3"></script>
-  <script src="home.js?v=20260808-1"></script>
+  <script src="home.js?v=20260808-2"></script>
 </body>
 </html>
