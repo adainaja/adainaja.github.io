@@ -1,13 +1,11 @@
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbx0VQGRZ9bXUSp8nTdgttqyD5VNOtTavrB0iqpS91gWjqTstIZzd189uIxtTQHD6FI/exec";
-
-const REGION_API =
-  "https://www.emsifa.com/api-wilayah-indonesia/api/";
+const REGION_API = "https://www.emsifa.com/api-wilayah-indonesia/api/";
 
 const selected = {};
 let currentLocationType = "";
 let currentLocationData = [];
-let fotoProfile = "";
+let selectedPhotoFile = null;
+let currentUser = null;
+let currentProfile = null;
 
 const sheet = document.getElementById("sheet");
 const title = document.getElementById("title");
@@ -20,24 +18,8 @@ const avatar = document.getElementById("avatar");
 const photo = document.getElementById("photo");
 const addressInput = document.getElementById("addressInput");
 const addressCounter = document.getElementById("addressCounter");
-
-function getStoredUser() {
-  try {
-    return JSON.parse(localStorage.getItem("user") || "null");
-  } catch {
-    return null;
-  }
-}
-
-function getUserEmail() {
-  return (
-    localStorage.getItem("register_email") ||
-    getStoredUser()?.email ||
-    ""
-  )
-    .trim()
-    .toLowerCase();
-}
+const usernameInput = document.getElementById("usernameInput");
+const postalCodeInput = document.getElementById("postalCodeInput");
 
 function formatLocation(name = "") {
   let value = String(name)
@@ -46,8 +28,7 @@ function formatLocation(name = "") {
 
   const specialNames = {
     "Dki Jakarta": "DKI Jakarta",
-    "Di Yogyakarta": "DI Yogyakarta",
-    "Nanggroe Aceh Darussalam": "Nanggroe Aceh Darussalam"
+    "Di Yogyakarta": "DI Yogyakarta"
   };
 
   return specialNames[value] || value;
@@ -65,35 +46,25 @@ function setSaving(isSaving) {
   const subtitleElement = saveButton.querySelector(".save-copy small");
 
   if (titleElement) {
-    titleElement.textContent = isSaving
-      ? "Menyimpan profil..."
-      : "Simpan & Mulai";
+    titleElement.textContent = isSaving ? "Menyimpan profil..." : "Simpan & Mulai";
   }
 
   if (subtitleElement) {
-    subtitleElement.textContent = isSaving
-      ? "Mohon tunggu sebentar"
-      : "Lanjutkan ke AdaAja";
+    subtitleElement.textContent = isSaving ? "Mohon tunggu sebentar" : "Lanjutkan ke AdaAja";
   }
 }
 
 function getLocationEndpoint(type) {
-  if (type === "province") {
-    return `${REGION_API}provinces.json`;
-  }
-
+  if (type === "province") return `${REGION_API}provinces.json`;
   if (type === "city" && selected.province) {
     return `${REGION_API}regencies/${selected.province.id}.json`;
   }
-
   if (type === "district" && selected.city) {
     return `${REGION_API}districts/${selected.city.id}.json`;
   }
-
   if (type === "village" && selected.district) {
     return `${REGION_API}villages/${selected.district.id}.json`;
   }
-
   return "";
 }
 
@@ -123,8 +94,7 @@ function renderLocationOptions(items) {
   list.innerHTML = "";
 
   if (!items.length) {
-    list.innerHTML =
-      '<div class="empty-location">Wilayah tidak ditemukan.</div>';
+    list.innerHTML = '<div class="empty-location">Wilayah tidak ditemukan.</div>';
     return;
   }
 
@@ -135,9 +105,7 @@ function renderLocationOptions(items) {
     button.className = "option";
     button.type = "button";
     button.textContent = formatLocation(item.name);
-    button.addEventListener("click", () => {
-      selectLocation(currentLocationType, item);
-    });
+    button.addEventListener("click", () => selectLocation(currentLocationType, item));
     fragment.appendChild(button);
   });
 
@@ -154,10 +122,7 @@ async function openLocation(type) {
       village: "Pilih kecamatan terlebih dahulu."
     };
 
-    setMessage(
-      dependencyMessages[type] || "Pilihan wilayah belum tersedia.",
-      "error"
-    );
+    setMessage(dependencyMessages[type] || "Pilihan wilayah belum tersedia.", "error");
     return;
   }
 
@@ -170,16 +135,11 @@ async function openLocation(type) {
 
   try {
     const response = await fetch(endpoint);
-
-    if (!response.ok) {
-      throw new Error("Data wilayah gagal dimuat.");
-    }
-
+    if (!response.ok) throw new Error("Data wilayah gagal dimuat.");
     currentLocationData = await response.json();
     renderLocationOptions(currentLocationData);
   } catch (error) {
-    list.innerHTML =
-      `<div class="empty-location">${error.message || "Data wilayah tidak dapat dimuat."}</div>`;
+    list.innerHTML = `<div class="empty-location">${error.message || "Data wilayah tidak dapat dimuat."}</div>`;
   } finally {
     sheetLoading.classList.remove("show");
   }
@@ -210,27 +170,141 @@ function clearLocationAfter(type) {
 
 function selectLocation(type, item) {
   selected[type] = item;
-  document.getElementById(type).textContent =
-    formatLocation(item.name);
-
+  document.getElementById(type).textContent = formatLocation(item.name);
   clearLocationAfter(type);
   closeSheet();
   setMessage("");
 }
 
-document.querySelectorAll("[data-location]").forEach((button) => {
-  button.addEventListener("click", () => {
-    openLocation(button.dataset.location);
+function showAvatar(url) {
+  if (!url) return;
+  avatar.innerHTML = `<img src="${url}" alt="Foto profil">`;
+}
+
+async function uploadAvatar(userId) {
+  if (!selectedPhotoFile) return currentProfile?.avatar_url || null;
+
+  const extension = selectedPhotoFile.name.split(".").pop()?.toLowerCase() || "jpg";
+  const filePath = `${userId}/avatar-${Date.now()}.${extension}`;
+
+  const { error: uploadError } = await window.adaajaSupabase.storage
+    .from("avatars")
+    .upload(filePath, selectedPhotoFile, {
+      cacheControl: "3600",
+      upsert: true,
+      contentType: selectedPhotoFile.type
+    });
+
+  if (uploadError) throw uploadError;
+
+  const { data } = window.adaajaSupabase.storage
+    .from("avatars")
+    .getPublicUrl(filePath);
+
+  return data.publicUrl;
+}
+
+async function usernameIsAvailable(username) {
+  const { data, error } = await window.adaajaSupabase
+    .from("profiles")
+    .select("id")
+    .eq("username", username)
+    .neq("id", currentUser.id)
+    .maybeSingle();
+
+  if (error) throw error;
+  return !data;
+}
+
+function validateForm() {
+  const username = usernameInput.value.trim().toLowerCase();
+  const address = addressInput.value.trim();
+  const postalCode = postalCodeInput.value.trim();
+
+  if (!currentUser) return { valid: false, message: "Sesi login tidak ditemukan." };
+  if (!username) return { valid: false, message: "Username belum diisi." };
+
+  if (!/^[a-z0-9._]{3,24}$/.test(username)) {
+    return {
+      valid: false,
+      message: "Username harus 3–24 karakter dan hanya boleh berisi huruf kecil, angka, titik, atau garis bawah."
+    };
+  }
+
+  if (!selected.province || !selected.city || !selected.district || !selected.village) {
+    return { valid: false, message: "Lengkapi seluruh pilihan wilayah." };
+  }
+
+  if (address.length < 8) {
+    return { valid: false, message: "Masukkan alamat lengkap minimal 8 karakter." };
+  }
+
+  if (postalCode && !/^\d{5,10}$/.test(postalCode)) {
+    return { valid: false, message: "Kode pos harus berisi 5–10 angka." };
+  }
+
+  return { valid: true, username, address, postalCode };
+}
+
+async function loadExistingData() {
+  const { data: profile, error: profileError } = await window.adaajaSupabase
+    .from("profiles")
+    .select("id, username, full_name, phone, avatar_url, bio, status")
+    .eq("id", currentUser.id)
+    .maybeSingle();
+
+  if (profileError) throw profileError;
+  currentProfile = profile || null;
+
+  if (profile?.username) usernameInput.value = profile.username;
+  if (profile?.avatar_url) showAvatar(profile.avatar_url);
+
+  const { data: address, error: addressError } = await window.adaajaSupabase
+    .from("addresses")
+    .select("province, city, district, village, postal_code, full_address")
+    .eq("user_id", currentUser.id)
+    .eq("is_primary", true)
+    .maybeSingle();
+
+  if (addressError) throw addressError;
+  if (!address) return;
+
+  ["province", "city", "district", "village"].forEach((type) => {
+    if (address[type]) {
+      selected[type] = { id: null, name: address[type] };
+      document.getElementById(type).textContent = address[type];
+    }
   });
+
+  addressInput.value = address.full_address || "";
+  postalCodeInput.value = address.postal_code || "";
+  addressCounter.textContent = `${addressInput.value.length}/200`;
+}
+
+async function initializePage() {
+  try {
+    const session = await window.AdaAjaAuth.getSession();
+    if (!session?.user) {
+      localStorage.setItem("redirectAfterLogin", "complete-account.html");
+      location.replace("login.html");
+      return;
+    }
+
+    currentUser = session.user;
+    await loadExistingData();
+  } catch (error) {
+    console.error("Complete account initialization error:", error);
+    setMessage(error.message || "Data akun belum dapat dimuat.", "error");
+  }
+}
+
+document.querySelectorAll("[data-location]").forEach((button) => {
+  button.addEventListener("click", () => openLocation(button.dataset.location));
 });
 
 search.addEventListener("input", () => {
   const keyword = search.value.trim().toLowerCase();
-
-  if (!keyword) {
-    renderLocationOptions(currentLocationData);
-    return;
-  }
+  if (!keyword) return renderLocationOptions(currentLocationData);
 
   renderLocationOptions(
     currentLocationData.filter((item) =>
@@ -243,197 +317,112 @@ document.getElementById("sheetBackdrop").addEventListener("click", closeSheet);
 document.getElementById("sheetClose").addEventListener("click", closeSheet);
 
 document.getElementById("backButton").addEventListener("click", () => {
-  if (history.length > 1) {
-    history.back();
-    return;
-  }
-
+  if (history.length > 1) return history.back();
   location.href = "home.html";
 });
 
 photo.addEventListener("change", (event) => {
   const file = event.target.files?.[0];
-
   if (!file) return;
 
-  if (!file.type.startsWith("image/")) {
-    setMessage("File foto harus berupa gambar.", "error");
+  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+    setMessage("Foto harus berformat JPG, PNG, atau WebP.", "error");
     photo.value = "";
     return;
   }
 
-  if (file.size > 5 * 1024 * 1024) {
-    setMessage("Ukuran foto maksimal 5 MB.", "error");
+  if (file.size > 2 * 1024 * 1024) {
+    setMessage("Ukuran foto maksimal 2 MB.", "error");
     photo.value = "";
     return;
   }
 
-  const reader = new FileReader();
-
-  reader.onload = (result) => {
-    fotoProfile = result.target.result;
-    avatar.innerHTML =
-      `<img src="${fotoProfile}" alt="Pratinjau foto profil">`;
-    setMessage("");
-  };
-
-  reader.readAsDataURL(file);
+  selectedPhotoFile = file;
+  showAvatar(URL.createObjectURL(file));
+  setMessage("");
 });
 
 addressInput.addEventListener("input", () => {
-  addressCounter.textContent =
-    `${addressInput.value.length}/200`;
+  addressCounter.textContent = `${addressInput.value.length}/200`;
 });
-
-function validateForm() {
-  const username =
-    document.getElementById("usernameInput").value.trim();
-
-  const address = addressInput.value.trim();
-
-  const postalCode =
-    document.getElementById("postalCodeInput").value.trim();
-
-  if (!getUserEmail()) {
-    return {
-      valid: false,
-      message:
-        "Email akun tidak ditemukan. Silakan masuk atau daftar kembali."
-    };
-  }
-
-  if (!username) {
-    return {
-      valid: false,
-      message: "Username belum diisi."
-    };
-  }
-
-  if (!/^[a-zA-Z0-9._]{3,24}$/.test(username)) {
-    return {
-      valid: false,
-      message:
-        "Username harus 3–24 karakter dan hanya boleh berisi huruf, angka, titik, atau garis bawah."
-    };
-  }
-
-  if (
-    !selected.province ||
-    !selected.city ||
-    !selected.district ||
-    !selected.village
-  ) {
-    return {
-      valid: false,
-      message: "Lengkapi seluruh pilihan wilayah."
-    };
-  }
-
-  if (address.length < 8) {
-    return {
-      valid: false,
-      message: "Masukkan alamat lengkap minimal 8 karakter."
-    };
-  }
-
-  if (postalCode && !/^\d{5,10}$/.test(postalCode)) {
-    return {
-      valid: false,
-      message: "Kode pos harus berisi 5–10 angka."
-    };
-  }
-
-  return {
-    valid: true,
-    username,
-    address,
-    postalCode
-  };
-}
 
 saveButton.addEventListener("click", async () => {
   const validation = validateForm();
-
   if (!validation.valid) {
     setMessage(validation.message, "error");
     return;
   }
 
-  const payload = {
-    action: "completeProfile",
-    email: getUserEmail(),
-    username: validation.username,
-    foto_profile: fotoProfile,
-    provinsi: formatLocation(selected.province.name),
-    kota: formatLocation(selected.city.name),
-    kecamatan: formatLocation(selected.district.name),
-    kelurahan: formatLocation(selected.village.name),
-    alamat: validation.address,
-    kode_pos: validation.postalCode
-  };
-
   setSaving(true);
   setMessage("Menyimpan profil Anda...");
 
   try {
-    const response = await fetch(API_URL, {
-      method: "POST",
-      redirect: "follow",
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8"
-      },
-      body: JSON.stringify(payload)
-    });
+    const available = await usernameIsAvailable(validation.username);
+    if (!available) throw new Error("Username sudah digunakan. Pilih username lain.");
 
-    const responseText = await response.text();
+    const avatarUrl = await uploadAvatar(currentUser.id);
+    const fullName = currentProfile?.full_name || currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || "Pengguna AdaAja";
 
-    let result;
+    const { error: profileError } = await window.adaajaSupabase
+      .from("profiles")
+      .upsert({
+        id: currentUser.id,
+        username: validation.username,
+        full_name: fullName,
+        avatar_url: avatarUrl,
+        status: "active",
+        updated_at: new Date().toISOString()
+      }, { onConflict: "id" });
 
-    try {
-      result = JSON.parse(responseText);
-    } catch (e) {
-      console.error("Server response:", responseText);
-      throw new Error("Server sedang sibuk. Silakan coba beberapa detik lagi.");
-    }
+    if (profileError) throw profileError;
 
-    if (result.status !== "success") {
-      throw new Error(result.message || "Profil gagal disimpan.");
-    }
+    const addressPayload = {
+      user_id: currentUser.id,
+      label: "Utama",
+      recipient_name: fullName,
+      recipient_phone: currentProfile?.phone || null,
+      province: formatLocation(selected.province.name),
+      city: formatLocation(selected.city.name),
+      district: formatLocation(selected.district.name),
+      village: formatLocation(selected.village.name),
+      postal_code: validation.postalCode || null,
+      full_address: validation.address,
+      is_primary: true,
+      updated_at: new Date().toISOString()
+    };
 
-    const user = getStoredUser();
+    const { data: existingAddress, error: existingError } = await window.adaajaSupabase
+      .from("addresses")
+      .select("id")
+      .eq("user_id", currentUser.id)
+      .eq("is_primary", true)
+      .maybeSingle();
 
-    if (user) {
-      user.username = validation.username;
+    if (existingError) throw existingError;
 
-      if (result.foto) {
-        user.foto_profile = result.foto;
-      }
+    const addressQuery = existingAddress?.id
+      ? window.adaajaSupabase.from("addresses").update(addressPayload).eq("id", existingAddress.id)
+      : window.adaajaSupabase.from("addresses").insert(addressPayload);
 
-      localStorage.setItem("user", JSON.stringify(user));
-    }
+    const { error: addressError } = await addressQuery;
+    if (addressError) throw addressError;
 
-    localStorage.removeItem("register_email");
-    localStorage.removeItem("register_username");
-    localStorage.removeItem("register_password");
+    await window.AdaAjaAuth.syncLegacyUser(currentUser);
+    localStorage.setItem("profile_completed", "true");
 
     setMessage("Profil berhasil disimpan.", "success");
-
-    setTimeout(() => {
-      location.href = "home.html";
-    }, 800);
+    window.setTimeout(() => location.replace("home.html"), 700);
   } catch (error) {
     console.error("Complete profile error:", error);
-    setMessage(
-      error.message || "Gagal terhubung ke server.",
-      "error"
-    );
+    setMessage(error.message || "Profil gagal disimpan.", "error");
     setSaving(false);
   }
 });
 
 document.querySelectorAll("[data-auth-required='true']").forEach((link) => {
-  link.addEventListener("click", (event) => {
-    if (getStoredUser()) return;
+  link.addEventListener("click", async (event) => {
+    const session = await window.AdaAjaAuth.getSession();
+    if (session?.user) return;
 
     event.preventDefault();
     localStorage.setItem("redirectAfterLogin", link.getAttribute("href"));
@@ -441,14 +430,4 @@ document.querySelectorAll("[data-auth-required='true']").forEach((link) => {
   });
 });
 
-const user = getStoredUser();
-
-if (user?.username) {
-  document.getElementById("usernameInput").value = user.username;
-}
-
-if (user?.foto_profile && user.foto_profile.startsWith("http")) {
-  fotoProfile = user.foto_profile;
-  avatar.innerHTML =
-    `<img src="${fotoProfile}" alt="Foto profil">`;
-}
+initializePage();
