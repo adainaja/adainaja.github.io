@@ -299,7 +299,6 @@ async function loadProduct() {
 
     bottomAction.classList.remove("hidden");
 
-    offerButton.classList.add("feature-pending");
 
     await getCurrentUser();
     await syncFavoriteState();
@@ -727,73 +726,113 @@ offerButton.addEventListener(
     const user = await requireLogin();
     if (!user || !currentProduct) return;
 
-    if (
-      String(user.id) ===
-      String(currentProduct.seller_id)
-    ) {
-      showFeatureToast(
-        "Anda tidak dapat menawar produk sendiri."
-      );
+    if (String(user.id) === String(currentProduct.seller_id)) {
+      showFeatureToast("Anda tidak dapat menawar produk sendiri.");
       return;
     }
 
-    showFeatureToast(
-      "Fitur Ajukan Harga segera hadir."
-    );
-  }
-);
-
-document
-  .querySelectorAll("[data-close-modal]")
-  .forEach((element) => {
-    element.addEventListener(
-      "click",
-      closeOfferModal
-    );
-  });
-
-document.addEventListener(
-  "keydown",
-  (event) => {
-    if (event.key === "Escape") {
-      closeOfferModal();
-    }
-  }
-);
-
-offerPrice.addEventListener("input", () => {
-  const raw =
-    offerPrice.value
-      .replace(/\D/g, "")
-      .slice(0, 12);
-
-  offerPrice.dataset.value = raw;
-
-  offerPrice.value =
-    raw
-      ? new Intl.NumberFormat("id-ID")
-          .format(Number(raw))
-      : "";
-
-  if (currentProduct && raw) {
-    const difference =
-      Number(currentProduct.price) -
-      Number(raw);
-
-    offerHint.textContent =
-      difference > 0
-        ? `${formatRupiah(difference)} lebih rendah dari harga sekarang`
-        : "Harga penawaran harus lebih rendah dari harga sekarang";
-  } else {
+    modalMessage.textContent = "";
+    modalMessage.style.color = "";
+    offerPrice.value = "";
+    offerPrice.dataset.value = "";
     offerHint.textContent = "";
+
+    openOfferModal();
   }
-});
+);
 
 document
   .getElementById("submitOffer")
-  .addEventListener("click", () => {
-    modalMessage.textContent =
-      "Fitur Ajukan Harga segera hadir.";
+  .addEventListener("click", async function () {
+    const submitButton = this;
+    const user = await requireLogin();
+
+    if (!user || !currentProduct) return;
+
+    const offeredPrice =
+      Number(offerPrice.dataset.value || 0);
+
+    modalMessage.textContent = "";
+    modalMessage.style.color = "";
+
+    if (String(user.id) === String(currentProduct.seller_id)) {
+      modalMessage.textContent =
+        "Anda tidak dapat menawar produk sendiri.";
+      return;
+    }
+
+    const originalPrice = Number(currentProduct.price || 0);
+
+    if (offeredPrice <= 0) {
+      modalMessage.textContent =
+        "Masukkan harga penawaran yang benar.";
+      return;
+    }
+
+    if (offeredPrice >= originalPrice) {
+      modalMessage.textContent =
+        "Harga penawaran harus lebih rendah dari harga produk.";
+      return;
+    }
+
+    submitButton.disabled = true;
+    submitButton.textContent = "Mengirim...";
+
+    try {
+      const { data: existing, error: existingError } =
+        await window.adaajaSupabase
+          .from("offers")
+          .select("id,status")
+          .eq("product_id", currentProduct.id)
+          .eq("buyer_id", user.id)
+          .in("status", ["pending", "countered", "accepted"])
+          .limit(1);
+
+      if (existingError) throw existingError;
+
+      if ((existing || []).length) {
+        throw new Error(
+          "Anda masih memiliki negosiasi aktif untuk produk ini."
+        );
+      }
+
+      const expiresAt = new Date(
+        Date.now() + 24 * 60 * 60 * 1000
+      ).toISOString();
+
+      const { error } = await window.adaajaSupabase
+        .from("offers")
+        .insert({
+          product_id: currentProduct.id,
+          buyer_id: user.id,
+          seller_id: currentProduct.seller_id,
+          original_price: originalPrice,
+          offered_price: offeredPrice,
+          counter_price: null,
+          status: "pending",
+          expires_at: expiresAt
+        });
+
+      if (error) throw error;
+
+      modalMessage.style.color = "#15803d";
+      modalMessage.textContent =
+        "Penawaran berhasil dikirim kepada penjual.";
+
+      setTimeout(() => {
+        closeOfferModal();
+        modalMessage.textContent = "";
+        modalMessage.style.color = "";
+        location.href = "my-offers.html";
+      }, 1100);
+    } catch (error) {
+      console.error("Gagal mengirim penawaran:", error);
+      modalMessage.textContent =
+        error.message || "Penawaran gagal dikirim.";
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = "Kirim Penawaran";
+    }
   });
 
 buyButton.addEventListener(

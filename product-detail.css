@@ -855,3 +855,9 @@ svg{
   stroke:currentColor;
 }
 .favorite-button:disabled{opacity:.55}
+
+/* OFFER ENABLED */
+#offerButton.feature-pending{
+  opacity:1 !important;
+  pointer-events:auto !important;
+}
