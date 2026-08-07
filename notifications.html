@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Notifikasi AdaAja">
+  <title>Notifikasi — AdaAja</title>
+  <link rel="stylesheet" href="notifications.css?v=20260808-1">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="top-header">
+      <div class="top-header-inner">
+        <div class="header-copy">
+          <span>AKTIVITAS</span>
+          <h1>Notifikasi</h1>
+        </div>
+
+        <button class="header-button" id="refreshButton" type="button" aria-label="Muat ulang">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 11a8 8 0 1 0 2 5"></path>
+            <path d="M20 4v7h-7"></path>
+          </svg>
+        </button>
+
+        <a class="header-button" href="profile.html" aria-label="Akun">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M4 21a8 8 0 0 1 16 0"></path>
+          </svg>
+        </a>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="hero-card">
+        <div class="hero-glow glow-one"></div>
+        <div class="hero-glow glow-two"></div>
+
+        <div class="hero-copy">
+          <span class="eyebrow"><i></i> UPDATE TERBARU</span>
+          <h2>Tidak ada aktivitas penting yang terlewat.</h2>
+          <p>Pembayaran, negosiasi, pengiriman, pesanan, pesan, dan informasi sistem tersusun rapi di sini.</p>
+        </div>
+
+        <div class="hero-stats">
+          <div>
+            <span>Belum Dibaca</span>
+            <strong id="unreadCount">0</strong>
+          </div>
+          <div>
+            <span>Hari Ini</span>
+            <strong id="todayCount">0</strong>
+          </div>
+          <div>
+            <span>Total</span>
+            <strong id="totalCount">0</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="toolbar-card">
+        <label class="search-shell" for="searchInput">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="m20 20-3.5-3.5"></path>
+          </svg>
+          <input id="searchInput" type="search" placeholder="Cari notifikasi" autocomplete="off">
+        </label>
+
+        <div class="filter-row">
+          <div class="filter-tabs" id="filterTabs">
+            <button class="active" type="button" data-filter="all">Semua</button>
+            <button type="button" data-filter="unread">Belum Dibaca</button>
+            <button type="button" data-filter="order">Pesanan</button>
+            <button type="button" data-filter="offer">Negosiasi</button>
+            <button type="button" data-filter="shipping">Pengiriman</button>
+            <button type="button" data-filter="payment">Pembayaran</button>
+            <button type="button" data-filter="chat">Pesan</button>
+            <button type="button" data-filter="system">Sistem</button>
+          </div>
+        </div>
+
+        <div class="toolbar-bottom">
+          <div>
+            <span>DAFTAR NOTIFIKASI</span>
+            <strong id="resultCount">Memuat...</strong>
+          </div>
+
+          <button class="mark-all-button" id="markAllReadButton" type="button">
+            Tandai semua dibaca
+          </button>
+        </div>
+      </section>
+
+      <section id="notificationList" class="notification-list" aria-live="polite">
+        <article class="skeleton-card shimmer"></article>
+        <article class="skeleton-card shimmer"></article>
+        <article class="skeleton-card shimmer"></article>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navigasi utama">
+      <a href="home.html" class="nav-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m3 11 9-8 9 8"></path>
+          <path d="M5 10v10h14V10"></path>
+        </svg>
+        <span>Beranda</span>
+      </a>
+
+      <a href="explore.html" class="nav-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.5-3.5"></path>
+        </svg>
+        <span>Jelajah</span>
+      </a>
+
+      <a href="upload.html" class="nav-create" aria-label="Jual barang">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 5v14M5 12h14"></path>
+        </svg>
+      </a>
+
+      <a href="activity.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path>
+          <path d="M4 8v10l8 3 8-3V8"></path>
+        </svg>
+        <span>Aktivitas</span>
+      </a>
+
+      <a href="profile.html" class="nav-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 21a8 8 0 0 1 16 0"></path>
+        </svg>
+        <span>Akun</span>
+      </a>
+    </nav>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=20260807-1"></script>
+  <script src="auth-session.js?v=20260807-3"></script>
+  <script src="notifications.js?v=20260808-1"></script>
+</body>
+</html>
