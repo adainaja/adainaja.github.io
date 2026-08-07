@@ -272,3 +272,33 @@ form{display:grid;gap:14px;margin-top:14px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loader-card strong{margin-top:13px;color:var(--navy);font-size:12px}
 .loader-card small{margin-top:5px;color:var(--muted);font-size:7px}
+
+/* UNIT & MINIMUM ORDER */
+.sales-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  align-items:start;
+}
+.sales-grid .field{
+  margin-top:14px;
+}
+.sales-grid .field:first-child{
+  margin-top:14px;
+}
+.compact-stock-control{
+  grid-template-columns:42px 1fr 42px;
+}
+.minimum-order-hint{
+  margin:7px 1px 0;
+  color:#98a2af;
+  font-size:6.5px;
+  line-height:1.45;
+}
+@media(max-width:360px){
+  .sales-grid{
+    grid-template-columns:1fr;
+    gap:0;
+  }
+}
+

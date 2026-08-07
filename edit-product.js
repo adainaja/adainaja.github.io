@@ -12,6 +12,9 @@ const description = document.getElementById("description");
 const category = document.getElementById("category");
 const brand = document.getElementById("brand");
 const price = document.getElementById("price");
+const unit = document.getElementById("unit");
+const minimumOrder = document.getElementById("minimumOrder");
+const minimumOrderHint = document.getElementById("minimumOrderHint");
 const stock = document.getElementById("stock");
 const shippingMethod = document.getElementById("shippingMethod");
 const shipFromRegion = document.getElementById("shipFromRegion");
@@ -56,6 +59,8 @@ function updateProgress() {
     category.value,
     condition,
     Number(price.dataset.value || 0) > 0,
+    unit.value,
+    Number(minimumOrder.value || 0) >= 1,
     Number(stock.value || 0) >= 0,
     shippingPayer,
     shippingMethod.value,
@@ -144,6 +149,8 @@ async function loadProduct() {
         brand,
         condition,
         price,
+        unit,
+        minimum_order,
         stock,
         shipping_payer,
         shipping_method,
@@ -173,7 +180,10 @@ async function loadProduct() {
     description.value = data.description || "";
     category.value = data.category_id || "";
     brand.value = data.brand || "";
+    unit.value = data.unit || "pcs";
+    minimumOrder.value = Math.max(1, Number(data.minimum_order || 1));
     stock.value = Number(data.stock || 0);
+    updateMinimumOrderHint();
     shippingMethod.value = data.shipping_method || "";
     shipFromRegion.value = data.ship_from_region || "";
     processingTime.value = String(data.processing_time_days || "");
@@ -369,7 +379,37 @@ document.getElementById("increaseStock").addEventListener("click", () => {
   updateProgress();
 });
 
-["category", "brand", "stock", "shippingMethod", "shipFromRegion", "processingTime"]
+function updateMinimumOrderHint() {
+  const value = Math.max(1, Number(minimumOrder.value || 1));
+  const unitLabel = unit.value || "satuan";
+  minimumOrderHint.textContent = `Minimal pembelian ${value} ${unitLabel}.`;
+}
+
+document.getElementById("decreaseMinimumOrder").addEventListener("click", () => {
+  minimumOrder.value = Math.max(1, Number(minimumOrder.value || 1) - 1);
+  updateMinimumOrderHint();
+  updateProgress();
+});
+
+document.getElementById("increaseMinimumOrder").addEventListener("click", () => {
+  minimumOrder.value = Math.min(9999, Number(minimumOrder.value || 1) + 1);
+  updateMinimumOrderHint();
+  updateProgress();
+});
+
+minimumOrder.addEventListener("input", () => {
+  const value = Math.max(1, Math.min(9999, Number(minimumOrder.value || 1)));
+  minimumOrder.value = value;
+  updateMinimumOrderHint();
+  updateProgress();
+});
+
+unit.addEventListener("change", () => {
+  updateMinimumOrderHint();
+  updateProgress();
+});
+
+["category", "brand", "stock", "shippingMethod", "shipFromRegion", "processingTime", "unit"]
   .forEach((id) => {
     const element = document.getElementById(id);
     element.addEventListener(
@@ -385,7 +425,12 @@ function validate() {
   if (!category.value) return "Pilih kategori.";
   if (!condition) return "Pilih kondisi produk.";
   if (Number(price.dataset.value || 0) <= 0) return "Harga jual belum benar.";
+  if (!unit.value) return "Pilih satuan produk.";
+  if (Number(minimumOrder.value || 0) < 1) return "Minimum order minimal 1.";
   if (Number(stock.value || 0) < 0) return "Stok tidak valid.";
+  if (Number(minimumOrder.value || 0) > Number(stock.value || 0)) {
+    return "Minimum order tidak boleh melebihi stok tersedia.";
+  }
   if (!shippingPayer) return "Pilih penanggung ongkir.";
   if (!shippingMethod.value) return "Pilih metode pengiriman.";
   if (!shipFromRegion.value.trim()) return "Isi asal pengiriman.";
@@ -481,6 +526,8 @@ async function saveProduct() {
         brand: brand.value.trim() || null,
         condition,
         price: Number(price.dataset.value || 0),
+        unit: unit.value,
+        minimum_order: Number(minimumOrder.value || 1),
         stock: Number(stock.value || 0),
         shipping_payer: shippingPayer,
         shipping_method: shippingMethod.value,

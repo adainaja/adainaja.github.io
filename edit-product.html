@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#ffffff">
   <meta name="description" content="Edit produk Anda di AdaAja.">
   <title>Edit Produk — AdaAja</title>
-  <link rel="stylesheet" href="edit-product.css?v=20260807-1">
+  <link rel="stylesheet" href="edit-product.css?v=20260807-2">
 </head>
 <body>
   <div class="app-shell">
@@ -135,6 +135,56 @@
             </div>
           </label>
 
+          <div class="sales-grid">
+            <label class="field">
+              <span>Satuan produk</span>
+              <select id="unit">
+                <option value="">Pilih satuan</option>
+                <option value="unit">Unit</option>
+                <option value="pcs">Pcs</option>
+                <option value="kg">Kg</option>
+                <option value="gram">Gram</option>
+                <option value="ton">Ton</option>
+                <option value="meter">Meter</option>
+                <option value="cm">Cm</option>
+                <option value="mm">Mm</option>
+                <option value="liter">Liter</option>
+                <option value="ml">Ml</option>
+                <option value="botol">Botol</option>
+                <option value="dus">Dus</option>
+                <option value="box">Box</option>
+                <option value="pack">Pack</option>
+                <option value="sak">Sak</option>
+                <option value="lembar">Lembar</option>
+                <option value="roll">Roll</option>
+                <option value="pasang">Pasang</option>
+                <option value="set">Set</option>
+                <option value="karung">Karung</option>
+                <option value="tray">Tray</option>
+                <option value="bungkus">Bungkus</option>
+                <option value="kaleng">Kaleng</option>
+                <option value="galon">Galon</option>
+                <option value="tabung">Tabung</option>
+                <option value="buah">Buah</option>
+                <option value="ekor">Ekor</option>
+                <option value="ikat">Ikat</option>
+                <option value="kodi">Kodi</option>
+                <option value="lusin">Lusin</option>
+                <option value="lainnya">Lainnya</option>
+              </select>
+            </label>
+
+            <div class="field">
+              <span>Minimum order</span>
+              <div class="stock-control compact-stock-control">
+                <button id="decreaseMinimumOrder" type="button">−</button>
+                <input id="minimumOrder" type="number" min="1" max="9999" value="1">
+                <button id="increaseMinimumOrder" type="button">+</button>
+              </div>
+              <p class="minimum-order-hint" id="minimumOrderHint">Minimal pembelian 1 satuan.</p>
+            </div>
+          </div>
+
           <div class="field">
             <span>Stok</span>
             <div class="stock-control">
@@ -236,6 +286,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=20260807-1"></script>
   <script src="auth-session.js?v=20260807-3"></script>
-  <script src="edit-product.js?v=20260807-1"></script>
+  <script src="edit-product.js?v=20260807-2"></script>
 </body>
 </html>
