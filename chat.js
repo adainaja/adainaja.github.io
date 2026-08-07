@@ -23,5 +23,82 @@ async function loadMessages(){
 }
 async function markRead(){await window.adaajaSupabase.from("conversation_members").update({last_read_at:new Date().toISOString()}).eq("conversation_id",conversationId).eq("user_id",currentUser.id)}
 function subscribe(){if(realtimeChannel)window.adaajaSupabase.removeChannel(realtimeChannel);realtimeChannel=window.adaajaSupabase.channel(`chat-${conversationId}`).on("postgres_changes",{event:"INSERT",schema:"public",table:"messages",filter:`conversation_id=eq.${conversationId}`},async()=>{await loadMessages();await markRead()}).subscribe()}
-composer.addEventListener("submit",async e=>{e.preventDefault();const text=messageInput.value.trim();if(!text||!currentUser)return;sendButton.disabled=true;try{const {error}=await window.adaajaSupabase.from("messages").insert({conversation_id:conversationId,sender_id:currentUser.id,message_type:"text",message_text:text});if(error)throw error;messageInput.value="";messageInput.style.height="auto";await window.adaajaSupabase.from("conversations").update({last_message_at:new Date().toISOString()}).eq("id",conversationId)}catch(err){console.error(err);showToast(err.message||"Pesan gagal dikirim.")}finally{sendButton.disabled=false}});
-messageInput.addEventListener("input",()=>{messageInput.style.height="auto";messageInput.style.height=Math.min(messageInput.scrollHeight,88)+"px"});document.getElementById("attachmentButton").onclick=()=>showToast("Lampiran akan diaktifkan pada tahap berikutnya.");window.adaajaSupabase.auth.onAuthStateChange((e,s)=>{if(e==="SIGNED_OUT"||!s?.user)location.replace("login.html")});loadConversation();
+async function sendMessage() {
+  const text = messageInput.value.trim();
+
+  if (!text || !currentUser || !conversationId) {
+    return;
+  }
+
+  sendButton.disabled = true;
+
+  const originalValue = messageInput.value;
+
+  try {
+    const { error } = await window.adaajaSupabase
+      .from("messages")
+      .insert({
+        conversation_id: conversationId,
+        sender_id: currentUser.id,
+        message_type: "text",
+        message_text: text
+      });
+
+    if (error) throw error;
+
+    messageInput.value = "";
+    messageInput.style.height = "auto";
+
+    await window.adaajaSupabase
+      .from("conversations")
+      .update({
+        last_message_at: new Date().toISOString()
+      })
+      .eq("id", conversationId);
+
+    // Jangan hanya mengandalkan Realtime.
+    // Muat ulang langsung supaya pesan pasti terlihat.
+    await loadMessages();
+    await markRead();
+
+    requestAnimationFrame(() => {
+      messagesArea.scrollTop = messagesArea.scrollHeight;
+      messageInput.focus();
+    });
+  } catch (err) {
+    console.error("Pesan gagal dikirim:", err);
+
+    // Pertahankan teks jika insert gagal.
+    messageInput.value = originalValue;
+
+    showToast(
+      err.message ||
+      "Pesan gagal dikirim."
+    );
+  } finally {
+    sendButton.disabled = false;
+  }
+}
+
+composer.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  await sendMessage();
+});if(error)throw error;messageInput.value="";messageInput.style.height="auto";await window.adaajaSupabase.from("conversations").update({last_message_at:new Date().toISOString()}).eq("id",conversationId)}catch(err){console.error(err);showToast(err.message||"Pesan gagal dikirim.")}finally{sendButton.disabled=false}});
+messageInput.addEventListener("input", () => {
+  messageInput.style.height = "auto";
+  messageInput.style.height =
+    Math.min(messageInput.scrollHeight, 88) + "px";
+});
+
+messageInput.addEventListener("keydown", async (event) => {
+  // Enter = kirim
+  // Shift + Enter = baris baru
+  if (
+    event.key === "Enter" &&
+    !event.shiftKey &&
+    !event.isComposing
+  ) {
+    event.preventDefault();
+    await sendMessage();
+  }
+});document.getElementById("attachmentButton").onclick=()=>showToast("Lampiran akan diaktifkan pada tahap berikutnya.");window.adaajaSupabase.auth.onAuthStateChange((e,s)=>{if(e==="SIGNED_OUT"||!s?.user)location.replace("login.html")});loadConversation();
