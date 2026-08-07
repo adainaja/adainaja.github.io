@@ -688,103 +688,43 @@ async function startSellerChat() {
     return;
   }
 
-  const chatButton = document.getElementById("chatSellerButton");
+  const chatButton =
+    document.getElementById("chatSellerButton");
 
   if (chatButton) {
     chatButton.disabled = true;
     chatButton.dataset.originalText = chatButton.innerHTML;
-    chatButton.innerHTML = "Membuka chat...";
+    chatButton.innerHTML = `
+      <span class="chat-button-spinner"></span>
+      Membuka Chat
+    `;
   }
 
   try {
     const {
-      data: myMemberships,
-      error: membershipError
-    } = await window.adaajaSupabase
-      .from("conversation_members")
-      .select("conversation_id")
-      .eq("user_id", user.id);
-
-    if (membershipError) throw membershipError;
-
-    const myConversationIds =
-      (myMemberships || [])
-        .map((row) => row.conversation_id)
-        .filter(Boolean);
-
-    let conversationId = null;
-
-    if (myConversationIds.length) {
-      const {
-        data: candidates,
-        error: candidateError
-      } = await window.adaajaSupabase
-        .from("conversations")
-        .select("id,product_id")
-        .in("id", myConversationIds)
-        .eq("product_id", currentProduct.id);
-
-      if (candidateError) throw candidateError;
-
-      const candidateIds =
-        (candidates || []).map((row) => row.id);
-
-      if (candidateIds.length) {
-        const {
-          data: sellerMemberships,
-          error: sellerMemberError
-        } = await window.adaajaSupabase
-          .from("conversation_members")
-          .select("conversation_id")
-          .eq("user_id", sellerId)
-          .in("conversation_id", candidateIds);
-
-        if (sellerMemberError) throw sellerMemberError;
-
-        conversationId =
-          sellerMemberships?.[0]?.conversation_id || null;
+      data,
+      error
+    } = await window.adaajaSupabase.rpc(
+      "get_or_create_product_conversation",
+      {
+        p_product_id: currentProduct.id,
+        p_seller_id: sellerId
       }
-    }
+    );
+
+    if (error) throw error;
+
+    const conversationId =
+      typeof data === "string"
+        ? data
+        : data?.conversation_id ||
+          data?.id ||
+          null;
 
     if (!conversationId) {
-      const {
-        data: conversation,
-        error: conversationError
-      } = await window.adaajaSupabase
-        .from("conversations")
-        .insert({
-          product_id: currentProduct.id,
-          order_id: null,
-          conversation_type: "product",
-          last_message_at: new Date().toISOString()
-        })
-        .select("id")
-        .single();
-
-      if (conversationError) throw conversationError;
-
-      conversationId = conversation.id;
-
-      const {
-        error: membersError
-      } = await window.adaajaSupabase
-        .from("conversation_members")
-        .insert([
-          {
-            conversation_id: conversationId,
-            user_id: user.id,
-            role: "buyer",
-            last_read_at: new Date().toISOString()
-          },
-          {
-            conversation_id: conversationId,
-            user_id: sellerId,
-            role: "seller",
-            last_read_at: null
-          }
-        ]);
-
-      if (membersError) throw membersError;
+      throw new Error(
+        "Conversation ID tidak diterima dari database."
+      );
     }
 
     location.href =
@@ -792,10 +732,19 @@ async function startSellerChat() {
   } catch (error) {
     console.error("Chat penjual gagal dibuka:", error);
 
-    showFeatureToast(
-      error.message ||
-      "Chat belum dapat dibuka."
-    );
+    let message =
+      error?.message ||
+      "Chat belum dapat dibuka.";
+
+    if (
+      message.toLowerCase().includes("function") &&
+      message.toLowerCase().includes("does not exist")
+    ) {
+      message =
+        "Fungsi chat database belum dipasang. Jalankan SQL chat RPC terlebih dahulu.";
+    }
+
+    showFeatureToast(message);
   } finally {
     if (chatButton) {
       chatButton.disabled = false;

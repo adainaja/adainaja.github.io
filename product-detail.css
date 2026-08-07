@@ -1177,3 +1177,18 @@ svg{
   opacity:1 !important;
   pointer-events:auto !important;
 }
+
+
+/* CHAT RPC LOADING */
+.chat-button-spinner{
+  width:13px;
+  height:13px;
+  border:2px solid rgba(255,255,255,.35);
+  border-top-color:#fff;
+  border-radius:50%;
+  animation:chatSpin .7s linear infinite;
+}
+
+@keyframes chatSpin{
+  to{transform:rotate(360deg)}
+}
