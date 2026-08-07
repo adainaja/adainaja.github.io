@@ -50,13 +50,14 @@ function getPublicImageUrl(storagePath) {
   return data?.publicUrl || "";
 }
 
-async function getSession() {
-  if (currentSession?.user) return currentSession;
+async function getSession(forceFresh = false) {
+  if (!forceFresh && currentSession?.user) return currentSession;
 
   const { data, error } = await window.adaajaSupabase.auth.getSession();
 
   if (error) {
     console.warn("Gagal membaca session:", error);
+    currentSession = null;
     return null;
   }
 
@@ -279,13 +280,14 @@ function closeAccountPanel() {
 }
 
 async function handleAccountClick() {
-  const session = await getSession();
+  const session = await getSession(true);
 
   if (session?.user) {
     location.href = "profile.html";
     return;
   }
 
+  currentProfile = null;
   openAccountPanel();
 }
 
@@ -340,7 +342,7 @@ document.addEventListener("click", async (event) => {
 
   if (!isUploadPage) return;
 
-  const session = await getSession();
+  const session = await getSession(true);
 
   if (session?.user) return;
 
@@ -357,6 +359,28 @@ document.addEventListener("click", async (event) => {
 });
 
 window.adaajaReloadProducts = loadProducts;
+
+/*
+  Sinkronkan Home dengan perubahan Auth.
+  Ini penting setelah logout dan ketika browser mengembalikan halaman
+  dari back/forward cache (bfcache).
+*/
+window.adaajaSupabase.auth.onAuthStateChange(async (event, session) => {
+  currentSession = session || null;
+
+  if (event === "SIGNED_OUT" || !session?.user) {
+    currentProfile = null;
+  }
+
+  await setupAccount();
+});
+
+window.addEventListener("pageshow", async () => {
+  currentSession = null;
+  currentProfile = null;
+  await getSession(true);
+  await setupAccount();
+});
 
 (async function initHome() {
   await getSession();

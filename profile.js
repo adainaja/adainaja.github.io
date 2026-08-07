@@ -256,8 +256,9 @@ async function logout() {
   confirmLogoutButton.textContent = "Keluar...";
 
   try {
-    const { error } =
-      await window.adaajaSupabase.auth.signOut();
+    const { error } = await window.adaajaSupabase.auth.signOut({
+      scope: "local"
+    });
 
     if (error) {
       console.warn("Supabase signOut warning:", error);
@@ -283,7 +284,23 @@ async function logout() {
       sessionStorage.removeItem(key);
     });
 
-    location.replace("login.html");
+    /*
+      Fallback untuk membersihkan token Supabase yang mungkin masih
+      tertinggal di browser jika signOut gagal karena token/server.
+    */
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith("sb-") && key.endsWith("-auth-token")) {
+        localStorage.removeItem(key);
+      }
+    });
+
+    Object.keys(sessionStorage).forEach((key) => {
+      if (key.startsWith("sb-") && key.endsWith("-auth-token")) {
+        sessionStorage.removeItem(key);
+      }
+    });
+
+    location.replace("home.html?logged_out=1");
   }
 }
 
