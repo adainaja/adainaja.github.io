@@ -1,43 +1,182 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Penawaran Saya - AdaAja</title>
-<link rel="stylesheet" href="my-offers.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Kelola negosiasi harga Anda di AdaAja.">
+  <title>Negosiasi — AdaAja</title>
+  <link rel="stylesheet" href="my-offers.css?v=20260807-1">
 </head>
 <body>
-<div class="app-shell">
-<header class="topbar">
-<a href="profile.html" class="icon-button">‹</a>
-<div class="page-title"><span>PEMBELI</span><h1>Penawaran Saya</h1></div>
-<button class="icon-button" id="refreshButton">↻</button>
-</header>
+  <div class="app-shell">
+    <header class="top-header">
+      <div class="top-header-inner">
+        <div class="header-copy">
+          <span>AKTIVITAS</span>
+          <h1>Negosiasi</h1>
+        </div>
 
-<section class="hero-card">
-<div class="hero-copy">
-<span>RINGKASAN PENAWARAN</span>
-<h2>Pantau semua harga yang Anda ajukan</h2>
-<p>Penawaran diterima dapat langsung dilanjutkan ke checkout.</p>
-</div>
-<div class="hero-stats">
-<div><strong id="pendingCount">0</strong><span>Menunggu</span></div>
-<div><strong id="acceptedCount">0</strong><span>Diterima</span></div>
-<div><strong id="rejectedCount">0</strong><span>Ditolak</span></div>
-</div>
-</section>
+        <button class="header-button" id="refreshButton" type="button" aria-label="Muat ulang">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 11a8 8 0 1 0 2 5"></path>
+            <path d="M20 4v7h-7"></path>
+          </svg>
+        </button>
 
-<nav class="filter-tabs">
-<button class="active" data-status="all">Semua</button>
-<button data-status="pending">Menunggu</button>
-<button data-status="accepted">Diterima</button>
-<button data-status="rejected">Ditolak</button>
-</nav>
+        <a class="header-button" href="profile.html" aria-label="Akun">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M4 21a8 8 0 0 1 16 0"></path>
+          </svg>
+        </a>
+      </div>
+    </header>
 
-<main id="offersContainer">
-<section class="state-card"><div class="spinner"></div><strong>Memuat penawaran...</strong><span>Mohon tunggu sebentar.</span></section>
-</main>
-</div>
-<script src="my-offers.js"></script>
+    <main class="content">
+      <section class="hero-card">
+        <div class="hero-glow glow-one"></div>
+        <div class="hero-glow glow-two"></div>
+
+        <div class="hero-copy">
+          <span class="eyebrow"><i></i> NEGOSIASI SAYA</span>
+          <h2>Tawar harga dengan lebih nyaman dan transparan.</h2>
+          <p>Pantau harga yang diajukan, balasan penjual, dan lanjutkan transaksi saat sudah deal.</p>
+        </div>
+
+        <div class="hero-stats">
+          <div>
+            <span>Menunggu</span>
+            <strong id="pendingCount">0</strong>
+          </div>
+          <div>
+            <span>Balasan</span>
+            <strong id="counteredCount">0</strong>
+          </div>
+          <div>
+            <span>Disetujui</span>
+            <strong id="acceptedCount">0</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="toolbar-card">
+        <label class="search-shell" for="searchInput">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="m20 20-3.5-3.5"></path>
+          </svg>
+          <input
+            id="searchInput"
+            type="search"
+            placeholder="Cari produk atau penjual"
+            autocomplete="off"
+          >
+        </label>
+
+        <div class="status-tabs" id="statusTabs">
+          <button class="active" type="button" data-status="all">Semua</button>
+          <button type="button" data-status="pending">Menunggu</button>
+          <button type="button" data-status="countered">Harga Balasan</button>
+          <button type="button" data-status="accepted">Disetujui</button>
+          <button type="button" data-status="rejected">Ditolak</button>
+          <button type="button" data-status="ended">Berakhir</button>
+        </div>
+
+        <div class="sort-row">
+          <div>
+            <span>DAFTAR NEGOSIASI</span>
+            <strong id="resultCount">Memuat...</strong>
+          </div>
+
+          <label class="sort-select">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 6h12M8 12h9M8 18h6"></path>
+              <path d="M4 5v14"></path>
+            </svg>
+            <select id="sortSelect" aria-label="Urutkan negosiasi">
+              <option value="latest">Terbaru</option>
+              <option value="oldest">Terlama</option>
+              <option value="offer_high">Tawaran terbesar</option>
+              <option value="offer_low">Tawaran terkecil</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section id="offersList" class="offers-list" aria-live="polite">
+        <article class="skeleton-card shimmer"></article>
+        <article class="skeleton-card shimmer"></article>
+        <article class="skeleton-card shimmer"></article>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navigasi utama">
+      <a href="home.html" class="nav-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m3 11 9-8 9 8"></path>
+          <path d="M5 10v10h14V10"></path>
+        </svg>
+        <span>Beranda</span>
+      </a>
+
+      <a href="explore.html" class="nav-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.5-3.5"></path>
+        </svg>
+        <span>Jelajah</span>
+      </a>
+
+      <a href="upload.html" class="nav-create" aria-label="Jual barang">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 5v14M5 12h14"></path>
+        </svg>
+      </a>
+
+      <a href="my-orders.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path>
+          <path d="M4 8v10l8 3 8-3V8"></path>
+        </svg>
+        <span>Aktivitas</span>
+      </a>
+
+      <a href="profile.html" class="nav-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 21a8 8 0 0 1 16 0"></path>
+        </svg>
+        <span>Akun</span>
+      </a>
+    </nav>
+  </div>
+
+  <div class="sheet" id="offerSheet" aria-hidden="true">
+    <button class="sheet-backdrop" id="offerSheetBackdrop" type="button" aria-label="Tutup"></button>
+    <section class="sheet-card">
+      <div class="sheet-handle"></div>
+
+      <div class="sheet-header">
+        <div>
+          <span>DETAIL NEGOSIASI</span>
+          <h2 id="sheetTitle">Negosiasi</h2>
+        </div>
+
+        <button id="closeOfferSheet" type="button" aria-label="Tutup">
+          <svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg>
+        </button>
+      </div>
+
+      <div id="offerSheetContent"></div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=20260807-1"></script>
+  <script src="auth-session.js?v=20260807-3"></script>
+  <script src="my-offers.js?v=20260807-1"></script>
 </body>
 </html>
