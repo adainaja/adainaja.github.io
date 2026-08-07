@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Kelola produk jualan Anda di AdaAja.">
+  <title>Produk Saya — AdaAja</title>
+  <link rel="stylesheet" href="my-products.css?v=20260807-1">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="page-header" id="pageHeader">
+      <a class="header-button" href="profile.html" aria-label="Kembali ke profil">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m15 18-6-6 6-6"></path>
+        </svg>
+      </a>
+
+      <div class="header-title">
+        <span>SELLER CENTER</span>
+        <h1>Produk Saya</h1>
+      </div>
+
+      <a class="header-button accent" href="upload.html" aria-label="Tambah produk">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 5v14M5 12h14"></path>
+        </svg>
+      </a>
+    </header>
+
+    <main class="content">
+      <section class="hero-card">
+        <div class="hero-orb orb-one"></div>
+        <div class="hero-orb orb-two"></div>
+
+        <div class="hero-copy">
+          <span class="eyebrow"><i></i> TOKO SAYA</span>
+          <h2>Kelola listing dengan lebih cepat</h2>
+          <p>Pantau produk aktif, stok, dan performa listing Anda dari satu tempat.</p>
+        </div>
+
+        <div class="hero-stats">
+          <div>
+            <span>Total produk</span>
+            <strong id="totalProducts">0</strong>
+          </div>
+          <div>
+            <span>Aktif</span>
+            <strong id="activeProducts">0</strong>
+          </div>
+          <div>
+            <span>Stok habis</span>
+            <strong id="soldOutProducts">0</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="toolbar-card">
+        <div class="search-shell">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="m20 20-3.5-3.5"></path>
+          </svg>
+          <input id="searchInput" type="search" placeholder="Cari produk saya..." autocomplete="off">
+        </div>
+
+        <div class="toolbar-row">
+          <div class="segment-control" id="statusTabs">
+            <button class="active" type="button" data-status="all">Semua</button>
+            <button type="button" data-status="active">Aktif</button>
+            <button type="button" data-status="inactive">Nonaktif</button>
+          </div>
+
+          <select id="sortSelect" aria-label="Urutkan produk">
+            <option value="latest">Terbaru</option>
+            <option value="price_high">Harga tertinggi</option>
+            <option value="price_low">Harga terendah</option>
+            <option value="stock_high">Stok terbanyak</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="section-heading">
+        <div>
+          <span>LISTING</span>
+          <h2>Produk yang Anda jual</h2>
+        </div>
+        <small id="resultCount">Memuat...</small>
+      </section>
+
+      <section id="productList" class="product-list">
+        <div class="loading-card shimmer"></div>
+        <div class="loading-card shimmer"></div>
+        <div class="loading-card shimmer"></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navigasi utama">
+      <a href="home.html" class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"></path><path d="M5 10v10h14V10"></path></svg>
+        <span>Beranda</span>
+      </a>
+
+      <a href="explore.html" class="nav-item">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+        <span>Jelajah</span>
+      </a>
+
+      <a href="upload.html" class="nav-create" aria-label="Jual barang">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+      </a>
+
+      <a href="my-orders.html" class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path><path d="M4 8v10l8 3 8-3V8"></path></svg>
+        <span>Aktivitas</span>
+      </a>
+
+      <a href="profile.html" class="nav-item active">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+        <span>Akun</span>
+      </a>
+    </nav>
+  </div>
+
+  <div class="action-sheet" id="actionSheet" aria-hidden="true">
+    <button class="sheet-backdrop" id="sheetBackdrop" type="button" aria-label="Tutup"></button>
+    <section class="sheet-card">
+      <div class="sheet-handle"></div>
+      <div class="sheet-product">
+        <div class="sheet-thumb" id="sheetThumb"></div>
+        <div>
+          <span>KELOLA PRODUK</span>
+          <strong id="sheetProductName">Produk</strong>
+        </div>
+      </div>
+
+      <button class="sheet-action" id="editAction" type="button">
+        <span class="sheet-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4 11.5-11.5Z"></path></svg>
+        </span>
+        <span><strong>Edit produk</strong><small>Ubah informasi listing</small></span>
+        <svg class="sheet-arrow" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
+      </button>
+
+      <button class="sheet-action" id="toggleAction" type="button">
+        <span class="sheet-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M8 12h8"></path></svg>
+        </span>
+        <span><strong id="toggleActionTitle">Nonaktifkan</strong><small id="toggleActionSubtitle">Sembunyikan dari marketplace</small></span>
+        <svg class="sheet-arrow" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
+      </button>
+
+      <button class="sheet-action danger" id="deleteAction" type="button">
+        <span class="sheet-icon">
+          <svg viewBox="0 0 24 24"><path d="M4 7h16"></path><path d="M9 7V4h6v3"></path><path d="m7 7 1 13h8l1-13"></path></svg>
+        </span>
+        <span><strong>Hapus produk</strong><small>Hapus listing secara permanen</small></span>
+        <svg class="sheet-arrow" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
+      </button>
+
+      <button class="sheet-cancel" id="sheetCancel" type="button">Batal</button>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=20260807-1"></script>
+  <script src="auth-session.js?v=20260807-3"></script>
+  <script src="my-products.js?v=20260807-1"></script>
+</body>
+</html>
