@@ -1,8 +1,11 @@
-const loginForm = document.getElementById("loginForm");
+const form = document.getElementById("loginForm");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
-const message = document.getElementById("message");
 const loginButton = document.getElementById("loginButton");
+const togglePassword = document.getElementById("togglePassword");
+const message = document.getElementById("message");
+
+let currentSession = null;
 
 function setMessage(text = "", type = "") {
   message.className = `message ${type}`.trim();
@@ -17,14 +20,14 @@ function setLoading(isLoading) {
 
   if (title) {
     title.textContent = isLoading
-      ? "Memverifikasi akun..."
+      ? "Memeriksa akun..."
       : "Masuk ke AdaAja";
   }
 
   if (subtitle) {
     subtitle.textContent = isLoading
       ? "Mohon tunggu sebentar"
-      : "Gunakan email dan password";
+      : "Email & password";
   }
 }
 
@@ -32,22 +35,133 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-async function loginWithSupabase() {
-  const email = emailInput.value.trim().toLowerCase();
-  const password = passwordInput.value;
+async function getSession() {
+  if (currentSession?.user) return currentSession;
 
-  if (!email || !password) {
-    setMessage("Masukkan email dan password.", "error");
+  const { data, error } =
+    await window.adaajaSupabase.auth.getSession();
+
+  if (error) throw error;
+
+  currentSession = data.session || null;
+  return currentSession;
+}
+
+async function isProfileComplete(userId) {
+  const [
+    { data: profile, error: profileError },
+    { data: address, error: addressError }
+  ] = await Promise.all([
+    window.adaajaSupabase
+      .from("profiles")
+      .select("id, username")
+      .eq("id", userId)
+      .maybeSingle(),
+
+    window.adaajaSupabase
+      .from("addresses")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("is_primary", true)
+      .limit(1)
+      .maybeSingle()
+  ]);
+
+  if (profileError) {
+    console.warn("Profile check failed:", profileError);
+  }
+
+  if (addressError) {
+    console.warn("Address check failed:", addressError);
+  }
+
+  return Boolean(profile?.username && address?.id);
+}
+
+function consumeRedirectAfterLogin() {
+  const redirect =
+    localStorage.getItem("redirectAfterLogin") || "";
+
+  localStorage.removeItem("redirectAfterLogin");
+
+  if (!redirect) return "home.html";
+
+  try {
+    const destination = new URL(
+      redirect,
+      window.location.href
+    );
+
+    if (destination.origin !== window.location.origin) {
+      return "home.html";
+    }
+
+    return (
+      destination.pathname.split("/").pop() +
+      destination.search +
+      destination.hash
+    ) || "home.html";
+  } catch {
+    return "home.html";
+  }
+}
+
+async function routeLoggedInUser(user) {
+  const complete = await isProfileComplete(user.id);
+
+  if (!complete) {
+    location.replace("complete-account.html");
+    return;
+  }
+
+  location.replace(consumeRedirectAfterLogin());
+}
+
+async function loginWithPassword() {
+  const email =
+    emailInput.value.trim().toLowerCase();
+
+  const password =
+    passwordInput.value;
+
+  if (!email) {
+    setMessage(
+      "Masukkan email terlebih dahulu.",
+      "error"
+    );
+    emailInput.focus();
     return;
   }
 
   if (!isValidEmail(email)) {
-    setMessage("Masukkan alamat email yang valid.", "error");
+    setMessage(
+      "Masukkan alamat email yang valid.",
+      "error"
+    );
+    emailInput.focus();
+    return;
+  }
+
+  if (!password) {
+    setMessage(
+      "Masukkan password terlebih dahulu.",
+      "error"
+    );
+    passwordInput.focus();
+    return;
+  }
+
+  if (password.length < 8) {
+    setMessage(
+      "Password minimal 8 karakter.",
+      "error"
+    );
+    passwordInput.focus();
     return;
   }
 
   setLoading(true);
-  setMessage("Memverifikasi akun Anda...");
+  setMessage("Memeriksa email dan password Anda...");
 
   try {
     const { data, error } =
@@ -56,91 +170,142 @@ async function loginWithSupabase() {
         password
       });
 
-    if (error) {
-      throw error;
+    if (error) throw error;
+
+    if (!data?.user || !data?.session) {
+      throw new Error(
+        "Sesi login tidak terbentuk. Silakan coba kembali."
+      );
     }
 
-    if (!data.user || !data.session) {
-      throw new Error("Sesi login tidak berhasil dibuat.");
+    currentSession = data.session;
+
+    if (window.AdaAjaAuth?.syncLegacyUser) {
+      try {
+        await window.AdaAjaAuth.syncLegacyUser(data.user);
+      } catch (syncError) {
+        console.warn(
+          "Sinkronisasi kompatibilitas user gagal:",
+          syncError
+        );
+      }
     }
 
-    await window.AdaAjaAuth.syncLegacyUser(data.user);
-
-    const redirectPage =
-      localStorage.getItem("redirectAfterLogin") ||
-      "home.html";
-
-    localStorage.removeItem("redirectAfterLogin");
     localStorage.removeItem("login_email");
+    localStorage.removeItem("register_password");
+    localStorage.removeItem("register_email");
+    localStorage.removeItem("register_username");
 
-    setMessage("Login berhasil. Mengalihkan...", "success");
+    setMessage(
+      "Login berhasil. Mengalihkan...",
+      "success"
+    );
 
-    window.setTimeout(() => {
-      location.href = redirectPage;
-    }, 600);
+    await routeLoggedInUser(data.user);
   } catch (error) {
     console.error("Supabase login error:", error);
 
-    const rawMessage = String(error?.message || "");
-    const normalized = rawMessage.toLowerCase();
+    const raw =
+      String(error?.message || "").toLowerCase();
 
     if (
-      normalized.includes("invalid login credentials") ||
-      normalized.includes("invalid credentials")
-    ) {
-      setMessage("Email atau password tidak sesuai.", "error");
-    } else if (
-      normalized.includes("email not confirmed")
+      raw.includes("invalid login credentials") ||
+      raw.includes("invalid credentials")
     ) {
       setMessage(
-        "Email belum dikonfirmasi. Buka email Anda dan klik tautan konfirmasi.",
+        "Email atau password salah. Silakan periksa kembali.",
+        "error"
+      );
+    } else if (raw.includes("email not confirmed")) {
+      setMessage(
+        "Akun belum aktif. Periksa konfigurasi akun Supabase Anda.",
         "error"
       );
     } else {
       setMessage(
-        rawMessage || "Login belum berhasil. Silakan coba kembali.",
+        error?.message ||
+          "Login belum berhasil. Silakan coba kembali.",
         "error"
       );
     }
-  } finally {
+
     setLoading(false);
   }
 }
 
-loginForm.addEventListener("submit", (event) => {
+togglePassword.addEventListener("click", () => {
+  const show =
+    passwordInput.type === "password";
+
+  passwordInput.type =
+    show ? "text" : "password";
+
+  togglePassword.classList.toggle(
+    "visible",
+    show
+  );
+
+  togglePassword.setAttribute(
+    "aria-label",
+    show
+      ? "Sembunyikan password"
+      : "Tampilkan password"
+  );
+});
+
+form.addEventListener("submit", (event) => {
   event.preventDefault();
-  loginWithSupabase();
+  loginWithPassword();
 });
 
-document.querySelectorAll("[data-auth-required='true']").forEach((link) => {
-  link.addEventListener("click", async (event) => {
-    const session = await window.AdaAjaAuth.getSession();
+document
+  .querySelectorAll("[data-auth-required='true']")
+  .forEach((link) => {
+    link.addEventListener("click", async (event) => {
+      event.preventDefault();
 
-    if (session?.user) return;
+      try {
+        const session = await getSession();
 
-    event.preventDefault();
-    localStorage.setItem(
-      "redirectAfterLogin",
-      link.getAttribute("href")
-    );
+        if (session?.user) {
+          location.href =
+            link.getAttribute("href");
+          return;
+        }
+      } catch (error) {
+        console.warn(
+          "Pemeriksaan sesi gagal:",
+          error
+        );
+      }
+
+      localStorage.setItem(
+        "redirectAfterLogin",
+        link.getAttribute("href")
+      );
+
+      location.href = "login.html";
+    });
   });
-});
 
-window.addEventListener("load", async () => {
+(async function initLoginPage() {
   try {
-    const session = await window.AdaAjaAuth.getSession();
+    const session = await getSession();
 
     if (!session?.user) return;
 
-    await window.AdaAjaAuth.syncLegacyUser(session.user);
+    setMessage(
+      "Anda sudah login. Mengalihkan...",
+      "success"
+    );
 
-    const redirectPage =
-      localStorage.getItem("redirectAfterLogin") ||
-      "home.html";
-
-    localStorage.removeItem("redirectAfterLogin");
-    location.replace(redirectPage);
+    await routeLoggedInUser(
+      session.user
+    );
   } catch (error) {
-    console.warn("Pemeriksaan sesi gagal:", error.message);
+    console.warn(
+      "Pemeriksaan sesi awal gagal:",
+      error
+    );
   }
-});
+})();
