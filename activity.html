@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#ffffff">
-  <meta name="description" content="Pusat aktivitas AdaAja.">
+  <meta name="description" content="Pusat aktivitas pembeli dan penjual AdaAja.">
   <title>Aktivitas — AdaAja</title>
-  <link rel="stylesheet" href="activity.css?v=20260808-2">
+  <link rel="stylesheet" href="activity.css?v=20260808-3">
 </head>
 <body>
   <div class="app-shell">
@@ -40,135 +40,192 @@
 
         <div class="hero-copy">
           <span class="eyebrow"><i></i> PUSAT AKTIVITAS</span>
-          <h2>Semua yang sedang berjalan, ada di satu tempat.</h2>
-          <p>Pantau pembelian, negosiasi, pesanan masuk, dan notifikasi terbaru tanpa perlu berpindah jauh.</p>
+          <h2>Kelola semua aktivitas beli dan jual dari satu tempat.</h2>
+          <p>Pilih sisi Pembeli atau Penjual untuk membuka seluruh transaksi, negosiasi, pesan, dan aktivitas yang relevan.</p>
         </div>
 
-        <div class="hero-summary">
-          <div>
-            <span>Perlu perhatian</span>
-            <strong id="attentionCount">0</strong>
-          </div>
-          <div>
-            <span>Aktif</span>
-            <strong id="activeCount">0</strong>
-          </div>
-          <div>
-            <span>Notifikasi</span>
-            <strong id="notificationCountHero">0</strong>
-          </div>
+        <div class="role-switch" id="roleSwitch" role="tablist" aria-label="Pilih aktivitas">
+          <button class="role-tab active" type="button" data-role="buyer" role="tab" aria-selected="true">
+            <span class="role-icon">
+              <svg viewBox="0 0 24 24"><path d="M6 8h12l1 12H5L6 8Z"></path><path d="M9 8a3 3 0 0 1 6 0"></path></svg>
+            </span>
+            <span class="role-copy"><small>AKTIVITAS</small><strong>Pembeli</strong></span>
+          </button>
+
+          <button class="role-tab" type="button" data-role="seller" role="tab" aria-selected="false">
+            <span class="role-icon">
+              <svg viewBox="0 0 24 24"><path d="M4 9h16"></path><path d="M5 9l1-5h12l1 5"></path><path d="M6 9v11h12V9"></path></svg>
+            </span>
+            <span class="role-copy"><small>AKTIVITAS</small><strong>Penjual</strong></span>
+          </button>
         </div>
       </section>
 
-      <section class="section">
-        <div class="section-heading">
+      <section class="dashboard-panel active" id="buyerPanel" data-panel="buyer">
+        <div class="panel-intro">
           <div>
-            <span>AKSES CEPAT</span>
-            <h2>Kelola aktivitas Anda</h2>
+            <span>PEMBELI</span>
+            <h2>Aktivitas pembelian</h2>
+            <p>Semua kebutuhan Anda sebagai pembeli.</p>
           </div>
-          <small>Realtime Supabase</small>
+          <span class="panel-badge">Buyer Center</span>
         </div>
 
-        <div class="activity-grid">
-          <a class="activity-card purchase-card" href="my-orders.html">
-            <div class="activity-icon">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path>
-                <path d="M4 8v10l8 3 8-3V8"></path>
-              </svg>
-            </div>
-
-            <div class="activity-copy">
-              <span>PEMBELI</span>
+        <div class="menu-grid">
+          <a class="menu-card tone-orange" href="my-orders.html">
+            <span class="menu-icon">
+              <svg viewBox="0 0 24 24"><path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path><path d="M4 8v10l8 3 8-3V8"></path></svg>
+            </span>
+            <div class="menu-copy">
+              <small>TRANSAKSI</small>
               <h3>Pembelian</h3>
-              <p>Pantau pembayaran, proses, dan pengiriman barang Anda.</p>
+              <p>Pantau pesanan, pembayaran, proses, dan pengiriman barang.</p>
             </div>
-
-            <div class="activity-footer">
-              <span class="metric-pill" id="purchaseCount">0 aktif</span>
-              <span class="arrow">
-                <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
-              </span>
-            </div>
+            <span class="menu-arrow"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></span>
           </a>
 
-          <a class="activity-card negotiation-card" href="my-offers.html">
-            <div class="activity-icon">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4 7h16v10H4z"></path>
-                <path d="M8 11h8"></path>
-                <path d="M8 14h5"></path>
-              </svg>
+          <a class="menu-card tone-blue" href="my-offers.html">
+            <span class="menu-icon">
+              <svg viewBox="0 0 24 24"><path d="M4 7h16v10H4z"></path><path d="M8 11h8"></path><path d="M8 14h5"></path></svg>
+            </span>
+            <div class="menu-copy">
+              <small>TAWAR HARGA</small>
+              <h3>Negosiasi Saya</h3>
+              <p>Lihat penawaran yang Anda ajukan dan harga balasan dari penjual.</p>
             </div>
-
-            <div class="activity-copy">
-              <span>TAWAR HARGA</span>
-              <h3>Negosiasi</h3>
-              <p>Lihat tawaran, harga balasan, dan kesepakatan terbaru.</p>
-            </div>
-
-            <div class="activity-footer">
-              <span class="metric-pill" id="offerCount">0 aktif</span>
-              <span class="arrow">
-                <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
-              </span>
-            </div>
+            <span class="menu-arrow"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></span>
           </a>
 
-          <a class="activity-card seller-card" href="seller-orders.html">
-            <div class="activity-icon">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4 9h16"></path>
-                <path d="M5 9l1-5h12l1 5"></path>
-                <path d="M6 9v11h12V9"></path>
-                <path d="M9 20v-6h6v6"></path>
-              </svg>
+          <a class="menu-card tone-red" href="favorites.html">
+            <span class="menu-icon">
+              <svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"></path></svg>
+            </span>
+            <div class="menu-copy">
+              <small>TERSIMPAN</small>
+              <h3>Favorit</h3>
+              <p>Buka kembali produk yang sudah Anda simpan.</p>
             </div>
-
-            <div class="activity-copy">
-              <span>PENJUAL</span>
-              <h3>Pesanan Masuk</h3>
-              <p>Kelola pesanan baru, proses barang, dan pengiriman.</p>
-            </div>
-
-            <div class="activity-footer">
-              <span class="metric-pill" id="sellerOrderCount">0 perlu diproses</span>
-              <span class="arrow">
-                <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
-              </span>
-            </div>
+            <span class="menu-arrow"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></span>
           </a>
 
-          <a class="activity-card notification-card" href="notifications.html">
-            <div class="activity-icon">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path>
-                <path d="M10 21h4"></path>
-              </svg>
+          <a class="menu-card tone-navy" href="messages.html">
+            <span class="menu-icon">
+              <svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4V5Z"></path><path d="M8 9h8"></path><path d="M8 12h5"></path></svg>
+            </span>
+            <div class="menu-copy">
+              <small>KOMUNIKASI</small>
+              <h3>Chat</h3>
+              <p>Hubungi penjual dan lanjutkan percakapan produk Anda.</p>
             </div>
+            <span class="menu-arrow"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></span>
+          </a>
 
-            <div class="activity-copy">
-              <span>UPDATE</span>
+          <a class="menu-card tone-purple full-card" href="notifications.html">
+            <span class="menu-icon">
+              <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg>
+            </span>
+            <div class="menu-copy">
+              <small>PEMBARUAN</small>
               <h3>Notifikasi</h3>
-              <p>Lihat aktivitas terbaru dari transaksi dan akun Anda.</p>
+              <p>Lihat perubahan penting pada pembelian, negosiasi, pembayaran, dan akun.</p>
             </div>
-
-            <div class="activity-footer">
-              <span class="metric-pill" id="notificationCount">0 baru</span>
-              <span class="arrow">
-                <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
-              </span>
-            </div>
+            <span class="menu-arrow"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></span>
           </a>
         </div>
       </section>
 
-      <section class="section">
+      <section class="dashboard-panel" id="sellerPanel" data-panel="seller" hidden>
+        <div class="panel-intro seller-intro">
+          <div>
+            <span>PENJUAL</span>
+            <h2>Aktivitas penjualan</h2>
+            <p>Kelola produk, penawaran, pesanan, dan komunikasi dengan pembeli.</p>
+          </div>
+          <span class="panel-badge seller-badge">Seller Center</span>
+        </div>
+
+        <div class="menu-grid">
+          <a class="menu-card tone-green" href="seller-orders.html">
+            <span class="menu-icon">
+              <svg viewBox="0 0 24 24"><path d="M4 9h16"></path><path d="M5 9l1-5h12l1 5"></path><path d="M6 9v11h12V9"></path><path d="M9 20v-6h6v6"></path></svg>
+            </span>
+            <div class="menu-copy">
+              <small>TRANSAKSI</small>
+              <h3>Pesanan Masuk</h3>
+              <p>Kelola order pembeli, proses barang, dan pengiriman.</p>
+            </div>
+            <span class="menu-arrow"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></span>
+          </a>
+
+          <a class="menu-card tone-blue" href="seller-offers.html">
+            <span class="menu-icon">
+              <svg viewBox="0 0 24 24"><path d="M4 7h16v10H4z"></path><path d="M8 11h8"></path><path d="M8 14h5"></path></svg>
+            </span>
+            <div class="menu-copy">
+              <small>NEGOSIASI</small>
+              <h3>Penawaran Masuk</h3>
+              <p>Terima, tolak, atau kirim harga balasan kepada pembeli.</p>
+            </div>
+            <span class="menu-arrow"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></span>
+          </a>
+
+          <a class="menu-card tone-orange" href="my-products.html">
+            <span class="menu-icon">
+              <svg viewBox="0 0 24 24"><path d="M5 7h14v13H5z"></path><path d="M8 7V5h8v2"></path><path d="M9 12h6"></path></svg>
+            </span>
+            <div class="menu-copy">
+              <small>KATALOG</small>
+              <h3>Produk Saya</h3>
+              <p>Lihat dan kelola seluruh produk yang Anda jual.</p>
+            </div>
+            <span class="menu-arrow"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></span>
+          </a>
+
+          <a class="menu-card tone-navy" href="messages.html">
+            <span class="menu-icon">
+              <svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4V5Z"></path><path d="M8 9h8"></path><path d="M8 12h5"></path></svg>
+            </span>
+            <div class="menu-copy">
+              <small>KOMUNIKASI</small>
+              <h3>Chat Pembeli</h3>
+              <p>Jawab pertanyaan dan percakapan dari calon pembeli.</p>
+            </div>
+            <span class="menu-arrow"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></span>
+          </a>
+
+          <a class="menu-card tone-purple" href="notifications.html">
+            <span class="menu-icon">
+              <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg>
+            </span>
+            <div class="menu-copy">
+              <small>PEMBARUAN</small>
+              <h3>Notifikasi</h3>
+              <p>Lihat aktivitas penting dari penawaran dan transaksi penjualan.</p>
+            </div>
+            <span class="menu-arrow"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></span>
+          </a>
+
+          <a class="menu-card tone-cyan" href="upload.html">
+            <span class="menu-icon">
+              <svg viewBox="0 0 24 24"><path d="M6 8h12l1 12H5L6 8Z"></path><path d="M9 8a3 3 0 0 1 6 0"></path><path d="M12 12v5M9.5 14.5h5"></path></svg>
+            </span>
+            <div class="menu-copy">
+              <small>JUAL</small>
+              <h3>Tambah Produk</h3>
+              <p>Pasang produk baru langsung dari dashboard aktivitas.</p>
+            </div>
+            <span class="menu-arrow"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></span>
+          </a>
+        </div>
+      </section>
+
+      <section class="section recent-section">
         <div class="section-heading">
           <div>
             <span>TERBARU</span>
-            <h2>Ringkasan aktivitas</h2>
+            <h2>Aktivitas terkini</h2>
           </div>
+          <a href="notifications.html">Lihat semua</a>
         </div>
 
         <div class="recent-card" id="recentActivity">
@@ -181,40 +238,26 @@
 
     <nav class="bottom-nav" aria-label="Navigasi utama">
       <a href="home.html" class="nav-item">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="m3 11 9-8 9 8"></path>
-          <path d="M5 10v10h14V10"></path>
-        </svg>
+        <svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"></path><path d="M5 10v10h14V10"></path></svg>
         <span>Beranda</span>
       </a>
 
       <a href="explore.html" class="nav-item">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="11" cy="11" r="7"></circle>
-          <path d="m20 20-3.5-3.5"></path>
-        </svg>
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
         <span>Jelajah</span>
       </a>
 
       <a href="upload.html" class="nav-create" aria-label="Jual barang">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 5v14M5 12h14"></path>
-        </svg>
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
       </a>
 
       <a href="activity.html" class="nav-item active">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path>
-          <path d="M4 8v10l8 3 8-3V8"></path>
-        </svg>
+        <svg viewBox="0 0 24 24"><path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path><path d="M4 8v10l8 3 8-3V8"></path></svg>
         <span>Aktivitas</span>
       </a>
 
       <a href="profile.html" class="nav-item">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="12" cy="8" r="4"></circle>
-          <path d="M4 21a8 8 0 0 1 16 0"></path>
-        </svg>
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
         <span>Akun</span>
       </a>
     </nav>
@@ -225,6 +268,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=20260807-1"></script>
   <script src="auth-session.js?v=20260807-3"></script>
-  <script src="activity.js?v=20260808-2"></script>
+  <script src="activity.js?v=20260808-3"></script>
 </body>
 </html>
