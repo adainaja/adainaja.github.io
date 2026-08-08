@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#ffffff">
-  <meta name="description" content="Checkout aman di AdaAja.">
+  <meta name="description" content="Checkout aman AdaAja.">
   <title>Checkout — AdaAja</title>
-  <link rel="stylesheet" href="checkout.css?v=20260808-1">
+  <link rel="stylesheet" href="checkout.css?v=20260808-4">
 </head>
 <body>
   <div class="app-shell">
@@ -20,7 +20,7 @@
         <h1>Checkout</h1>
       </div>
 
-      <div class="secure-badge" aria-label="Transaksi aman">
+      <div class="secure-badge" aria-label="Pembayaran terlindungi">
         <svg viewBox="0 0 24 24">
           <path d="M12 3 5 6v5c0 4.7 3 8.3 7 10 4-1.7 7-5.3 7-10V6l-7-3Z"></path>
           <path d="m9.5 12 1.7 1.7 3.8-4"></path>
@@ -28,41 +28,38 @@
       </div>
     </header>
 
-    <main class="content" id="checkoutContent">
+    <main class="content">
       <section class="hero-card">
-        <div class="hero-glow glow-one"></div>
-        <div class="hero-glow glow-two"></div>
+        <div class="hero-orb one"></div>
+        <div class="hero-orb two"></div>
 
-        <div class="hero-copy">
-          <span class="eyebrow"><i></i> CHECKOUT</span>
-          <h2>Periksa sekali lagi, lalu lanjutkan dengan tenang.</h2>
-          <p>Alamat, jumlah produk, dan ringkasan transaksi ada di satu halaman yang ringkas.</p>
-        </div>
+        <span class="hero-eyebrow"><i></i> CHECKOUT</span>
+        <h2>Satu langkah lagi sebelum barang menjadi milik Anda.</h2>
+        <p>Periksa alamat, pengiriman, biaya layanan, dan metode pembayaran sebelum melanjutkan.</p>
 
-        <div class="hero-trust">
-          <div>
-            <svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.7 3 8.3 7 10 4-1.7 7-5.3 7-10V6l-7-3Z"></path><path d="m9.5 12 1.7 1.7 3.8-4"></path></svg>
-            <span>Data terlindungi</span>
-          </div>
-          <div>
+        <div class="hero-badges">
+          <span>
+            <svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.7 3 8.3 7 10 4-1.7 7-5.3 7-10V6l-7-3Z"></path></svg>
+            Dana terlindungi
+          </span>
+          <span>
             <svg viewBox="0 0 24 24"><path d="M3 7h11v10H3z"></path><path d="M14 10h4l3 3v4h-7V10Z"></path></svg>
-            <span>Pengiriman terpantau</span>
-          </div>
+            Pengiriman terpantau
+          </span>
         </div>
       </section>
 
       <section class="checkout-section">
         <div class="section-heading">
-          <div class="section-title-wrap">
+          <div class="section-title">
             <span class="section-icon">
               <svg viewBox="0 0 24 24"><path d="M12 21s7-4.4 7-11a7 7 0 1 0-14 0c0 6.6 7 11 7 11Z"></path><circle cx="12" cy="10" r="2.4"></circle></svg>
             </span>
             <div>
-              <small>PENGIRIMAN</small>
-              <h2>Alamat penerima</h2>
+              <small>PENERIMA</small>
+              <h2>Alamat pengiriman</h2>
             </div>
           </div>
-
           <button class="text-button" id="changeAddressButton" type="button">Ubah</button>
         </div>
 
@@ -75,13 +72,13 @@
 
       <section class="checkout-section">
         <div class="section-heading">
-          <div class="section-title-wrap">
+          <div class="section-title">
             <span class="section-icon">
               <svg viewBox="0 0 24 24"><path d="M6 8h12l1 12H5L6 8Z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path></svg>
             </span>
             <div>
-              <small>PRODUK</small>
-              <h2>Pesanan Anda</h2>
+              <small>PESANAN</small>
+              <h2>Produk</h2>
             </div>
           </div>
         </div>
@@ -100,7 +97,6 @@
             <span>Jumlah pembelian</span>
             <small id="minimumOrderText">Minimum order —</small>
           </div>
-
           <div class="stepper">
             <button id="decreaseQty" type="button" aria-label="Kurangi jumlah">−</button>
             <input id="quantityInput" type="number" min="1" value="1" inputmode="numeric">
@@ -111,34 +107,60 @@
 
       <section class="checkout-section">
         <div class="section-heading">
-          <div class="section-title-wrap">
-            <span class="section-icon">
-              <svg viewBox="0 0 24 24"><path d="M3 7h11v10H3z"></path><path d="M14 10h4l3 3v4h-7V10Z"></path></svg>
+          <div class="section-title">
+            <span class="section-icon blue">
+              <svg viewBox="0 0 24 24"><path d="M3 7h11v10H3z"></path><path d="M14 10h4l3 3v4h-7V10Z"></path><circle cx="7" cy="18" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>
             </span>
             <div>
               <small>PENGIRIMAN</small>
-              <h2>Metode pengiriman</h2>
+              <h2>Pilih ekspedisi</h2>
+            </div>
+          </div>
+          <button class="text-button" id="reloadShippingButton" type="button">Muat ulang</button>
+        </div>
+
+        <div class="shipping-state" id="shippingState">
+          <div class="shipping-loading">
+            <div class="mini-spinner"></div>
+            <div>
+              <strong>Mencari layanan pengiriman…</strong>
+              <span>Tarif akan dihitung berdasarkan alamat dan detail produk.</span>
             </div>
           </div>
         </div>
 
-        <div class="shipping-card" id="shippingCard">
-          <div class="shipping-main">
-            <span class="shipping-icon">
-              <svg viewBox="0 0 24 24"><path d="M3 7h11v10H3z"></path><path d="M14 10h4l3 3v4h-7V10Z"></path><circle cx="7" cy="18" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>
+        <div class="shipping-list" id="shippingList"></div>
+      </section>
+
+      <section class="checkout-section">
+        <div class="section-heading">
+          <div class="section-title">
+            <span class="section-icon purple">
+              <svg viewBox="0 0 24 24"><path d="M4 7h16v10H4z"></path><path d="M8 11h8"></path><path d="M8 14h5"></path></svg>
             </span>
             <div>
-              <strong id="shippingMethod">Pengiriman standar</strong>
-              <span id="shippingInfo">Pilihan kurir realtime akan tersedia saat Biteship diaktifkan.</span>
+              <small>PEMBAYARAN</small>
+              <h2>Metode pembayaran</h2>
             </div>
           </div>
-          <strong class="shipping-price" id="shippingPrice">Rp0</strong>
+        </div>
+
+        <div class="payment-methods" id="paymentMethods">
+          <label class="payment-option active">
+            <input type="radio" name="payment_method" value="default_estimate" checked>
+            <span class="payment-logo">M</span>
+            <span class="payment-copy">
+              <strong>Midtrans</strong>
+              <small>Pilih metode pembayaran pada halaman pembayaran aman.</small>
+            </span>
+            <span class="radio-dot"></span>
+          </label>
         </div>
       </section>
 
       <section class="checkout-section">
         <div class="section-heading">
-          <div class="section-title-wrap">
+          <div class="section-title">
             <span class="section-icon">
               <svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"></path><path d="M8 9h8M8 13h5"></path></svg>
             </span>
@@ -150,72 +172,77 @@
         </div>
 
         <label class="note-shell">
-          <textarea id="buyerNote" rows="3" maxlength="500" placeholder="Contoh: tolong packing lebih aman, warna sesuai foto, dll."></textarea>
+          <textarea id="buyerNote" rows="3" maxlength="500" placeholder="Contoh: tolong packing lebih aman."></textarea>
           <span><b id="noteCount">0</b>/500</span>
         </label>
       </section>
 
-      <section class="checkout-section">
+      <section class="checkout-section summary-section">
         <div class="section-heading">
-          <div class="section-title-wrap">
-            <span class="section-icon">
+          <div class="section-title">
+            <span class="section-icon green">
               <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"></path><path d="M8 9h8M8 13h8M8 17h5"></path></svg>
             </span>
             <div>
               <small>RINGKASAN</small>
-              <h2>Pembayaran</h2>
+              <h2>Rincian pembayaran</h2>
             </div>
           </div>
         </div>
 
         <div class="summary-card">
           <div class="summary-row">
-            <span>Harga satuan</span>
-            <strong id="unitPrice">Rp0</strong>
-          </div>
-          <div class="summary-row">
-            <span>Jumlah</span>
-            <strong id="summaryQty">0</strong>
-          </div>
-          <div class="summary-row">
-            <span>Subtotal</span>
+            <span>Harga barang</span>
             <strong id="subtotal">Rp0</strong>
           </div>
           <div class="summary-row">
-            <span>Ongkos kirim</span>
-            <strong id="shippingSummary">Rp0</strong>
+            <span>Biaya pengiriman</span>
+            <strong id="shippingSummary">—</strong>
           </div>
           <div class="summary-row">
             <span>Biaya layanan</span>
-            <strong id="adminFee">Rp0</strong>
+            <strong id="serviceFee">Rp0</strong>
           </div>
+
           <div class="summary-divider"></div>
+
           <div class="summary-row total">
             <span>Total pembayaran</span>
             <strong id="grandTotal">Rp0</strong>
           </div>
+
+          <p class="summary-caption">
+            Biaya pengiriman yang tampil adalah harga final pengiriman di AdaAja. Biaya layanan dihitung otomatis sesuai konfigurasi platform.
+          </p>
         </div>
 
-        <div class="payment-note">
-          <span class="payment-note-icon">
-            <svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.7 3 8.3 7 10 4-1.7 7-5.3 7-10V6l-7-3Z"></path></svg>
+        <div class="escrow-note">
+          <span>
+            <svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.7 3 8.3 7 10 4-1.7 7-5.3 7-10V6l-7-3Z"></path><path d="m9.5 12 1.7 1.7 3.8-4"></path></svg>
           </span>
           <div>
-            <strong>Pembayaran belum diproses di halaman ini</strong>
-            <p>Pesanan akan dibuat dengan status Belum Bayar. Midtrans akan dihubungkan pada tahap berikutnya.</p>
+            <strong>Perlindungan transaksi AdaAja</strong>
+            <p>Dana seller ditahan sampai pesanan selesai. Setelah barang diterima, dana baru dilepas ke saldo seller.</p>
           </div>
         </div>
+      </section>
+
+      <section class="checkout-error" id="checkoutError" hidden>
+        <strong>Checkout belum siap</strong>
+        <p id="checkoutErrorText"></p>
+        <button id="retryCheckoutButton" type="button">Coba Lagi</button>
       </section>
     </main>
 
     <div class="checkout-bar">
       <div>
-        <span>Total</span>
+        <span>Total pembayaran</span>
         <strong id="bottomTotal">Rp0</strong>
+        <small id="bottomHint">Pilih pengiriman untuk melanjutkan</small>
       </div>
 
-      <button id="createOrderButton" type="button">
-        Buat Pesanan
+      <button id="payButton" type="button" disabled>
+        Bayar Sekarang
         <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
       </button>
     </div>
@@ -225,21 +252,17 @@
         <svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"></path><path d="M5 10v10h14V10"></path></svg>
         <span>Beranda</span>
       </a>
-
       <a href="explore.html" class="nav-item">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
         <span>Jelajah</span>
       </a>
-
       <a href="upload.html" class="nav-create" aria-label="Jual barang">
         <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
       </a>
-
       <a href="activity.html" class="nav-item">
         <svg viewBox="0 0 24 24"><path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path><path d="M4 8v10l8 3 8-3V8"></path></svg>
         <span>Aktivitas</span>
       </a>
-
       <a href="profile.html" class="nav-item">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
         <span>Akun</span>
@@ -247,24 +270,11 @@
     </nav>
   </div>
 
-  <div class="success-modal" id="successModal" aria-hidden="true">
-    <div class="success-backdrop"></div>
-    <section class="success-card">
-      <div class="success-icon">
-        <svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"></path></svg>
-      </div>
-      <span>PESANAN DIBUAT</span>
-      <h2>Pesanan Anda sudah tersimpan.</h2>
-      <p>Selanjutnya Anda dapat melanjutkan pembayaran setelah Midtrans diaktifkan.</p>
-      <button id="goToOrdersButton" type="button">Lihat Pembelian</button>
-    </section>
-  </div>
-
-  <div class="toast" id="toast" role="status"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=20260807-1"></script>
   <script src="auth-session.js?v=20260807-3"></script>
-  <script src="checkout.js?v=20260808-1"></script>
+  <script src="checkout.js?v=20260808-4"></script>
 </body>
 </html>
