@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#071e38">
+  <meta name="description" content="Status pembayaran AdaAja">
+  <title>Pembayaran Berhasil — AdaAja</title>
+  <link rel="stylesheet" href="payment-result.css?v=20260809-1">
+</head>
+<body>
+  <main class="page-shell">
+    <section class="result-card success">
+      <div class="glow glow-a"></div><div class="glow glow-b"></div>
+      <div class="brand-row"><div class="brand-mark">A</div><div><span>ADAAJA</span><small>Transaksi Aman</small></div></div>
+      <div class="status-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.7 3 8.3 7 10 4-1.7 7-5.3 7-10V6l-7-3Z"></path><path d="m8.8 12.2 2 2 4.6-4.7"></path></svg></div>
+      <p class="eyebrow">PEMBAYARAN BERHASIL</p>
+      <h1>Transaksi kamu sudah kami terima.</h1>
+      <p class="lead">Kami sedang memverifikasi status pembayaran dari server AdaAja. Dana tetap terlindungi sampai transaksi selesai.</p>
+      <div class="verification" id="verificationBox"><span class="pulse"></span><div><strong id="verificationTitle">Memverifikasi pembayaran…</strong><small id="verificationText">Mohon tunggu sebentar.</small></div></div>
+      <div class="order-box">
+        <div class="order-line"><span>No. Pesanan</span><strong id="orderNumber">—</strong></div>
+        <div class="order-line"><span>Status</span><strong id="orderStatus" class="status-pill pending">Memeriksa</strong></div>
+        <div class="order-line"><span>Total</span><strong id="orderTotal">—</strong></div>
+      </div>
+      <div class="protection-note"><span><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.7 3 8.3 7 10 4-1.7 7-5.3 7-10V6l-7-3Z"></path></svg></span><div><strong>Dana dilindungi AdaAja</strong><p>Dana tidak langsung diteruskan ke penjual. Pelepasan dana mengikuti status penyelesaian pesanan.</p></div></div>
+      <div class="actions"><a class="primary-action" id="viewOrderButton" href="activity.html">Lihat Pesanan<svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></a><a class="secondary-action" href="home.html">Kembali ke Beranda</a></div>
+      <p class="footnote">Jangan tutup halaman ini sebelum status selesai diverifikasi.</p>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=20260807-1"></script>
+  <script src="auth-session.js?v=20260807-3"></script>
+  <script src="payment-success.js?v=20260809-1"></script>
+</body>
+</html>
