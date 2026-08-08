@@ -152,33 +152,21 @@ async function loadCore() {
     const resolvedProductId = offer?.product_id || productIdFromUrl;
     if (!resolvedProductId) throw new Error("Produk checkout tidak ditemukan.");
 
-    const [productRes, addressRes, settingsRes, paymentFeeRes] = await Promise.all([
+    // Ambil produk secara defensif dengan select("*").
+    // Ini mencegah checkout gagal hanya karena ada kolom opsional
+    // (mis. processing_time / weight / dimensions) yang belum ada di schema.
+    const [productRes, imageRes, addressRes, settingsRes, paymentFeeRes] = await Promise.all([
       window.adaajaSupabase
         .from("products")
-        .select(`
-          id,
-          name,
-          price,
-          stock,
-          unit,
-          minimum_order,
-          seller_id,
-          shipping_method,
-          shipping_payer,
-          processing_time,
-          status,
-          weight,
-          length,
-          width,
-          height,
-          product_images (
-            storage_path,
-            sort_order,
-            is_cover
-          )
-        `)
+        .select("*")
         .eq("id", resolvedProductId)
         .maybeSingle(),
+
+      window.adaajaSupabase
+        .from("product_images")
+        .select("storage_path,sort_order,is_cover")
+        .eq("product_id", resolvedProductId)
+        .order("sort_order", { ascending: true }),
 
       window.adaajaSupabase
         .from("addresses")
@@ -203,10 +191,14 @@ async function loadCore() {
 
     if (productRes.error) throw productRes.error;
     if (!productRes.data) throw new Error("Produk tidak ditemukan.");
+    if (imageRes.error) console.warn("Product image query:", imageRes.error);
     if (addressRes.error) throw addressRes.error;
     if (settingsRes.error) throw settingsRes.error;
 
-    product = productRes.data;
+    product = {
+      ...productRes.data,
+      product_images: imageRes.data || []
+    };
     settings = settingsRes.data || {
       marketplace_fee_percent: 5,
       service_fee_percent: 5,
