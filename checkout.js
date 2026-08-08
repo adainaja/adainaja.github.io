@@ -168,11 +168,12 @@ async function loadCore() {
         .eq("product_id", resolvedProductId)
         .order("sort_order", { ascending: true }),
 
+      // Jangan bergantung pada kolom is_default karena schema address
+      // existing Anda belum memiliki field tersebut.
       window.adaajaSupabase
         .from("addresses")
         .select("*")
         .eq("user_id", user.id)
-        .order("is_default", { ascending: false })
         .order("created_at", { ascending: false })
         .limit(10),
 
@@ -209,9 +210,18 @@ async function loadCore() {
       throw new Error("Anda tidak dapat membeli produk sendiri.");
     }
 
+    // Prioritas address dibuat kompatibel dengan berbagai schema:
+    // is_default/default/is_primary bila suatu saat ada; jika tidak, gunakan
+    // alamat terbaru dari hasil query.
+    const addressRows = addressRes.data || [];
     address =
-      (addressRes.data || []).find((item) => item.is_default) ||
-      (addressRes.data || [])[0] ||
+      addressRows.find((item) =>
+        item.is_default === true ||
+        item.default === true ||
+        item.is_primary === true ||
+        item.is_main === true
+      ) ||
+      addressRows[0] ||
       null;
 
     renderProduct();
