@@ -1,50 +1,112 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Penawaran Masuk - AdaAja</title>
-<link rel="stylesheet" href="seller-offers.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>Penawaran Masuk — AdaAja</title>
+  <link rel="stylesheet" href="seller-offers.css?v=20260808-1">
 </head>
 <body>
-<div class="app-shell">
-<header class="topbar">
-<a href="profile.html" class="icon-btn">‹</a>
-<div><span class="eyebrow">PENJUAL</span><h1>Penawaran Masuk</h1></div>
-<button class="icon-btn" id="refreshButton">↻</button>
-</header>
+  <div class="app-shell">
+    <header class="top-header">
+      <div class="top-header-inner">
+        <div class="header-copy">
+          <span>AKTIVITAS PENJUAL</span>
+          <h1>Penawaran Masuk</h1>
+        </div>
+        <button class="header-button" id="refreshButton" type="button" aria-label="Muat ulang">
+          <svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0 2 5"></path><path d="M20 4v7h-7"></path></svg>
+        </button>
+        <a class="header-button" href="profile.html" aria-label="Akun">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+        </a>
+      </div>
+    </header>
 
-<section class="summary-card">
-<div><span>Menunggu</span><strong id="pendingCount">0</strong></div>
-<div><span>Diterima</span><strong id="acceptedCount">0</strong></div>
-<div><span>Ditolak</span><strong id="rejectedCount">0</strong></div>
-</section>
+    <main class="content">
+      <section class="hero-card">
+        <div class="hero-glow glow-one"></div>
+        <div class="hero-glow glow-two"></div>
+        <div class="hero-copy">
+          <span class="eyebrow"><i></i> NEGOSIASI PENJUAL</span>
+          <h2>Kelola setiap tawaran dengan cepat dan profesional.</h2>
+          <p>Lihat siapa yang menawar, bandingkan harga, terima penawaran, atau kirim harga balasan.</p>
+        </div>
+        <div class="hero-stats">
+          <div><span>Menunggu</span><strong id="pendingCount">0</strong></div>
+          <div><span>Balasan</span><strong id="counteredCount">0</strong></div>
+          <div><span>Disetujui</span><strong id="acceptedCount">0</strong></div>
+        </div>
+      </section>
 
-<nav class="tabs">
-<button class="active" data-status="all">Semua</button>
-<button data-status="pending">Menunggu</button>
-<button data-status="accepted">Diterima</button>
-<button data-status="rejected">Ditolak</button>
-</nav>
+      <section class="toolbar-card">
+        <label class="search-shell" for="searchInput">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+          <input id="searchInput" type="search" placeholder="Cari produk atau pembeli" autocomplete="off">
+        </label>
 
-<main id="offersContainer">
-<section class="state"><div class="spinner"></div><strong>Memuat penawaran...</strong></section>
-</main>
-</div>
+        <div class="status-tabs" id="statusTabs">
+          <button class="active" type="button" data-status="all">Semua</button>
+          <button type="button" data-status="pending">Menunggu</button>
+          <button type="button" data-status="countered">Harga Balasan</button>
+          <button type="button" data-status="accepted">Disetujui</button>
+          <button type="button" data-status="rejected">Ditolak</button>
+          <button type="button" data-status="ended">Berakhir</button>
+        </div>
 
-<div class="modal" id="confirmModal">
-<div class="backdrop" data-close></div>
-<div class="sheet">
-<div class="handle"></div>
-<h2 id="modalTitle">Terima penawaran?</h2>
-<p id="modalText"></p>
-<div class="modal-actions">
-<button class="secondary" data-close>Batal</button>
-<button class="primary" id="confirmAction">Lanjutkan</button>
-</div>
-</div>
-</div>
+        <div class="sort-row">
+          <div><span>PENAWARAN MASUK</span><strong id="resultCount">Memuat...</strong></div>
+          <label class="sort-select">
+            <select id="sortSelect">
+              <option value="latest">Terbaru</option>
+              <option value="oldest">Terlama</option>
+              <option value="offer_high">Tawaran tertinggi</option>
+              <option value="offer_low">Tawaran terendah</option>
+            </select>
+          </label>
+        </div>
+      </section>
 
-<script src="seller-offers.js"></script>
+      <section id="offersList" class="offers-list" aria-live="polite">
+        <article class="skeleton-card shimmer"></article>
+        <article class="skeleton-card shimmer"></article>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <a href="home.html" class="nav-item"><span>⌂</span><small>Beranda</small></a>
+      <a href="explore.html" class="nav-item"><span>⌕</span><small>Jelajah</small></a>
+      <a href="upload.html" class="nav-create">＋</a>
+      <a href="activity.html" class="nav-item active"><span>▣</span><small>Aktivitas</small></a>
+      <a href="profile.html" class="nav-item"><span>○</span><small>Akun</small></a>
+    </nav>
+  </div>
+
+  <div class="sheet" id="counterSheet" aria-hidden="true">
+    <button class="sheet-backdrop" id="counterSheetBackdrop" type="button"></button>
+    <section class="sheet-card">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <div><span>HARGA BALASAN</span><h2>Kirim harga baru</h2></div>
+        <button id="closeCounterSheet" type="button">×</button>
+      </div>
+      <div class="counter-summary" id="counterSummary"></div>
+      <label class="counter-input">
+        <span>Harga balasan</span>
+        <div><b>Rp</b><input id="counterPriceInput" inputmode="numeric" placeholder="0"></div>
+      </label>
+      <p class="counter-hint" id="counterHint"></p>
+      <p class="counter-message" id="counterMessage"></p>
+      <button class="submit-counter" id="submitCounterButton" type="button">Kirim Harga Balasan</button>
+    </section>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=20260807-1"></script>
+  <script src="auth-session.js?v=20260807-3"></script>
+  <script src="seller-offers.js?v=20260808-1"></script>
 </body>
 </html>
