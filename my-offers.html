@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#ffffff">
   <meta name="description" content="Kelola negosiasi harga Anda di AdaAja.">
   <title>Negosiasi — AdaAja</title>
-  <link rel="stylesheet" href="my-offers.css?v=20260807-1">
+  <link rel="stylesheet" href="my-offers.css?v=20260808-2">
 </head>
 <body>
   <div class="app-shell">
@@ -134,7 +134,7 @@
         </svg>
       </a>
 
-      <a href="my-orders.html" class="nav-item active">
+      <a href="activity.html" class="nav-item active">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path>
           <path d="M4 8v10l8 3 8-3V8"></path>
@@ -172,11 +172,25 @@
     </section>
   </div>
 
+
+  <div class="sheet" id="counterSheet" aria-hidden="true">
+    <button class="sheet-backdrop" id="counterSheetBackdrop" type="button" aria-label="Tutup"></button>
+    <section class="sheet-card response-sheet-card">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header"><div><span>TAWAR LAGI</span><h2>Ajukan harga baru</h2></div><button id="closeCounterSheet" type="button" aria-label="Tutup"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg></button></div>
+      <div class="response-summary" id="responseSummary"></div>
+      <label class="response-input"><span>Harga yang ingin Anda ajukan</span><div><b>Rp</b><input id="newOfferPrice" inputmode="numeric" autocomplete="off" placeholder="0"></div></label>
+      <p class="response-hint" id="newOfferHint">Harga baru harus lebih rendah dari harga balasan penjual.</p>
+      <p class="response-message" id="responseMessage"></p>
+      <button class="submit-response" id="submitNewOffer" type="button">Kirim Penawaran Baru</button>
+    </section>
+  </div>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=20260807-1"></script>
   <script src="auth-session.js?v=20260807-3"></script>
-  <script src="my-offers.js?v=20260807-1"></script>
+  <script src="my-offers.js?v=20260808-2"></script>
 </body>
 </html>
