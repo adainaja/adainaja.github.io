@@ -16,6 +16,7 @@ const unit = document.getElementById("unit");
 const minimumOrder = document.getElementById("minimumOrder");
 const minimumOrderHint = document.getElementById("minimumOrderHint");
 const stock = document.getElementById("stock");
+const weightGrams = document.getElementById("weightGrams");
 const shippingMethod = document.getElementById("shippingMethod");
 const shipFromRegion = document.getElementById("shipFromRegion");
 const processingTime = document.getElementById("processingTime");
@@ -62,6 +63,7 @@ function updateProgress() {
     unit.value,
     Number(minimumOrder.value || 0) >= 1,
     Number(stock.value || 0) >= 0,
+    Number(weightGrams.value || 0) > 0,
     shippingPayer,
     shippingMethod.value,
     shipFromRegion.value.trim(),
@@ -152,6 +154,7 @@ async function loadProduct() {
         unit,
         minimum_order,
         stock,
+        weight_grams,
         shipping_payer,
         shipping_method,
         ship_from_region,
@@ -183,6 +186,7 @@ async function loadProduct() {
     unit.value = data.unit || "pcs";
     minimumOrder.value = Math.max(1, Number(data.minimum_order || 1));
     stock.value = Number(data.stock || 0);
+    weightGrams.value = data.weight_grams ? Number(data.weight_grams) : "";
     updateMinimumOrderHint();
     shippingMethod.value = data.shipping_method || "";
     shipFromRegion.value = data.ship_from_region || "";
@@ -409,7 +413,7 @@ unit.addEventListener("change", () => {
   updateProgress();
 });
 
-["category", "brand", "stock", "shippingMethod", "shipFromRegion", "processingTime", "unit"]
+["category", "brand", "stock", "weightGrams", "shippingMethod", "shipFromRegion", "processingTime", "unit"]
   .forEach((id) => {
     const element = document.getElementById(id);
     element.addEventListener(
@@ -431,6 +435,7 @@ function validate() {
   if (Number(minimumOrder.value || 0) > Number(stock.value || 0)) {
     return "Minimum order tidak boleh melebihi stok tersedia.";
   }
+  if (Number(weightGrams.value || 0) <= 0) return "Berat paket wajib diisi minimal 1 gram.";
   if (!shippingPayer) return "Pilih penanggung ongkir.";
   if (!shippingMethod.value) return "Pilih metode pengiriman.";
   if (!shipFromRegion.value.trim()) return "Isi asal pengiriman.";
@@ -529,6 +534,7 @@ async function saveProduct() {
         unit: unit.value,
         minimum_order: Number(minimumOrder.value || 1),
         stock: Number(stock.value || 0),
+        weight_grams: Math.round(Number(weightGrams.value || 0)),
         shipping_payer: shippingPayer,
         shipping_method: shippingMethod.value,
         ship_from_region: shipFromRegion.value.trim(),

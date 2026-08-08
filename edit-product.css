@@ -302,3 +302,39 @@ form{display:grid;gap:14px;margin-top:14px}
   }
 }
 
+
+
+/* SHIPPING WEIGHT */
+.required-mark{
+  color:var(--orange);
+  font-size:8px;
+}
+.weight-shell{
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:15px;
+  background:#f8fafc;
+  transition:border-color .18s ease,box-shadow .18s ease,background .18s ease;
+}
+.weight-shell:focus-within{
+  border-color:rgba(255,122,0,.46);
+  background:#fff;
+  box-shadow:0 0 0 4px rgba(255,122,0,.07);
+}
+.weight-shell input{
+  flex:1;
+  min-width:0;
+  height:50px;
+  padding:0 13px;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.weight-shell small{
+  padding:0 14px 0 8px;
+  color:#8d98a4;
+  font-size:7px;
+  font-weight:800;
+}

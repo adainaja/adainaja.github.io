@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#ffffff">
   <meta name="description" content="Edit produk Anda di AdaAja.">
   <title>Edit Produk — AdaAja</title>
-  <link rel="stylesheet" href="edit-product.css?v=20260807-2">
+  <link rel="stylesheet" href="edit-product.css?v=20260809-3">
 </head>
 <body>
   <div class="app-shell">
@@ -203,6 +203,15 @@
             </div>
           </div>
 
+          <label class="field">
+            <span>Berat paket <b class="required-mark">*</b></span>
+            <div class="weight-shell">
+              <input id="weightGrams" type="number" inputmode="numeric" min="1" max="1000000" step="1" placeholder="Contoh: 500">
+              <small>gram</small>
+            </div>
+            <p class="helper">Masukkan berat paket setelah dikemas. Berat wajib untuk menghitung ongkir kurir.</p>
+          </label>
+
           <div class="field">
             <span>Biaya pengiriman</span>
             <div class="payer-group" id="shippingPayerGroup">
@@ -286,6 +295,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=20260807-1"></script>
   <script src="auth-session.js?v=20260807-3"></script>
-  <script src="edit-product.js?v=20260807-2"></script>
+  <script src="edit-product.js?v=20260809-3"></script>
 </body>
 </html>
