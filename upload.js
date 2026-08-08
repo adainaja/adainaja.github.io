@@ -47,6 +47,7 @@ const stock = document.getElementById("stock");
 const unit = document.getElementById("unit");
 const minimumOrder = document.getElementById("minimumOrder");
 const minimumOrderHint = document.getElementById("minimumOrderHint");
+const weightGrams = document.getElementById("weightGrams");
 const message = document.getElementById("formMessage");
 const publishButton = document.getElementById("publishButton");
 const loadingOverlay = document.getElementById("loadingOverlay");
@@ -119,7 +120,8 @@ function updateProgress() {
     document.getElementById("processingTime").value,
     Number(price.dataset.value || 0) > 0,
     unit.value,
-    Number(minimumOrder.value || 0) >= 1
+    Number(minimumOrder.value || 0) >= 1,
+    Number(weightGrams.value || 0) > 0
   ];
   const progress = Math.round((checks.filter(Boolean).length / checks.length) * 100);
   formProgress.textContent = `${progress}%`;
@@ -316,7 +318,8 @@ function collectFormData() {
     price: Number(price.dataset.value || 0),
     unit: unit.value,
     minimum_order: Number(minimumOrder.value || 1),
-    stock: Number(stock.value || 1)
+    stock: Number(stock.value || 1),
+    weight_grams: Number(weightGrams.value || 0)
   };
 }
 
@@ -335,6 +338,7 @@ function validate(data) {
   if (!data.unit) return "Pilih satuan produk.";
   if (data.minimum_order < 1) return "Minimum order minimal 1.";
   if (data.stock < 1) return "Stok minimal satu.";
+  if (!Number.isFinite(data.weight_grams) || data.weight_grams <= 0) return "Isi berat paket dalam gram.";
   if (data.minimum_order > data.stock) return "Minimum order tidak boleh melebihi stok tersedia.";
   return "";
 }
@@ -454,6 +458,7 @@ form.addEventListener("submit", async (event) => {
       unit: data.unit,
       minimum_order: data.minimum_order,
       stock: data.stock,
+      weight_grams: data.weight_grams,
       shipping_payer: data.shipping_payer,
       shipping_method: data.shipping_method,
       ship_from_region: data.ship_from_region,
@@ -506,7 +511,7 @@ form.addEventListener("submit", async (event) => {
   }
 });
 
-["category", "condition", "shippingMethod", "shipFromRegion", "processingTime", "unit"].forEach((id) => {
+["category", "condition", "shippingMethod", "shipFromRegion", "processingTime", "unit", "weightGrams"].forEach((id) => {
   const element = document.getElementById(id);
   element.addEventListener(
     element.tagName === "SELECT" ? "change" : "input",
@@ -544,6 +549,7 @@ form.addEventListener("submit", async (event) => {
     unit.value = draft.unit || "pcs";
     minimumOrder.value = Math.max(1, Number(draft.minimum_order || 1));
     stock.value = draft.stock || draft.stok || 1;
+    weightGrams.value = draft.weight_grams || "";
     updateMinimumOrderHint();
 
     const restoredPrice = draft.price || draft.harga || 0;

@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#ffffff">
   <meta name="description" content="Jual produk di AdaAja dengan mudah.">
   <title>Jual Produk — AdaAja</title>
-  <link rel="stylesheet" href="upload.css?v=20260807-3">
+  <link rel="stylesheet" href="upload.css?v=20260809-1">
 </head>
 <body>
   <div class="app-shell">
@@ -317,6 +317,20 @@
               </select>
             </div>
           </div>
+
+
+          <label class="field">
+            <span class="field-label">
+              Berat paket
+              <em>Wajib</em>
+            </span>
+            <div class="input-shell">
+              <span class="field-icon">⚖</span>
+              <input id="weightGrams" type="number" inputmode="numeric" min="1" max="1000000" placeholder="Contoh: 1500">
+              <strong style="font-size:9px;color:#6f7b8c">gram</strong>
+            </div>
+            <small class="field-hint">Isi berat paket setelah dikemas. Digunakan untuk menghitung ongkir.</small>
+          </label>
         </section>
 
         <section class="form-card">
@@ -504,6 +518,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=20260807-1"></script>
   <script src="auth-session.js?v=20260807-1"></script>
-  <script src="upload.js?v=20260807-3"></script>
+  <script src="upload.js?v=20260809-1"></script>
 </body>
 </html>
