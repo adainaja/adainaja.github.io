@@ -101,8 +101,16 @@ function addressRegion(address) {
     .join(", ");
 }
 
-function addressShort(address) {
-  return [address.city, address.province].filter(Boolean).join(", ") || addressRegion(address);
+function addressTitle(address) {
+  // Prioritaskan nama perumahan / alamat detail agar pilihan tidak terlalu general.
+  // Label dipakai hanya sebagai fallback jika detail alamat belum tersedia.
+  return address.detail || address.label || address.village || address.district || address.city || "Alamat tersimpan";
+}
+
+function addressSecondary(address) {
+  return [address.village, address.district, address.city, address.province]
+    .filter(Boolean)
+    .join(", ");
 }
 
 function escapeHtml(value) {
@@ -264,8 +272,8 @@ shipFromAddress.addEventListener("change", () => {
     shipFromPreview.innerHTML = "<span>Pilih alamat tersimpan yang menjadi lokasi asal produk.</span>";
   } else {
     shipFromPreview.innerHTML = `
-      <strong>${escapeHtml(address.label)}${address.isPrimary ? " · Utama" : ""}</strong>
-      <span>${escapeHtml(addressRegion(address))}</span>
+      <strong>${escapeHtml(addressTitle(address))}${address.isPrimary ? " · Utama" : ""}</strong>
+      <span>${escapeHtml(addressSecondary(address) || addressRegion(address))}</span>
     `;
   }
   updateProgress();
@@ -301,7 +309,7 @@ async function loadSavedAddresses(userId, preferredRegion = "") {
       '<option value="">Pilih alamat asal produk</option>' +
       savedAddresses.map((address) => `
         <option value="${escapeHtml(address.id)}">
-          ${escapeHtml(address.label)}${address.isPrimary ? " (Utama)" : ""} — ${escapeHtml(addressShort(address))}
+          ${escapeHtml(addressTitle(address))}${address.isPrimary ? " (Utama)" : ""}
         </option>
       `).join("");
 
