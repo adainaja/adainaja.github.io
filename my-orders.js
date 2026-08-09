@@ -9,8 +9,8 @@ const orderNo=id=>`ADA-${String(id||"").replaceAll("-","").slice(0,10).toUpperCa
 const lower=v=>String(v||"").toLowerCase();
 function effectiveStatus(o){
   const orderStatus=lower(o?.status);
-  const paymentStatus=lower(o?.payment_status);
-  const txStatus=lower(o?.payment?.transaction_status);
+  const paymentStatus=lower(o?.payment_status || o?.payment?.status);
+  const txStatus=lower(o?.payment?.transaction_status || o?.transaction_status);
   const shipmentStatus=lower(o?.shipment?.status);
 
   if(["cancelled","canceled","expired","failed","deny","denied","refunded","refund"].includes(orderStatus) ||
@@ -23,8 +23,9 @@ function effectiveStatus(o){
   if(["processing","confirmed","ready_to_ship","packed"].includes(orderStatus)) return "processing";
 
   const paidByOrder=["paid","settlement","capture","success","successful"].includes(paymentStatus);
-  const paidByMidtrans=txStatus==="settlement" || (txStatus==="capture" && lower(o?.payment?.fraud_status)!=="challenge");
-  if(paidByOrder || paidByMidtrans || orderStatus==="paid") return "processing";
+  const paidByMidtrans=["settlement","success","successful"].includes(txStatus) ||
+    (txStatus==="capture" && !["challenge","deny","denied"].includes(lower(o?.payment?.fraud_status)));
+  if(paidByOrder || paidByMidtrans || ["paid","settlement","capture"].includes(orderStatus)) return "processing";
 
   return "pending_payment";
 }
@@ -50,7 +51,7 @@ async function loadOrders(){
   const raw=data||[],ids=raw.map(x=>x.id);
   const [itemsRes,payRes,shipRes,sellerRes]=await Promise.all([
    ids.length?window.adaajaSupabase.from("order_items").select("*").in("order_id",ids):Promise.resolve({data:[]}),
-   ids.length?window.adaajaSupabase.from("payments").select("order_id,transaction_status,payment_method,gross_amount,paid_at,fraud_status,created_at").in("order_id",ids).order("created_at",{ascending:false}):Promise.resolve({data:[]}),
+   ids.length?window.adaajaSupabase.from("payments").select("order_id,status,transaction_status,payment_method,gross_amount,paid_at,fraud_status,created_at").in("order_id",ids).order("created_at",{ascending:false}):Promise.resolve({data:[]}),
    ids.length?window.adaajaSupabase.from("shipments").select("id,order_id,courier_code,courier_name,courier_service,tracking_number,status,estimated_delivery_at").in("order_id",ids):Promise.resolve({data:[]}),
    raw.length?window.adaajaSupabase.from("profiles").select("id,username,full_name").in("id",[...new Set(raw.map(x=>x.seller_id))]):Promise.resolve({data:[]})
   ]);
@@ -83,5 +84,5 @@ function render(){const d=filtered();resultCount.textContent=`${d.length} pembel
 async function openTracking(id){const o=orders.find(x=>x.id===id);if(!o?.shipment?.id)return showToast("Data pengiriman belum tersedia.");trackingSheet.classList.add("active");document.body.classList.add("sheet-open");trackingContent.innerHTML=`<div class="tracking-summary"><span>${esc(o.shipment.courier_name||o.shipment.courier_code||"KURIR")}</span><strong>${esc(o.shipment.tracking_number||"Resi belum tersedia")}</strong><small>${esc(o.shipment.courier_service||"Layanan pengiriman")}</small></div><div class="timeline"><div class="timeline-item"><span class="timeline-dot"></span><div class="timeline-copy"><strong>Memuat perjalanan paket...</strong></div></div></div>`;
  const {data,error}=await window.adaajaSupabase.from("shipment_tracking").select("status,description,location,event_time,created_at").eq("shipment_id",o.shipment.id).order("event_time",{ascending:false});if(error)return trackingContent.insertAdjacentHTML("beforeend",`<p>${esc(error.message)}</p>`);const rows=data||[];trackingContent.innerHTML+=rows.length?`<div class="timeline">${rows.map(r=>`<div class="timeline-item"><span class="timeline-dot"></span><div class="timeline-copy"><strong>${esc(r.description||r.status||"Pembaruan")}</strong>${r.location?`<span>${esc(r.location)}</span>`:""}<small>${esc(date(r.event_time||r.created_at))}</small></div></div>`).join("")}</div>`:'<section class="empty-state"><strong>Belum ada riwayat perjalanan</strong><p>Pembaruan dari kurir akan tampil otomatis.</p></section>'}
 function closeTracking(){trackingSheet.classList.remove("active");document.body.classList.remove("sheet-open")}
-function subscribe(){if(!currentUser)return;if(realtimeChannel)window.adaajaSupabase.removeChannel(realtimeChannel);realtimeChannel=window.adaajaSupabase.channel(`buyer-orders-${currentUser.id}`).on("postgres_changes",{event:"*",schema:"public",table:"orders",filter:`buyer_id=eq.${currentUser.id}`},loadOrders).on("postgres_changes",{event:"*",schema:"public",table:"shipments",filter:`buyer_id=eq.${currentUser.id}`},loadOrders).subscribe()}
+function subscribe(){if(!currentUser)return;if(realtimeChannel)window.adaajaSupabase.removeChannel(realtimeChannel);realtimeChannel=window.adaajaSupabase.channel(`buyer-orders-${currentUser.id}`).on("postgres_changes",{event:"*",schema:"public",table:"orders",filter:`buyer_id=eq.${currentUser.id}`},loadOrders).on("postgres_changes",{event:"*",schema:"public",table:"payments"},loadOrders).on("postgres_changes",{event:"*",schema:"public",table:"shipments",filter:`buyer_id=eq.${currentUser.id}`},loadOrders).subscribe()}
 searchInput.oninput=render;sortSelect.onchange=render;statusTabs.querySelectorAll("button").forEach(b=>b.onclick=()=>{activeStatus=b.dataset.status;statusTabs.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===b));render()});refreshButton.onclick=async()=>{refreshButton.disabled=true;await loadOrders();refreshButton.disabled=false;showToast("Pembelian diperbarui.")};document.getElementById("trackingBackdrop").onclick=closeTracking;document.getElementById("closeTracking").onclick=closeTracking;window.adaajaSupabase.auth.onAuthStateChange((e,s)=>{if(e==="SIGNED_OUT"||!s?.user)location.replace("login.html")});window.addEventListener("beforeunload",()=>{if(realtimeChannel)window.adaajaSupabase.removeChannel(realtimeChannel)});loadOrders();
