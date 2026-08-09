@@ -78,6 +78,36 @@ function normalizedStatus(value) {
   return status;
 }
 
+function courierLabel(code) {
+  const value = String(code || "").trim().toLowerCase();
+  const labels = {
+    jne: "JNE",
+    jnt: "J&T Express",
+    'j&t': "J&T Express",
+    sicepat: "SiCepat",
+    anteraja: "AnterAja",
+    ninja: "Ninja Xpress",
+    lion: "Lion Parcel",
+    pos: "Pos Indonesia",
+    tiki: "TIKI",
+    wahana: "Wahana",
+    grab: "GrabExpress",
+    gosend: "GoSend"
+  };
+  return labels[value] || (value ? value.toUpperCase() : "-");
+}
+
+function shippingInfo(order) {
+  const code = order.courier_code || order.shipment?.courier_code || "";
+  const service = order.courier_service || order.shipment?.courier_service || "";
+  const courier = order.shipment?.courier_name || courierLabel(code);
+  const cost = Number(order.shipping_cost || order.shipment?.shipping_cost || 0);
+  const trackingNumber = order.shipment?.tracking_number || order.tracking_number || "";
+  const shipmentStatus = String(order.shipment?.shipment_status || order.shipment?.status || "").toLowerCase();
+
+  return { code, service, courier, cost, trackingNumber, shipmentStatus };
+}
+
 function publicUrl(path) {
   if (!path) return "";
 
@@ -154,6 +184,8 @@ async function loadOrders() {
         offer_id,
         address_id,
         status,
+        payment_status,
+        fulfillment_status,
         subtotal,
         shipping_cost,
         admin_fee,
@@ -423,10 +455,8 @@ function renderOrderCard(order) {
   const quantity = Number(firstItem.quantity || 1);
   const imageUrl = publicUrl(product.cover_path || "");
 
-  const trackingNumber =
-    order.shipment?.tracking_number ||
-    order.tracking_number ||
-    "";
+  const shipping = shippingInfo(order);
+  const trackingNumber = shipping.trackingNumber;
 
   const imageHtml = imageUrl
     ? `<img src="${esc(imageUrl)}" alt="${esc(productName)}" loading="lazy">`
@@ -500,6 +530,23 @@ function renderOrderCard(order) {
             }
           </div>
         </div>
+      </div>
+
+      <div class="shipping-summary">
+        <div class="shipping-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M3 7h11v10H3z"></path>
+            <path d="M14 10h4l3 3v4h-7z"></path>
+            <circle cx="7" cy="18" r="2"></circle>
+            <circle cx="18" cy="18" r="2"></circle>
+          </svg>
+        </div>
+        <div class="shipping-copy">
+          <span>PENGIRIMAN PILIHAN PEMBELI</span>
+          <strong>${esc(shipping.courier)}${shipping.service ? ` • ${esc(String(shipping.service).toUpperCase())}` : ""}</strong>
+          <small>${shipping.cost ? `Ongkir ${money(shipping.cost)}` : "Ongkir tersimpan pada transaksi"}${trackingNumber ? ` • Resi ${esc(trackingNumber)}` : ""}</small>
+        </div>
+        <span class="shipping-lock">Terkunci</span>
       </div>
 
       <div class="order-summary">
@@ -604,6 +651,7 @@ function openOrderSheet(orderId) {
 
   const [statusLabel] = statusInfo(selectedOrder.status);
   const shipment = selectedOrder.shipment;
+  const shipping = shippingInfo(selectedOrder);
   const buyer = selectedOrder.buyer || {};
   const firstItem = selectedOrder.items[0] || {};
 
@@ -633,10 +681,11 @@ function openOrderSheet(orderId) {
         <p>Total ${money(selectedOrder.total)}</p>
       </div>
 
-      <div class="detail-card">
-        <span>PENGIRIMAN</span>
-        <strong>${esc(shipment?.courier_name || shipment?.courier_code || "Belum dipilih")}</strong>
-        <p>${shipment?.tracking_number ? `Resi ${esc(shipment.tracking_number)}` : "Nomor resi belum tersedia."}</p>
+      <div class="detail-card shipping-detail-card">
+        <span>PENGIRIMAN PILIHAN PEMBELI</span>
+        <strong>${esc(shipping.courier)}${shipping.service ? ` • ${esc(String(shipping.service).toUpperCase())}` : ""}</strong>
+        <p>${shipping.cost ? `Ongkir ${money(shipping.cost)}.` : "Ongkir tersimpan pada transaksi."} ${shipping.trackingNumber ? `Resi ${esc(shipping.trackingNumber)}.` : "Nomor resi belum tersedia."}</p>
+        <div class="locked-note">Kurir sudah dipilih saat checkout dan tidak perlu dipilih ulang oleh penjual.</div>
       </div>
     </div>
 
@@ -664,17 +713,24 @@ function openOrderSheet(orderId) {
   });
 
   document.getElementById("sheetShippingAction")?.addEventListener("click", () => {
+    const info = shippingInfo(selectedOrder);
+
+    if (!info.code || !info.service) {
+      showToast("Data kurir pesanan belum lengkap. Periksa data checkout sebelum melanjutkan.");
+      return;
+    }
+
     if (!selectedOrder.shipment?.id) {
-      showToast("Integrasi Biteship belum aktif. Data pengiriman akan dibuat saat modul pengiriman dihubungkan.");
+      showToast(`Pengiriman ${info.courier} ${String(info.service).toUpperCase()} sudah dipilih pembeli. Shipment internal belum tersedia.`);
       return;
     }
 
-    if (!selectedOrder.shipment.tracking_number) {
-      showToast("Nomor resi belum tersedia.");
+    if (info.trackingNumber) {
+      showToast(`Resi ${info.courier}: ${info.trackingNumber}`);
       return;
     }
 
-    showToast(`Resi: ${selectedOrder.shipment.tracking_number}`);
+    showToast(`${info.courier} • ${String(info.service).toUpperCase()} sudah terkunci. Lanjutkan booking Biteship untuk mendapatkan resi.`);
   });
 }
 
