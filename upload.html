@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#ffffff">
   <meta name="description" content="Jual produk di AdaAja dengan mudah.">
   <title>Jual Produk — AdaAja</title>
-  <link rel="stylesheet" href="upload.css?v=20260809-1">
+  <link rel="stylesheet" href="upload.css?v=20260809-2">
 </head>
 <body>
   <div class="app-shell">
@@ -210,114 +210,51 @@
             <div class="section-title-wrap">
               <span class="section-number">03</span>
               <div>
-                <span class="section-kicker">PENGIRIMAN</span>
-                <h2>Pengaturan kirim</h2>
+                <span class="section-kicker">PENJUALAN</span>
+                <h2>Harga, lokasi & stok</h2>
               </div>
             </div>
           </div>
 
-          <div class="shipping-info">
+          <div class="buyer-shipping-note">
             <span>
               <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M3 7h11v10H3z"></path>
-                <path d="M14 10h4l3 3v4h-7V10Z"></path>
-                <circle cx="7" cy="18" r="2"></circle>
-                <circle cx="18" cy="18" r="2"></circle>
+                <path d="M6 8h12l1 12H5L6 8Z"></path>
+                <path d="M9 8a3 3 0 0 1 6 0"></path>
               </svg>
             </span>
             <div>
-              <strong>Integrasi kurir akan tersedia</strong>
-              <small>Untuk sekarang, isi metode dan asal pengiriman secara manual.</small>
+              <strong>Ongkir selalu dibayar pembeli</strong>
+              <small>Pembeli memilih layanan pengiriman saat checkout. Penjual cukup menentukan alamat asal dan berat paket.</small>
             </div>
           </div>
 
           <div class="field">
-            <span class="field-label">
-              Biaya pengiriman
-              <em>Wajib</em>
-            </span>
-            <div class="segmented-control" id="shippingPayerGroup">
-              <button type="button" data-value="seller">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"></path>
-                </svg>
-                <span>
-                  <strong>Penjual</strong>
-                  <small>Ongkir ditanggung Anda</small>
-                </span>
-              </button>
-              <button type="button" data-value="buyer">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M6 8h12l1 12H5L6 8Z"></path>
-                  <path d="M9 8a3 3 0 0 1 6 0"></path>
-                </svg>
-                <span>
-                  <strong>Pembeli</strong>
-                  <small>Ongkir dibayar pembeli</small>
-                </span>
-              </button>
-            </div>
-          </div>
-
-          <div class="field">
-            <span class="field-label">
-              Metode pengiriman
-              <em>Wajib</em>
-            </span>
-            <div class="select-shell">
-              <span class="field-icon">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M3 7h11v10H3z"></path>
-                  <path d="M14 10h4l3 3v4h-7V10Z"></path>
-                </svg>
-              </span>
-              <select id="shippingMethod">
-                <option value="">Pilih metode pengiriman</option>
-                <option value="kurir">Kurir / ekspedisi</option>
-                <option value="instant">Instan / same day</option>
-                <option value="pickup">Ambil di tempat</option>
-                <option value="digital">Produk digital / tanpa pengiriman</option>
-              </select>
-            </div>
-          </div>
-
-          <label class="field">
             <span class="field-label">
               Dikirim dari
               <em>Wajib</em>
             </span>
-            <div class="input-shell">
+            <div class="select-shell">
               <span class="field-icon">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"></path>
                   <circle cx="12" cy="10" r="2.5"></circle>
                 </svg>
               </span>
-              <input id="shipFromRegion" type="text" maxlength="80" placeholder="Contoh: Batam, Kepulauan Riau">
-            </div>
-          </label>
-
-          <div class="field">
-            <span class="field-label">
-              Waktu proses
-              <em>Wajib</em>
-            </span>
-            <div class="select-shell">
-              <span class="field-icon">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <circle cx="12" cy="12" r="9"></circle>
-                  <path d="M12 7v5l3 2"></path>
-                </svg>
-              </span>
-              <select id="processingTime">
-                <option value="">Pilih waktu proses</option>
-                <option value="1-2 hari">1–2 hari</option>
-                <option value="2-3 hari">2–3 hari</option>
-                <option value="4-7 hari">4–7 hari</option>
+              <select id="shipFromAddress">
+                <option value="">Memuat alamat...</option>
               </select>
             </div>
+            <div class="address-preview" id="shipFromPreview">
+              <span>Pilih alamat tersimpan yang menjadi lokasi asal produk.</span>
+            </div>
+            <a class="add-address-button" id="addAddressButton" href="my-address.html">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 5v14M5 12h14"></path>
+              </svg>
+              <span>Tambah alamat baru</span>
+            </a>
           </div>
-
 
           <label class="field">
             <span class="field-label">
@@ -329,20 +266,8 @@
               <input id="weightGrams" type="number" inputmode="numeric" min="1" max="1000000" placeholder="Contoh: 1500">
               <strong style="font-size:9px;color:#6f7b8c">gram</strong>
             </div>
-            <small class="field-hint">Isi berat paket setelah dikemas. Digunakan untuk menghitung ongkir.</small>
+            <small class="field-hint">Isi berat produk setelah dikemas. Berat ini digunakan saat pembeli menghitung ongkir di checkout.</small>
           </label>
-        </section>
-
-        <section class="form-card">
-          <div class="section-heading">
-            <div class="section-title-wrap">
-              <span class="section-number">04</span>
-              <div>
-                <span class="section-kicker">PENJUALAN</span>
-                <h2>Harga & stok</h2>
-              </div>
-            </div>
-          </div>
 
           <label class="field">
             <span class="field-label">
@@ -400,9 +325,16 @@
                   <option value="ikat">Ikat</option>
                   <option value="kodi">Kodi</option>
                   <option value="lusin">Lusin</option>
-                  <option value="lainnya">Lainnya</option>
+                  <option value="__custom__">Lainnya</option>
                 </select>
               </div>
+
+              <label class="custom-unit-wrap" id="customUnitWrap" hidden>
+                <span>Masukkan satuan lainnya</span>
+                <div class="input-shell">
+                  <input id="customUnit" type="text" maxlength="30" placeholder="Contoh: rim, paket, hari">
+                </div>
+              </label>
             </div>
 
             <label class="field">
@@ -489,7 +421,7 @@
         </svg>
       </a>
 
-      <a href="my-orders.html" class="nav-item">
+      <a href="activity.html" class="nav-item">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path>
           <path d="M4 8v10l8 3 8-3V8"></path>
@@ -518,6 +450,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=20260807-1"></script>
   <script src="auth-session.js?v=20260807-1"></script>
-  <script src="upload.js?v=20260809-1"></script>
+  <script src="upload.js?v=20260809-2"></script>
 </body>
 </html>

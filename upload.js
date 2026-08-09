@@ -31,10 +31,9 @@ const UPLOAD_LEGACY_CATEGORY_MAP = {
 
 const MAX_PHOTOS = 10;
 const PRODUCT_IMAGE_BUCKET = "product-images";
-
 const photos = [];
-let shippingPayer = "";
 let currentSession = null;
+let savedAddresses = [];
 
 const form = document.getElementById("productForm");
 const photoInput = document.getElementById("photoInput");
@@ -45,22 +44,81 @@ const description = document.getElementById("description");
 const price = document.getElementById("price");
 const stock = document.getElementById("stock");
 const unit = document.getElementById("unit");
+const customUnit = document.getElementById("customUnit");
+const customUnitWrap = document.getElementById("customUnitWrap");
 const minimumOrder = document.getElementById("minimumOrder");
 const minimumOrderHint = document.getElementById("minimumOrderHint");
 const weightGrams = document.getElementById("weightGrams");
+const shipFromAddress = document.getElementById("shipFromAddress");
+const shipFromPreview = document.getElementById("shipFromPreview");
 const message = document.getElementById("formMessage");
 const publishButton = document.getElementById("publishButton");
 const loadingOverlay = document.getElementById("loadingOverlay");
 const formProgress = document.getElementById("formProgress");
 
+const ADDRESS_ALIASES = {
+  label: ["label", "address_label", "type"],
+  province: ["province", "provinsi"],
+  city: ["city", "kota", "regency"],
+  district: ["district", "kecamatan"],
+  village: ["village", "kelurahan", "subdistrict"],
+  detail: ["address_line", "address_line1", "address", "alamat", "full_address"],
+  postal: ["postal_code", "kode_pos"]
+};
+
+const STANDARD_UNITS = new Set([
+  "unit","pcs","kg","gram","ton","meter","cm","mm","liter","ml","botol","dus","box",
+  "pack","sak","lembar","roll","pasang","set","karung","tray","bungkus","kaleng",
+  "galon","tabung","buah","ekor","ikat","kodi","lusin"
+]);
+
+function pickAddressValue(row, keys, fallback = "") {
+  for (const key of keys) {
+    if (row && row[key] != null && String(row[key]).trim()) {
+      return String(row[key]).trim();
+    }
+  }
+  return fallback;
+}
+
+function normalizeAddress(row) {
+  return {
+    id: row.id,
+    label: pickAddressValue(row, ADDRESS_ALIASES.label, "Alamat"),
+    province: pickAddressValue(row, ADDRESS_ALIASES.province),
+    city: pickAddressValue(row, ADDRESS_ALIASES.city),
+    district: pickAddressValue(row, ADDRESS_ALIASES.district),
+    village: pickAddressValue(row, ADDRESS_ALIASES.village),
+    detail: pickAddressValue(row, ADDRESS_ALIASES.detail),
+    postal: pickAddressValue(row, ADDRESS_ALIASES.postal),
+    isPrimary: Boolean(row.is_primary ?? row.is_default)
+  };
+}
+
+function addressRegion(address) {
+  return [address.detail, address.village, address.district, address.city, address.province, address.postal]
+    .filter(Boolean)
+    .join(", ");
+}
+
+function addressShort(address) {
+  return [address.city, address.province].filter(Boolean).join(", ") || addressRegion(address);
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 function normalizeUploadCondition(value) {
   const condition = String(value || "").trim().toLowerCase();
   if (!condition) return "";
   if (condition === "baru" || condition === "new") return "baru";
-  if (
-    condition === "bekas" ||
-    ["like_new", "good", "fair", "poor", "very_poor"].includes(condition)
-  ) {
+  if (condition === "bekas" || ["like_new", "good", "fair", "poor", "very_poor"].includes(condition)) {
     return "bekas";
   }
   return "";
@@ -107,6 +165,15 @@ async function requireLogin() {
   }
 }
 
+function selectedUnitValue() {
+  if (unit.value !== "__custom__") return unit.value;
+  return customUnit.value.trim();
+}
+
+function selectedAddress() {
+  return savedAddresses.find((item) => String(item.id) === String(shipFromAddress.value)) || null;
+}
+
 function updateProgress() {
   const checks = [
     photos.length > 0,
@@ -114,13 +181,11 @@ function updateProgress() {
     description.value.trim(),
     document.getElementById("category").value,
     document.getElementById("condition").value,
-    shippingPayer,
-    document.getElementById("shippingMethod").value,
-    document.getElementById("shipFromRegion").value.trim(),
-    document.getElementById("processingTime").value,
+    selectedAddress(),
     Number(price.dataset.value || 0) > 0,
-    unit.value,
+    selectedUnitValue(),
     Number(minimumOrder.value || 0) >= 1,
+    Number(stock.value || 0) >= 1,
     Number(weightGrams.value || 0) > 0
   ];
   const progress = Math.round((checks.filter(Boolean).length / checks.length) * 100);
@@ -144,28 +209,19 @@ price.addEventListener("input", () => {
   updateProgress();
 });
 
-document.querySelectorAll("#shippingPayerGroup button").forEach((button) => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll("#shippingPayerGroup button").forEach((item) => {
-      item.classList.remove("active");
-    });
-    button.classList.add("active");
-    shippingPayer = button.dataset.value;
-    updateProgress();
-  });
-});
-
 document.getElementById("decreaseStock").addEventListener("click", () => {
   stock.value = Math.max(1, Number(stock.value || 1) - 1);
+  updateProgress();
 });
 
 document.getElementById("increaseStock").addEventListener("click", () => {
   stock.value = Math.min(9999, Number(stock.value || 1) + 1);
+  updateProgress();
 });
 
 function updateMinimumOrderHint() {
   const value = Math.max(1, Number(minimumOrder.value || 1));
-  const unitLabel = unit.value || "satuan";
+  const unitLabel = selectedUnitValue() || "satuan";
   minimumOrderHint.textContent = `Minimal pembelian ${value} ${unitLabel}.`;
 }
 
@@ -189,9 +245,82 @@ minimumOrder.addEventListener("input", () => {
 });
 
 unit.addEventListener("change", () => {
+  const custom = unit.value === "__custom__";
+  customUnitWrap.hidden = !custom;
+  if (!custom) customUnit.value = "";
+  updateMinimumOrderHint();
+  updateProgress();
+  if (custom) customUnit.focus();
+});
+
+customUnit.addEventListener("input", () => {
   updateMinimumOrderHint();
   updateProgress();
 });
+
+shipFromAddress.addEventListener("change", () => {
+  const address = selectedAddress();
+  if (!address) {
+    shipFromPreview.innerHTML = "<span>Pilih alamat tersimpan yang menjadi lokasi asal produk.</span>";
+  } else {
+    shipFromPreview.innerHTML = `
+      <strong>${escapeHtml(address.label)}${address.isPrimary ? " · Utama" : ""}</strong>
+      <span>${escapeHtml(addressRegion(address))}</span>
+    `;
+  }
+  updateProgress();
+});
+
+document.getElementById("addAddressButton").addEventListener("click", () => {
+  sessionStorage.setItem("adaaja_address_return", "upload.html");
+});
+
+async function loadSavedAddresses(userId, preferredRegion = "") {
+  shipFromAddress.innerHTML = '<option value="">Memuat alamat...</option>';
+
+  try {
+    const { data, error } = await window.adaajaSupabase
+      .from("addresses")
+      .select("*")
+      .eq("user_id", userId)
+      .order("is_primary", { ascending: false })
+      .order("created_at", { ascending: true });
+
+    if (error) throw error;
+
+    savedAddresses = (data || []).map(normalizeAddress);
+
+    if (!savedAddresses.length) {
+      shipFromAddress.innerHTML = '<option value="">Belum ada alamat tersimpan</option>';
+      shipFromPreview.innerHTML = '<span>Tambahkan alamat terlebih dahulu untuk menentukan asal produk.</span>';
+      updateProgress();
+      return;
+    }
+
+    shipFromAddress.innerHTML =
+      '<option value="">Pilih alamat asal produk</option>' +
+      savedAddresses.map((address) => `
+        <option value="${escapeHtml(address.id)}">
+          ${escapeHtml(address.label)}${address.isPrimary ? " (Utama)" : ""} — ${escapeHtml(addressShort(address))}
+        </option>
+      `).join("");
+
+    let preferred = null;
+    if (preferredRegion) {
+      preferred = savedAddresses.find((address) => addressRegion(address) === preferredRegion);
+    }
+    preferred ||= savedAddresses.find((address) => address.isPrimary) || savedAddresses[0];
+
+    if (preferred) {
+      shipFromAddress.value = preferred.id;
+      shipFromAddress.dispatchEvent(new Event("change"));
+    }
+  } catch (error) {
+    console.error("Gagal memuat alamat:", error);
+    shipFromAddress.innerHTML = '<option value="">Alamat gagal dimuat</option>';
+    shipFromPreview.innerHTML = `<span>${escapeHtml(error.message || "Silakan muat ulang halaman.")}</span>`;
+  }
+}
 
 photoInput.addEventListener("change", async (event) => {
   const available = MAX_PHOTOS - photos.length;
@@ -294,29 +423,22 @@ document.getElementById("draftButton").addEventListener("click", () => {
   showMessage("Draf produk berhasil disimpan di perangkat ini.", "success");
 });
 
-function processingTimeToDays(value) {
-  return {
-    "1-2 hari": 2,
-    "2-3 hari": 3,
-    "4-7 hari": 7
-  }[value] || null;
-}
-
 function collectFormData() {
-  const processingTime = document.getElementById("processingTime").value;
+  const address = selectedAddress();
+
   return {
     category_id: document.getElementById("category").value,
     brand: document.getElementById("brand").value.trim(),
     name: productName.value.trim(),
     description: description.value.trim(),
     condition: document.getElementById("condition").value,
-    shipping_payer: shippingPayer,
-    shipping_method: document.getElementById("shippingMethod").value,
-    ship_from_region: document.getElementById("shipFromRegion").value.trim(),
-    processing_time_days: processingTimeToDays(processingTime),
-    processing_time_label: processingTime,
+    shipping_payer: "buyer",
+    shipping_method: null,
+    ship_from_address_id: address?.id || "",
+    ship_from_region: address ? addressRegion(address) : "",
     price: Number(price.dataset.value || 0),
-    unit: unit.value,
+    unit: selectedUnitValue(),
+    unit_selection: unit.value,
     minimum_order: Number(minimumOrder.value || 1),
     stock: Number(stock.value || 1),
     weight_grams: Number(weightGrams.value || 0)
@@ -330,12 +452,10 @@ function validate(data) {
   if (!data.description) return "Deskripsi produk belum diisi.";
   if (!data.category_id) return "Pilih kategori produk.";
   if (!["baru", "bekas"].includes(data.condition)) return "Pilih kondisi Baru atau Bekas.";
-  if (!data.shipping_payer) return "Pilih pihak yang menanggung ongkir.";
-  if (!data.shipping_method) return "Pilih metode pengiriman.";
-  if (!data.ship_from_region) return "Isi wilayah asal pengiriman.";
-  if (!data.processing_time_days) return "Pilih waktu proses.";
+  if (!data.ship_from_address_id || !data.ship_from_region) return "Pilih alamat asal produk.";
   if (data.price <= 0) return "Masukkan harga jual yang benar.";
-  if (!data.unit) return "Pilih satuan produk.";
+  if (!data.unit) return unit.value === "__custom__" ? "Masukkan satuan produk lainnya." : "Pilih satuan produk.";
+  if (data.unit.length > 30) return "Satuan produk maksimal 30 karakter.";
   if (data.minimum_order < 1) return "Minimum order minimal 1.";
   if (data.stock < 1) return "Stok minimal satu.";
   if (!Number.isFinite(data.weight_grams) || data.weight_grams <= 0) return "Isi berat paket dalam gram.";
@@ -459,10 +579,8 @@ form.addEventListener("submit", async (event) => {
       minimum_order: data.minimum_order,
       stock: data.stock,
       weight_grams: data.weight_grams,
-      shipping_payer: data.shipping_payer,
-      shipping_method: data.shipping_method,
+      shipping_payer: "buyer",
       ship_from_region: data.ship_from_region,
-      processing_time_days: data.processing_time_days,
       status: "active",
       published_at: now
     };
@@ -477,7 +595,6 @@ form.addEventListener("submit", async (event) => {
     if (!product?.id) throw new Error("ID produk tidak terbentuk.");
 
     productId = product.id;
-
     uploadedPaths = await uploadProductImages(productId, session.user.id);
 
     localStorage.removeItem("adaaja_product_draft");
@@ -497,7 +614,7 @@ form.addEventListener("submit", async (event) => {
 
     if (rawMessage.toLowerCase().includes("row-level security")) {
       showMessage(
-        "Akses Supabase ditolak oleh RLS. Periksa policy products, product_images, dan bucket product-images."
+        "Akses Supabase ditolak oleh RLS. Periksa policy products, product_images, addresses, dan bucket product-images."
       );
     } else if (rawMessage.toLowerCase().includes("bucket")) {
       showMessage(
@@ -511,7 +628,7 @@ form.addEventListener("submit", async (event) => {
   }
 });
 
-["category", "condition", "shippingMethod", "shipFromRegion", "processingTime", "unit", "weightGrams"].forEach((id) => {
+["category", "condition", "weightGrams"].forEach((id) => {
   const element = document.getElementById(id);
   element.addEventListener(
     element.tagName === "SELECT" ? "change" : "input",
@@ -519,9 +636,12 @@ form.addEventListener("submit", async (event) => {
   );
 });
 
-(function restoreDraft() {
+let draftToRestore = null;
+
+(function restoreDraftBase() {
   try {
     const draft = JSON.parse(localStorage.getItem("adaaja_product_draft") || "null");
+    draftToRestore = draft;
 
     if (!draft) {
       updateProgress();
@@ -540,13 +660,18 @@ form.addEventListener("submit", async (event) => {
     document.getElementById("brand").value = draft.brand || "";
     document.getElementById("condition").value =
       normalizeUploadCondition(draft.condition || draft.kondisi);
-    document.getElementById("shippingMethod").value = draft.shipping_method || "";
-    document.getElementById("shipFromRegion").value = draft.ship_from_region || "";
-    document.getElementById("processingTime").value =
-      draft.processing_time_label ||
-      ({ 2: "1-2 hari", 3: "2-3 hari", 7: "4-7 hari" }[Number(draft.processing_time_days)] || "");
 
-    unit.value = draft.unit || "pcs";
+    const restoredUnit = String(draft.unit || "pcs").trim();
+    if (STANDARD_UNITS.has(restoredUnit)) {
+      unit.value = restoredUnit;
+      customUnitWrap.hidden = true;
+      customUnit.value = "";
+    } else if (restoredUnit) {
+      unit.value = "__custom__";
+      customUnitWrap.hidden = false;
+      customUnit.value = restoredUnit;
+    }
+
     minimumOrder.value = Math.max(1, Number(draft.minimum_order || 1));
     stock.value = draft.stock || draft.stok || 1;
     weightGrams.value = draft.weight_grams || "";
@@ -556,13 +681,6 @@ form.addEventListener("submit", async (event) => {
     if (restoredPrice) {
       price.dataset.value = restoredPrice;
       price.value = new Intl.NumberFormat("id-ID").format(restoredPrice);
-    }
-
-    if (draft.shipping_payer) {
-      const button = document.querySelector(
-        `#shippingPayerGroup button[data-value="${draft.shipping_payer}"]`
-      );
-      if (button) button.click();
     }
 
     productName.dispatchEvent(new Event("input"));
@@ -578,6 +696,11 @@ window.addEventListener("beforeunload", () => {
   photos.forEach((photo) => {
     if (photo.previewUrl) URL.revokeObjectURL(photo.previewUrl);
   });
+});
+
+window.addEventListener("pageshow", async () => {
+  if (!currentSession?.user) return;
+  await loadSavedAddresses(currentSession.user.id, draftToRestore?.ship_from_region || "");
 });
 
 (async function initUploadPage() {
@@ -603,6 +726,7 @@ window.addEventListener("beforeunload", () => {
     console.warn("Profile validation failed:", error);
   }
 
+  await loadSavedAddresses(session.user.id, draftToRestore?.ship_from_region || "");
   updateMinimumOrderHint();
   updateProgress();
 })();

@@ -980,3 +980,123 @@ svg{
 @media(max-width:360px){
   .sales-grid{grid-template-columns:1fr;gap:0}
 }
+
+
+/* =========================================
+   FINISHING V1 — ADDRESS ORIGIN & CUSTOM UNIT
+========================================= */
+.buyer-shipping-note{
+  display:flex;
+  align-items:flex-start;
+  gap:11px;
+  margin-top:16px;
+  padding:13px;
+  border:1px solid rgba(255,122,0,.12);
+  border-radius:17px;
+  background:linear-gradient(180deg,#fff8f1,#fff3e7);
+}
+
+.buyer-shipping-note>span{
+  display:grid;
+  width:40px;
+  height:40px;
+  flex:0 0 auto;
+  place-items:center;
+  border-radius:13px;
+  background:#fff;
+  color:var(--orange);
+  box-shadow:0 7px 16px rgba(255,122,0,.08);
+}
+
+.buyer-shipping-note svg{
+  width:18px;
+  height:18px;
+}
+
+.buyer-shipping-note strong{
+  display:block;
+  color:var(--navy);
+  font-size:8.5px;
+}
+
+.buyer-shipping-note small{
+  display:block;
+  margin-top:4px;
+  color:var(--muted);
+  font-size:6.5px;
+  line-height:1.5;
+}
+
+.address-preview{
+  display:flex;
+  min-height:48px;
+  flex-direction:column;
+  justify-content:center;
+  gap:3px;
+  margin-top:8px;
+  padding:10px 12px;
+  border:1px solid rgba(9,37,68,.06);
+  border-radius:14px;
+  background:#fbfcfd;
+}
+
+.address-preview strong{
+  color:var(--navy);
+  font-size:7.5px;
+}
+
+.address-preview span{
+  color:var(--muted);
+  font-size:6.5px;
+  line-height:1.5;
+}
+
+.add-address-button{
+  display:flex;
+  width:max-content;
+  max-width:100%;
+  min-height:36px;
+  align-items:center;
+  gap:7px;
+  margin-top:9px;
+  padding:0 11px;
+  border:1px solid rgba(255,122,0,.15);
+  border-radius:12px;
+  background:var(--orange-soft);
+  color:var(--orange);
+  text-decoration:none;
+  font-size:7px;
+  font-weight:800;
+}
+
+.add-address-button svg{
+  width:14px;
+  height:14px;
+}
+
+.custom-unit-wrap{
+  display:block;
+  margin-top:8px;
+}
+
+.custom-unit-wrap[hidden]{
+  display:none;
+}
+
+.custom-unit-wrap>span{
+  display:block;
+  margin-bottom:6px;
+  color:var(--muted);
+  font-size:6.5px;
+  font-weight:700;
+}
+
+.custom-unit-wrap .input-shell{
+  min-height:44px;
+  border-radius:14px;
+}
+
+.custom-unit-wrap .input-shell input{
+  height:42px;
+  font-size:8.5px;
+}
