@@ -4,9 +4,16 @@ const photoElement = document.getElementById("photo");
 const avatarElement = document.getElementById("avatar");
 const avatarFallback = document.getElementById("avatarFallback");
 const joinedDateElement = document.getElementById("joinedDate");
-const balanceValueElement = document.getElementById("balanceValue");
-const productCountElement = document.getElementById("productCount");
-const orderCountElement = document.getElementById("orderCount");
+
+const fullNameValue = document.getElementById("fullNameValue");
+const emailValue = document.getElementById("emailValue");
+const phoneValue = document.getElementById("phoneValue");
+const bioValue = document.getElementById("bioValue");
+
+const addressLabel = document.getElementById("addressLabel");
+const addressTitle = document.getElementById("addressTitle");
+const addressDetail = document.getElementById("addressDetail");
+
 const confirmLogoutButton = document.getElementById("confirmLogout");
 
 let currentSession = null;
@@ -16,10 +23,7 @@ function formatJoinedDate(value) {
   if (!value) return "Member aktif";
 
   const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Member aktif";
-  }
+  if (Number.isNaN(date.getTime())) return "Member aktif";
 
   return `Bergabung ${new Intl.DateTimeFormat("id-ID", {
     month: "short",
@@ -27,33 +31,26 @@ function formatJoinedDate(value) {
   }).format(date)}`;
 }
 
-function formatBalance(value) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0
-  }).format(Number(value || 0));
-}
-
-async function getSession() {
-  if (currentSession?.user) return currentSession;
+async function getSession(forceFresh = false) {
+  if (!forceFresh && currentSession?.user) return currentSession;
 
   const { data, error } = await window.adaajaSupabase.auth.getSession();
-
-  if (error) {
-    throw error;
-  }
+  if (error) throw error;
 
   currentSession = data.session || null;
   return currentSession;
 }
 
 async function requireLogin() {
-  const user = await window.AdaAjaAuth.getCurrentUser();
+  try {
+    const session = await getSession(true);
 
-  if (user) {
-    currentSession = { user };
-    return currentSession;
+    if (session?.user) {
+      currentSession = session;
+      return session;
+    }
+  } catch (error) {
+    console.warn("Session check failed:", error);
   }
 
   currentSession = null;
@@ -75,21 +72,31 @@ async function loadProfile(userId) {
   return currentProfile;
 }
 
-async function hasPrimaryAddress(userId) {
+async function loadPrimaryAddress(userId) {
   const { data, error } = await window.adaajaSupabase
     .from("addresses")
-    .select("id")
+    .select("*")
     .eq("user_id", userId)
     .eq("is_primary", true)
     .limit(1)
     .maybeSingle();
 
   if (error) {
-    console.warn("Primary address check failed:", error);
-    return false;
+    console.warn("Primary address load failed:", error);
+    return null;
   }
 
-  return Boolean(data?.id);
+  return data || null;
+}
+
+function firstValue(object, keys) {
+  for (const key of keys) {
+    const value = object?.[key];
+    if (value !== undefined && value !== null && String(value).trim()) {
+      return String(value).trim();
+    }
+  }
+  return "";
 }
 
 function renderIdentity(session, profile) {
@@ -102,9 +109,11 @@ function renderIdentity(session, profile) {
 
   usernameElement.textContent = displayName;
   emailElement.textContent = session.user.email || "Email belum tersedia";
+  joinedDateElement.textContent = formatJoinedDate(
+    profile?.created_at || session.user.created_at
+  );
 
-  avatarFallback.textContent =
-    String(displayName).charAt(0).toUpperCase();
+  avatarFallback.textContent = String(displayName).charAt(0).toUpperCase();
 
   if (profile?.avatar_url) {
     photoElement.src = profile.avatar_url;
@@ -122,80 +131,60 @@ function renderIdentity(session, profile) {
     photoElement.removeAttribute("src");
   }
 
-  joinedDateElement.textContent =
-    formatJoinedDate(
-      profile?.created_at ||
-      session.user.created_at
-    );
+  fullNameValue.textContent =
+    profile?.full_name ||
+    session.user.user_metadata?.full_name ||
+    "Belum diisi";
+
+  emailValue.textContent =
+    session.user.email ||
+    "Belum tersedia";
+
+  phoneValue.textContent =
+    profile?.phone ||
+    session.user.phone ||
+    "Belum diisi";
+
+  bioValue.textContent =
+    profile?.bio ||
+    "Belum ada bio";
 }
 
-async function loadProductCount(userId) {
-  try {
-    const { count, error } = await window.adaajaSupabase
-      .from("products")
-      .select("id", {
-        count: "exact",
-        head: true
-      })
-      .eq("seller_id", userId);
-
-    if (error) throw error;
-
-    productCountElement.textContent =
-      Number(count || 0);
-  } catch (error) {
-    console.warn("Product count failed:", error);
-    productCountElement.textContent = "0";
+function renderAddress(address) {
+  if (!address) {
+    addressLabel.textContent = "ALAMAT BELUM DITAMBAHKAN";
+    addressTitle.textContent = "Tambahkan alamat utama";
+    addressDetail.textContent =
+      "Alamat utama diperlukan untuk pengiriman dan transaksi tertentu.";
+    return;
   }
-}
 
-async function loadOrderCount(userId) {
-  /*
-    Orders belum menjadi bagian migrasi yang sudah kita finalkan.
-    Fungsi ini mencoba membaca tabel orders jika sudah tersedia.
-    Jika struktur/tabel belum siap, halaman profil tetap berjalan
-    dan nilai pesanan tetap 0.
-  */
-  try {
-    const { count, error } = await window.adaajaSupabase
-      .from("orders")
-      .select("id", {
-        count: "exact",
-        head: true
-      })
-      .eq("buyer_id", userId);
+  const title =
+    firstValue(address, [
+      "address_detail",
+      "detail",
+      "street_address",
+      "address_line",
+      "full_address",
+      "label"
+    ]) || "Alamat utama";
 
-    if (error) throw error;
+  const regionParts = [
+    firstValue(address, ["village", "kelurahan"]),
+    firstValue(address, ["district", "kecamatan"]),
+    firstValue(address, ["city", "regency", "kota"]),
+    firstValue(address, ["province", "provinsi"]),
+    firstValue(address, ["postal_code", "postcode", "zip_code"])
+  ].filter(Boolean);
 
-    orderCountElement.textContent =
-      Number(count || 0);
-  } catch (error) {
-    console.warn("Order count belum tersedia:", error);
-    orderCountElement.textContent = "0";
-  }
-}
+  addressLabel.textContent =
+    firstValue(address, ["label", "name"])?.toUpperCase() || "ALAMAT UTAMA";
 
-async function loadBalance(userId) {
-  /*
-    Saldo belum dipastikan struktur tabelnya pada migrasi saat ini.
-    Coba membaca wallets jika tabel tersebut sudah tersedia.
-    Jika belum, tampilkan Rp0 tanpa memblokir halaman.
-  */
-  try {
-    const { data, error } = await window.adaajaSupabase
-      .from("wallets")
-      .select("balance")
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    if (error) throw error;
-
-    balanceValueElement.textContent =
-      formatBalance(data?.balance || 0);
-  } catch (error) {
-    console.warn("Wallet balance belum tersedia:", error);
-    balanceValueElement.textContent = formatBalance(0);
-  }
+  addressTitle.textContent = title;
+  addressDetail.textContent =
+    regionParts.join(", ") ||
+    firstValue(address, ["full_address", "address"]) ||
+    "Detail wilayah belum tersedia.";
 }
 
 async function renderProfile() {
@@ -203,28 +192,26 @@ async function renderProfile() {
   if (!session?.user) return;
 
   try {
-    const profile = await loadProfile(session.user.id);
-    const addressReady = await hasPrimaryAddress(session.user.id);
+    const [profile, primaryAddress] = await Promise.all([
+      loadProfile(session.user.id),
+      loadPrimaryAddress(session.user.id)
+    ]);
 
-    if (!profile?.username || !addressReady) {
+    // Profile tetap bisa dibuka meskipun alamat belum tersedia.
+    // Hanya profile row yang benar-benar hilang yang diarahkan ke complete account.
+    if (!profile) {
       location.replace("complete-account.html");
       return;
     }
 
     renderIdentity(session, profile);
-
-    await Promise.all([
-      loadProductCount(session.user.id),
-      loadOrderCount(session.user.id),
-      loadBalance(session.user.id)
-    ]);
+    renderAddress(primaryAddress);
   } catch (error) {
     console.error("Profile load failed:", error);
 
-    // Bila profile row hilang tetapi Auth masih aktif, arahkan kembali
-    // ke Complete Account agar data akun dapat dibuat ulang.
     if (currentSession?.user) {
-      location.replace("complete-account.html");
+      // Hindari loop ke complete-account hanya karena alamat gagal dibaca.
+      renderAddress(null);
       return;
     }
 
@@ -234,7 +221,6 @@ async function renderProfile() {
 
 function openLogoutPanel() {
   const panel = document.getElementById("logoutPanel");
-
   panel.classList.add("active");
   panel.setAttribute("aria-hidden", "false");
   document.body.classList.add("panel-open");
@@ -242,7 +228,6 @@ function openLogoutPanel() {
 
 function closeLogoutPanel() {
   const panel = document.getElementById("logoutPanel");
-
   panel.classList.remove("active");
   panel.setAttribute("aria-hidden", "true");
   document.body.classList.remove("panel-open");
@@ -257,65 +242,32 @@ async function logout() {
   } finally {
     currentSession = null;
     currentProfile = null;
-
     localStorage.removeItem("redirectAfterLogin");
-
-    /*
-      Gunakan query cache-buster agar Home tidak dikembalikan dari
-      snapshot browser lama setelah logout.
-    */
     location.replace(`home.html?logout=${Date.now()}`);
   }
 }
 
-document
-  .getElementById("editProfileButton")
-  .addEventListener("click", () => {
-    location.href = "edit-profile.html";
-  });
-
-document
-  .getElementById("settingsButton")
-  .addEventListener("click", () => {
-    location.href = "settings.html";
-  });
-
-document
-  .getElementById("logoutButton")
-  .addEventListener("click", openLogoutPanel);
-
-document
-  .getElementById("logoutBackdrop")
-  .addEventListener("click", closeLogoutPanel);
-
-document
-  .getElementById("cancelLogout")
-  .addEventListener("click", closeLogoutPanel);
-
-confirmLogoutButton
-  .addEventListener("click", logout);
+document.getElementById("logoutButton").addEventListener("click", openLogoutPanel);
+document.getElementById("logoutBackdrop").addEventListener("click", closeLogoutPanel);
+document.getElementById("cancelLogout").addEventListener("click", closeLogoutPanel);
+confirmLogoutButton.addEventListener("click", logout);
 
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") {
-    closeLogoutPanel();
+  if (event.key === "Escape") closeLogoutPanel();
+});
+
+window.adaajaSupabase.auth.onAuthStateChange((event, session) => {
+  currentSession = session || null;
+
+  if (event === "SIGNED_OUT" && !location.pathname.endsWith("/login.html")) {
+    location.replace("login.html");
   }
 });
 
-/*
-  Jika session berubah (misalnya logout di tab lain),
-  profil ikut menyesuaikan.
-*/
-window.adaajaSupabase.auth.onAuthStateChange(
-  (event, session) => {
-    currentSession = session || null;
-
-    if (
-      event === "SIGNED_OUT" &&
-      !location.pathname.endsWith("/login.html")
-    ) {
-      location.replace("login.html");
-    }
-  }
-);
+window.addEventListener("pageshow", () => {
+  currentSession = null;
+  currentProfile = null;
+  renderProfile();
+});
 
 renderProfile();
