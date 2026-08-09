@@ -14,6 +14,11 @@ const addressLabel = document.getElementById("addressLabel");
 const addressTitle = document.getElementById("addressTitle");
 const addressDetail = document.getElementById("addressDetail");
 
+const availableBalanceValue = document.getElementById("availableBalanceValue");
+const heldBalanceValue = document.getElementById("heldBalanceValue");
+const activeProductCountValue = document.getElementById("activeProductCountValue");
+const bankAccountStatus = document.getElementById("bankAccountStatus");
+
 const confirmLogoutButton = document.getElementById("confirmLogout");
 
 let currentSession = null;
@@ -187,6 +192,126 @@ function renderAddress(address) {
     "Detail wilayah belum tersedia.";
 }
 
+
+function formatCurrency(value) {
+  if (value === null || value === undefined || value === "") return "—";
+  const amount = Number(value);
+  if (!Number.isFinite(amount)) return "—";
+
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0
+  }).format(amount);
+}
+
+async function loadAdaPaySummary(userId) {
+  // Tidak menggunakan dummy. Jika struktur wallet belum tersedia,
+  // UI tetap menampilkan em dash sampai data valid berhasil dibaca.
+  try {
+    const { data, error } = await window.adaajaSupabase
+      .from("wallets")
+      .select("*")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    if (!data) {
+      availableBalanceValue.textContent = "—";
+      heldBalanceValue.textContent = "—";
+      return;
+    }
+
+    const available =
+      data.available_balance ??
+      data.balance ??
+      data.available ??
+      null;
+
+    const held =
+      data.held_balance ??
+      data.pending_balance ??
+      data.on_hold_balance ??
+      data.reserved_balance ??
+      null;
+
+    availableBalanceValue.textContent = formatCurrency(available);
+    heldBalanceValue.textContent = formatCurrency(held);
+  } catch (error) {
+    console.warn("AdaPay summary unavailable:", error);
+    availableBalanceValue.textContent = "—";
+    heldBalanceValue.textContent = "—";
+  }
+}
+
+async function loadActiveProductCount(userId) {
+  try {
+    const { count, error } = await window.adaajaSupabase
+      .from("products")
+      .select("id", { count: "exact", head: true })
+      .eq("seller_id", userId)
+      .eq("status", "active");
+
+    if (error) throw error;
+
+    activeProductCountValue.textContent =
+      Number.isFinite(Number(count)) ? String(Number(count)) : "—";
+  } catch (error) {
+    console.warn("Active product count unavailable:", error);
+    activeProductCountValue.textContent = "—";
+  }
+}
+
+async function loadBankAccountStatus(userId) {
+  // Coba tabel rekening pencairan jika sudah tersedia.
+  // Tidak membuat status palsu bila tabel belum ada.
+  const tableCandidates = ["bank_accounts", "payout_accounts"];
+
+  for (const table of tableCandidates) {
+    try {
+      const { data, error } = await window.adaajaSupabase
+        .from(table)
+        .select("*")
+        .eq("user_id", userId)
+        .limit(1)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (data) {
+        const bank =
+          data.bank_name ||
+          data.bank ||
+          "Rekening tersimpan";
+
+        const accountNumber =
+          String(
+            data.account_number ||
+            data.bank_account_number ||
+            ""
+          );
+
+        const masked =
+          accountNumber.length >= 4
+            ? ` •••• ${accountNumber.slice(-4)}`
+            : "";
+
+        bankAccountStatus.textContent = `${bank}${masked}`;
+        return;
+      }
+
+      bankAccountStatus.textContent = "Belum ditambahkan";
+      return;
+    } catch (error) {
+      // coba kandidat berikutnya
+    }
+  }
+
+  bankAccountStatus.textContent = "Belum tersedia";
+}
+
+
 async function renderProfile() {
   const session = await requireLogin();
   if (!session?.user) return;
@@ -206,6 +331,12 @@ async function renderProfile() {
 
     renderIdentity(session, profile);
     renderAddress(primaryAddress);
+
+    await Promise.all([
+      loadAdaPaySummary(session.user.id),
+      loadActiveProductCount(session.user.id),
+      loadBankAccountStatus(session.user.id)
+    ]);
   } catch (error) {
     console.error("Profile load failed:", error);
 

@@ -542,3 +542,264 @@ svg{
   .avatar{width:72px;height:72px;border-radius:23px}
   .identity-copy h2{font-size:18px}
 }
+
+
+/* =========================================
+   PROFILE LUXURY REFINEMENT
+========================================= */
+.profile-hero{
+  padding:22px;
+  border-radius:31px;
+  box-shadow:
+    0 28px 58px rgba(9,37,68,.24),
+    inset 0 1px 0 rgba(255,255,255,.09);
+}
+
+.profile-hero::after{
+  position:absolute;
+  left:-54px;
+  bottom:-70px;
+  width:180px;
+  height:180px;
+  border:25px solid rgba(255,255,255,.035);
+  border-radius:50%;
+  content:"";
+  pointer-events:none;
+}
+
+.avatar{
+  width:84px;
+  height:84px;
+  border-radius:28px;
+  border-color:rgba(255,255,255,.18);
+  box-shadow:
+    0 18px 34px rgba(0,0,0,.2),
+    inset 0 1px 0 rgba(255,255,255,.5);
+}
+
+.edit-profile-button{
+  min-height:45px;
+  border-radius:15px;
+  background:linear-gradient(180deg,rgba(255,255,255,.11),rgba(255,255,255,.075));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07);
+}
+
+.luxury-overview{
+  margin-top:18px;
+}
+
+.luxury-summary-grid{
+  display:grid;
+  grid-template-columns:1.25fr .75fr;
+  gap:11px;
+}
+
+.luxury-card{
+  position:relative;
+  display:flex;
+  min-width:0;
+  min-height:164px;
+  flex-direction:column;
+  justify-content:space-between;
+  overflow:hidden;
+  padding:16px;
+  border-radius:24px;
+  text-decoration:none;
+  transition:.2s ease;
+}
+
+.luxury-card:active{
+  transform:scale(.985);
+}
+
+.adapay-card{
+  border:1px solid rgba(255,255,255,.08);
+  background:
+    radial-gradient(circle at 100% 0,rgba(255,255,255,.13),transparent 120px),
+    linear-gradient(145deg,#071e38 0%,#0b2f58 58%,#173f70 100%);
+  color:#fff;
+  box-shadow:
+    0 20px 42px rgba(9,37,68,.20),
+    inset 0 1px 0 rgba(255,255,255,.07);
+}
+
+.adapay-card::after{
+  position:absolute;
+  right:-35px;
+  bottom:-48px;
+  width:120px;
+  height:120px;
+  border:19px solid rgba(255,255,255,.04);
+  border-radius:50%;
+  content:"";
+}
+
+.product-card-luxury{
+  border:1px solid rgba(255,122,0,.09);
+  background:
+    radial-gradient(circle at 100% 0,rgba(255,122,0,.1),transparent 110px),
+    linear-gradient(180deg,#fff,#fffdfb);
+  color:var(--navy);
+  box-shadow:0 16px 34px rgba(9,37,68,.075);
+}
+
+.luxury-card-top{
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.luxury-card-icon{
+  display:grid;
+  width:39px;
+  height:39px;
+  place-items:center;
+  border-radius:13px;
+  background:rgba(255,255,255,.09);
+  color:#ffb76d;
+}
+
+.product-card-luxury .luxury-card-icon{
+  background:var(--orange-soft);
+  color:var(--orange);
+}
+
+.luxury-card-icon svg{
+  width:18px;
+  height:18px;
+}
+
+.luxury-card-label{
+  font-size:7px;
+  font-weight:800;
+  letter-spacing:.9px;
+  opacity:.72;
+}
+
+.luxury-card-main{
+  position:relative;
+  z-index:1;
+  margin-top:18px;
+}
+
+.luxury-card-main small{
+  display:block;
+  color:inherit;
+  font-size:6.5px;
+  font-weight:700;
+  opacity:.62;
+}
+
+.luxury-card-main strong{
+  display:block;
+  overflow:hidden;
+  margin-top:6px;
+  font-size:20px;
+  line-height:1;
+  font-weight:800;
+  letter-spacing:-.65px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.product-card-luxury .luxury-card-main strong{
+  color:var(--orange);
+  font-size:28px;
+}
+
+.luxury-card-meta{
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:9px;
+  margin-top:18px;
+  padding-top:11px;
+  border-top:1px solid rgba(255,255,255,.09);
+}
+
+.product-card-luxury .luxury-card-meta{
+  border-top-color:#eef1f4;
+}
+
+.luxury-card-meta>span:first-child{
+  min-width:0;
+}
+
+.luxury-card-meta small{
+  display:block;
+  font-size:5.8px;
+  opacity:.55;
+}
+
+.luxury-card-meta strong{
+  display:block;
+  margin-top:3px;
+  font-size:8px;
+}
+
+.luxury-card-action{
+  flex:0 0 auto;
+  color:#ffb76d;
+  font-size:6.5px;
+  font-weight:800;
+}
+
+.product-card-luxury .luxury-card-action{
+  color:var(--orange);
+}
+
+.luxury-card-meta.single{
+  justify-content:flex-start;
+}
+
+.info-card,
+.account-menu,
+.address-card{
+  border-radius:24px;
+  box-shadow:
+    0 15px 34px rgba(9,37,68,.06),
+    inset 0 1px 0 rgba(255,255,255,.7);
+}
+
+.info-row,
+.menu-row{
+  min-height:72px;
+}
+
+.info-icon,
+.menu-icon{
+  border:1px solid rgba(9,37,68,.045);
+  background:linear-gradient(180deg,#fafbfd,#f3f6f9);
+}
+
+.address-card{
+  min-height:108px;
+  border-color:rgba(255,122,0,.12);
+  background:
+    radial-gradient(circle at 100% 0,rgba(255,122,0,.09),transparent 130px),
+    linear-gradient(180deg,#fff,#fffdfa);
+}
+
+.logout-button{
+  min-height:56px;
+  border-radius:18px;
+}
+
+@media(max-width:360px){
+  .luxury-summary-grid{
+    grid-template-columns:1fr;
+  }
+
+  .luxury-card{
+    min-height:145px;
+  }
+
+  .product-card-luxury .luxury-card-main strong{
+    font-size:24px;
+  }
+}

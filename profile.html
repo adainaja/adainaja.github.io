@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#ffffff">
   <meta name="description" content="Kelola identitas, alamat, dan pengaturan akun AdaAja.">
   <title>Profil Saya — AdaAja</title>
-  <link rel="stylesheet" href="profile.css?v=20260809-profile-finish-1">
+  <link rel="stylesheet" href="profile.css?v=20260809-profile-luxury-1">
 </head>
 <body>
   <div class="app-shell">
@@ -58,6 +58,65 @@
           </svg>
           <span>Edit Profil</span>
         </a>
+      </section>
+
+      <section class="profile-section luxury-overview">
+        <div class="section-heading">
+          <div>
+            <span>RINGKASAN AKUN</span>
+            <h2>AdaPay & Produk</h2>
+          </div>
+          <small>Data akun Anda</small>
+        </div>
+
+        <div class="luxury-summary-grid">
+          <a href="wallet.html" class="luxury-card adapay-card">
+            <div class="luxury-card-top">
+              <span class="luxury-card-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 6h14a2 2 0 0 1 2 2v10H4V6Z"></path>
+                  <path d="M4 9V6a2 2 0 0 1 2-2h11"></path>
+                  <path d="M16 12h4v4h-4a2 2 0 0 1 0-4Z"></path>
+                </svg>
+              </span>
+              <span class="luxury-card-label">AdaPay</span>
+            </div>
+
+            <div class="luxury-card-main">
+              <small>Saldo tersedia</small>
+              <strong id="availableBalanceValue">—</strong>
+            </div>
+
+            <div class="luxury-card-meta">
+              <span>
+                <small>Saldo tertahan</small>
+                <strong id="heldBalanceValue">—</strong>
+              </span>
+              <span class="luxury-card-action">Lihat saldo</span>
+            </div>
+          </a>
+
+          <a href="my-products.html" class="luxury-card product-card-luxury">
+            <div class="luxury-card-top">
+              <span class="luxury-card-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 8h12l1 12H5L6 8Z"></path>
+                  <path d="M9 8a3 3 0 0 1 6 0"></path>
+                </svg>
+              </span>
+              <span class="luxury-card-label">Produk Saya</span>
+            </div>
+
+            <div class="luxury-card-main">
+              <small>Produk aktif</small>
+              <strong id="activeProductCountValue">—</strong>
+            </div>
+
+            <div class="luxury-card-meta single">
+              <span class="luxury-card-action">Kelola produk</span>
+            </div>
+          </a>
+        </div>
       </section>
 
       <section class="profile-section">
@@ -162,6 +221,25 @@
         </div>
 
         <div class="account-menu">
+
+          <a href="bank-account.html" class="menu-row">
+            <span class="menu-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 10h18"></path>
+                <path d="M5 10v8M9 10v8M15 10v8M19 10v8"></path>
+                <path d="M4 18h16"></path>
+                <path d="M12 3 3 7h18l-9-4Z"></path>
+              </svg>
+            </span>
+            <span>
+              <strong>Rekening pencairan</strong>
+              <small id="bankAccountStatus">Belum dimuat</small>
+            </span>
+            <svg class="row-arrow" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m9 18 6-6-6-6"></path>
+            </svg>
+          </a>
+
           <a href="settings.html" class="menu-row">
             <span class="menu-icon">
               <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -279,6 +357,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=20260807-1"></script>
   <script src="auth-session.js?v=20260807-3"></script>
-  <script src="profile.js?v=20260809-profile-finish-1"></script>
+  <script src="profile.js?v=20260809-profile-luxury-1"></script>
 </body>
 </html>
