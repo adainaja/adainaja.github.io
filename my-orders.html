@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#ffffff">
   <meta name="description" content="Pantau pembelian Anda di AdaAja.">
   <title>Pembelian — AdaAja</title>
-  <link rel="stylesheet" href="my-orders.css?v=20260809-2">
+  <link rel="stylesheet" href="my-orders.css?v=20260810-1">
 </head>
 <body>
   <div class="app-shell">
@@ -48,6 +48,7 @@
           <button type="button" data-status="pending_payment">Belum Bayar</button>
           <button type="button" data-status="processing">Diproses</button>
           <button type="button" data-status="shipped">Dikirim</button>
+          <button type="button" data-status="delivered">Sudah Sampai</button>
           <button type="button" data-status="completed">Selesai</button>
           <button type="button" data-status="cancelled">Dibatalkan</button>
         </div>
@@ -92,11 +93,43 @@
     </section>
   </div>
 
+
+  <div class="confirm-received-sheet" id="confirmReceivedSheet" aria-hidden="true">
+    <button class="sheet-backdrop" id="confirmReceivedBackdrop" type="button" aria-label="Tutup"></button>
+    <section class="confirm-received-card">
+      <div class="sheet-handle"></div>
+
+      <div class="received-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 7h16v10H4z"></path>
+          <path d="m4 7 8 5 8-5"></path>
+          <path d="m8.5 16 2 2 5-5"></path>
+        </svg>
+      </div>
+
+      <span class="confirm-kicker">KONFIRMASI PENERIMAAN</span>
+      <h2>Pesanan sudah Anda terima?</h2>
+      <p>
+        Pastikan barang sudah diterima dan sesuai. Setelah dikonfirmasi,
+        transaksi diselesaikan dan dana escrow diteruskan ke saldo penjual.
+      </p>
+
+      <div class="confirm-order-preview" id="confirmOrderPreview"></div>
+
+      <div class="confirm-received-actions">
+        <button class="secondary" id="cancelConfirmReceived" type="button">Belum</button>
+        <button class="primary" id="submitConfirmReceived" type="button">
+          Ya, Pesanan Diterima
+        </button>
+      </div>
+    </section>
+  </div>
+
   <div class="toast" id="toast" role="status"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=20260807-1"></script>
   <script src="auth-session.js?v=20260807-3"></script>
-  <script src="my-orders.js?v=20260809-3"></script>
+  <script src="my-orders.js?v=20260810-1"></script>
 </body>
 </html>
