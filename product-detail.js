@@ -96,11 +96,6 @@ function normalizeCondition(value) {
   return value || "-";
 }
 
-function formatShippingPayer(value) {
-  return value === "seller"
-    ? "Ditanggung penjual"
-    : "Ditanggung pembeli";
-}
 
 function formatCategory(value) {
   const categories = {
@@ -125,16 +120,6 @@ function formatCategory(value) {
   return categories[String(value || "").toLowerCase()] || value || "-";
 }
 
-function formatProcessingTime(days) {
-  const value = Number(days || 0);
-
-  if (!value) return "-";
-  if (value <= 2) return "1–2 hari";
-  if (value <= 3) return "2–3 hari";
-  if (value <= 7) return "4–7 hari";
-
-  return `${value} hari`;
-}
 
 function getPublicImageUrl(storagePath) {
   if (!storagePath) return "";
@@ -231,10 +216,7 @@ async function loadProduct() {
           unit,
           minimum_order,
           stock,
-          shipping_payer,
-          shipping_method,
           ship_from_region,
-          processing_time_days,
           status,
           published_at,
           created_at,
@@ -490,39 +472,6 @@ function renderProduct(product) {
           <span class="info-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l1 12H5L6 8Z"></path><path d="M9 8a3 3 0 0 1 6 0"></path></svg></span>
           <span>Minimum pembelian</span>
           <strong>${formatMinimumOrder(product.minimum_order)} ${escapeHtml(formatUnit(product.unit))}</strong>
-        </div>
-
-        <div class="info-row">
-          <span class="info-icon">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M3 7h11v10H3z"></path>
-              <path d="M14 10h4l3 3v4h-7V10Z"></path>
-            </svg>
-          </span>
-          <span>Biaya pengiriman</span>
-          <strong>${escapeHtml(formatShippingPayer(product.shipping_payer))}</strong>
-        </div>
-
-        <div class="info-row">
-          <span class="info-icon">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M3 7h11v10H3z"></path>
-              <path d="M14 10h4l3 3v4h-7V10Z"></path>
-            </svg>
-          </span>
-          <span>Metode pengiriman</span>
-          <strong>${escapeHtml(product.shipping_method || "-")}</strong>
-        </div>
-
-        <div class="info-row">
-          <span class="info-icon">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="12" cy="12" r="9"></circle>
-              <path d="M12 7v5l3 2"></path>
-            </svg>
-          </span>
-          <span>Waktu proses</span>
-          <strong>${escapeHtml(formatProcessingTime(product.processing_time_days))}</strong>
         </div>
       </div>
     </section>
