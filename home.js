@@ -29,6 +29,40 @@ function formatRupiah(value) {
 function formatUnit(v){return String(v||'pcs').toLowerCase()||'pcs';}
 function formatMin(v){return Math.max(1,Number(v||1));}
 
+
+function formatCityOnly(value) {
+  const text = String(value || "").trim();
+  if (!text) return "Lokasi belum tersedia";
+
+  // Ambil bagian kota/kabupaten dari string lokasi umum.
+  const parts = text.split(",").map((part) => part.trim()).filter(Boolean);
+
+  const cityLike = parts.find((part) =>
+    /^(kota|kab\.?|kabupaten)\s+/i.test(part)
+  );
+  if (cityLike) {
+    return cityLike
+      .replace(/^kota\s+/i, "")
+      .replace(/^kabupaten\s+/i, "")
+      .replace(/^kab\.?\s+/i, "")
+      .trim();
+  }
+
+  // Untuk format alamat detail seperti "Perumahan..., Batam, Kepulauan Riau",
+  // gunakan bagian sebelum provinsi jika tersedia.
+  if (parts.length >= 2) {
+    const knownProvincePattern = /(aceh|sumatera|kepulauan riau|riau|jambi|bengkulu|lampung|bangka|banten|jakarta|jawa|yogyakarta|bali|nusa tenggara|kalimantan|sulawesi|maluku|papua)/i;
+    for (let i = parts.length - 1; i >= 0; i--) {
+      if (knownProvincePattern.test(parts[i]) && i - 1 >= 0) {
+        return parts[i - 1];
+      }
+    }
+    return parts[parts.length - 2];
+  }
+
+  return parts[0];
+}
+
 function formatCondition(value) {
   const normalized = String(value || "").trim().toLowerCase();
 
@@ -167,7 +201,7 @@ function renderProductCard(product) {
         <div class="product-price-line"><strong>${formatRupiah(product.price)}</strong><span class="product-unit">/ ${escapeHtml(formatUnit(product.unit))}</span></div>
 
         <div class="product-footer">
-          <span>${escapeHtml(product.ship_from_region || "Lokasi belum tersedia")}</span>
+          <span class="product-location">${escapeHtml(formatCityOnly(product.ship_from_region))}</span>
           <span>Stok ${Number(product.stock || 0)} ${escapeHtml(formatUnit(product.unit))}</span><span class="product-min">Min. ${formatMin(product.minimum_order)} ${escapeHtml(formatUnit(product.unit))}</span>
         </div>
       </div>
