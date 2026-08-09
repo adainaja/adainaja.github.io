@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#ffffff">
   <meta name="description" content="Jual produk di AdaAja dengan mudah.">
   <title>Jual Produk — AdaAja</title>
-  <link rel="stylesheet" href="upload.css?v=20260809-4">
+  <link rel="stylesheet" href="upload.css?v=20260809-6">
 </head>
 <body>
   <div class="app-shell">
@@ -95,19 +95,117 @@
         </section>
 
         <section class="form-card">
-
-          <div class="buyer-shipping-note">
-            <span>
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M6 8h12l1 12H5L6 8Z"></path>
-                <path d="M9 8a3 3 0 0 1 6 0"></path>
-              </svg>
-            </span>
-            <div>
-              <strong></strong>
-              <small></small>
+          <div class="section-heading">
+            <div class="section-title-wrap">
+              <span class="section-number">02</span>
+              <div>
+                <span class="section-kicker">DETAIL PRODUK</span>
+                <h2>Informasi produk</h2>
+              </div>
             </div>
           </div>
+
+          <label class="field">
+            <span class="field-label">
+              Nama produk
+              <em>Wajib</em>
+            </span>
+            <div class="input-shell">
+              <span class="field-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 8h12l1 12H5L6 8Z"></path>
+                  <path d="M9 8a3 3 0 0 1 6 0"></path>
+                </svg>
+              </span>
+              <input id="productName" type="text" maxlength="40" placeholder="Contoh: Tas kulit wanita warna cokelat">
+            </div>
+            <small><span id="nameCount">0</span>/40 karakter</small>
+          </label>
+
+          <label class="field">
+            <span class="field-label">
+              Deskripsi
+              <em>Wajib</em>
+            </span>
+            <div class="textarea-shell">
+              <textarea id="description" maxlength="1000" placeholder="Jelaskan kondisi, kelengkapan, ukuran, dan kekurangan produk dengan jujur."></textarea>
+              <span><span id="descriptionCount">0</span>/1000</span>
+            </div>
+          </label>
+
+          <div class="field">
+            <span class="field-label">
+              Kategori
+              <em>Wajib</em>
+            </span>
+            <div class="select-shell">
+              <span class="field-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="3" y="3" width="7" height="7" rx="2"></rect>
+                  <rect x="14" y="3" width="7" height="7" rx="2"></rect>
+                  <rect x="3" y="14" width="7" height="7" rx="2"></rect>
+                  <rect x="14" y="14" width="7" height="7" rx="2"></rect>
+                </svg>
+              </span>
+              <select id="category">
+                <option value="">Pilih kategori</option>
+                <option value="electronics">Elektronik</option>
+                <option value="fashion">Fashion</option>
+                <option value="home">Rumah Tangga</option>
+                <option value="automotive">Otomotif</option>
+                <option value="beauty">Kecantikan</option>
+                <option value="hobby">Hobi & Koleksi</option>
+                <option value="baby">Bayi & Anak</option>
+                <option value="books">Buku</option>
+                <option value="sports">Olahraga</option>
+                <option value="food">Makanan & Minuman</option>
+                <option value="pets">Hewan Peliharaan</option>
+                <option value="services">Jasa</option>
+                <option value="property">Properti</option>
+                <option value="event">Event & Tiket</option>
+                <option value="other">Lainnya</option>
+              </select>
+            </div>
+          </div>
+
+          <label class="field">
+            <span class="field-label">
+              Merek
+              <em>Opsional</em>
+            </span>
+            <div class="input-shell">
+              <span class="field-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20 13 11 4H4v7l9 9 7-7Z"></path>
+                  <circle cx="8" cy="8" r="1"></circle>
+                </svg>
+              </span>
+              <input id="brand" type="text" maxlength="60" placeholder="Masukkan merek produk">
+            </div>
+          </label>
+
+          <div class="field">
+            <span class="field-label">
+              Kondisi
+              <em>Wajib</em>
+            </span>
+            <div class="select-shell">
+              <span class="field-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m5 12 4 4 10-10"></path>
+                  <circle cx="12" cy="12" r="9"></circle>
+                </svg>
+              </span>
+              <select id="condition">
+                <option value="">Pilih kondisi produk</option>
+                <option value="baru">Baru</option>
+                <option value="bekas">Bekas</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-card">
 
           <div class="field">
             <span class="field-label">
@@ -330,6 +428,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=20260807-1"></script>
   <script src="auth-session.js?v=20260807-1"></script>
-  <script src="upload.js?v=20260809-4"></script>
+  <script src="upload.js?v=20260809-6"></script>
 </body>
 </html>
