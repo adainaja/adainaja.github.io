@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Rekening Pencairan — AdaAja</title>
+<link rel="stylesheet" href="bank-account.css?v=20260809-1">
+</head>
+<body>
+<div class="app-shell">
+<header class="page-header">
+<a class="header-button" href="wallet.html" aria-label="Kembali"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></a>
+<div class="header-title"><span>ADAPAY</span><h1>Rekening Pencairan</h1></div>
+<button class="header-button" id="addTopButton" type="button" aria-label="Tambah rekening"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+</header>
+
+<main class="content">
+<section class="hero-card">
+<div class="hero-glow"></div>
+<span class="hero-kicker">REKENING ADAPAY</span>
+<h2>Kelola rekening tujuan pencairan</h2>
+<p>Rekening utama digunakan sebagai tujuan saat Anda menarik saldo AdaPay.</p>
+<div class="hero-stat">
+<span><small>Rekening tersimpan</small><strong id="accountCount">—</strong></span>
+<span><small>Rekening utama</small><strong id="primaryStatus">—</strong></span>
+</div>
+</section>
+
+<section class="account-section">
+<div class="section-heading">
+<div><span>REKENING SAYA</span><h2>Daftar rekening</h2></div>
+<button type="button" id="addInlineButton">+ Tambah</button>
+</div>
+<div class="account-list" id="accountList"><div class="loading-card"></div><div class="loading-card"></div></div>
+</section>
+
+<section class="security-card">
+<span class="security-icon"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+<span><strong>Periksa kembali data rekening</strong><p>Pastikan nama pemilik dan nomor rekening sesuai sebelum mengajukan pencairan saldo.</p></span>
+</section>
+
+<div class="page-message" id="pageMessage"></div>
+</main>
+
+<nav class="bottom-nav">
+<a href="home.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>Beranda</span></a>
+<a href="explore.html" class="nav-item"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Jelajah</span></a>
+<a href="upload.html" class="nav-create"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></a>
+<a href="activity.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M6 3h12l2 5-8 4-8-4 2-5Z"/><path d="M4 8v10l8 3 8-3V8"/></svg><span>Aktivitas</span></a>
+<a href="profile.html" class="nav-item active"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Akun</span></a>
+</nav>
+</div>
+
+<div class="sheet" id="accountSheet" aria-hidden="true">
+<button class="sheet-backdrop" id="sheetBackdrop" type="button"></button>
+<section class="sheet-panel">
+<div class="sheet-handle"></div>
+<div class="sheet-heading">
+<div><span>REKENING PENCAIRAN</span><h2 id="sheetTitle">Tambah rekening</h2></div>
+<button id="closeSheetButton" type="button"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+</div>
+<form id="accountForm">
+<input type="hidden" id="accountId">
+<label class="field"><span>Nama bank</span><div class="input-shell"><svg viewBox="0 0 24 24"><path d="M3 10h18"/><path d="M5 10v8M9 10v8M15 10v8M19 10v8"/><path d="M4 18h16"/><path d="M12 3 3 7h18l-9-4Z"/></svg><input id="bankName" type="text" maxlength="80" placeholder="Contoh: BCA" required></div></label>
+<label class="field"><span>Kode bank</span><div class="input-shell"><svg viewBox="0 0 24 24"><path d="M5 5h14v14H5z"/><path d="M9 9h6M9 13h6"/></svg><input id="bankCode" type="text" maxlength="30" placeholder="Kode bank" required></div><small>Gunakan kode bank yang sesuai dengan data rekening Anda.</small></label>
+<label class="field"><span>Nomor rekening</span><div class="input-shell"><svg viewBox="0 0 24 24"><path d="M4 7h16v10H4z"/><path d="M8 12h8"/></svg><input id="accountNumber" type="text" inputmode="numeric" maxlength="40" placeholder="Masukkan nomor rekening" required></div></label>
+<label class="field"><span>Nama pemilik rekening</span><div class="input-shell"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><input id="accountHolderName" type="text" maxlength="120" placeholder="Sesuai rekening bank" required></div></label>
+<label class="default-toggle"><span><strong>Jadikan rekening utama</strong><small>Digunakan otomatis saat pencairan saldo.</small></span><input id="isDefault" type="checkbox"><i></i></label>
+<button class="save-button" id="saveButton" type="submit"><span><strong>Simpan rekening</strong><small id="saveHint">Pastikan data sudah benar</small></span><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+</form>
+</section>
+</div>
+
+<div class="confirm-sheet" id="deleteSheet" aria-hidden="true">
+<button class="sheet-backdrop" id="deleteBackdrop" type="button"></button>
+<section class="confirm-panel">
+<div class="danger-icon"><svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M7 7l1 13h8l1-13"/></svg></div>
+<h2>Hapus rekening?</h2>
+<p>Rekening akan dihapus dari daftar pencairan AdaPay.</p>
+<div class="confirm-actions"><button id="cancelDeleteButton" type="button">Batal</button><button id="confirmDeleteButton" type="button">Hapus</button></div>
+</section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js?v=20260807-1"></script>
+<script src="auth-session.js?v=20260807-3"></script>
+<script src="bank-account.js?v=20260809-1"></script>
+</body>
+</html>
