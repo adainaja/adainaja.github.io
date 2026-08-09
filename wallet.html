@@ -4,17 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#ffffff">
-  <meta name="description" content="Kelola saldo hasil penjualan dan pencairan dana melalui AdaPay.">
+  <meta name="description" content="AdaPay — saldo universal untuk pengguna AdaAja.">
   <title>AdaPay — AdaAja</title>
-  <link rel="stylesheet" href="wallet.css?v=20260809-1">
+  <link rel="stylesheet" href="wallet.css?v=20260809-universal-1">
 </head>
 <body>
   <div class="app-shell">
     <header class="page-header">
       <a class="header-button" href="profile.html" aria-label="Kembali ke profil">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="m15 18-6-6 6-6"></path>
-        </svg>
+        <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"></path></svg>
       </a>
 
       <div class="header-title">
@@ -22,10 +20,9 @@
         <h1>AdaPay</h1>
       </div>
 
-      <button class="header-button" id="refreshButton" type="button" aria-label="Muat ulang saldo">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M20 6v5h-5"></path>
-          <path d="M4 18v-5h5"></path>
+      <button class="header-button" id="refreshButton" type="button" aria-label="Muat ulang">
+        <svg viewBox="0 0 24 24">
+          <path d="M20 6v5h-5"></path><path d="M4 18v-5h5"></path>
           <path d="M18.5 9A7 7 0 0 0 6 6.5L4 9"></path>
           <path d="M5.5 15A7 7 0 0 0 18 17.5L20 15"></path>
         </svg>
@@ -33,223 +30,114 @@
     </header>
 
     <main class="content">
-      <section class="wallet-hero" id="walletHero">
+      <section class="wallet-hero">
         <div class="hero-glow hero-glow-one"></div>
         <div class="hero-glow hero-glow-two"></div>
 
         <div class="hero-topline">
           <span class="brand-pill">ADAPAY</span>
-          <span class="wallet-state" id="walletState">
-            <i></i>
-            <span id="walletStateText">Memuat</span>
-          </span>
+          <span class="wallet-state" id="walletState"><i></i><span id="walletStateText">Memuat</span></span>
         </div>
 
         <div class="balance-block">
           <span>Saldo tersedia</span>
           <strong id="availableBalance">—</strong>
-          <small id="currencyLabel">Saldo hasil transaksi Anda</small>
+          <small id="currencyLabel">Memuat saldo AdaPay...</small>
         </div>
 
-        <div class="hero-actions">
-          <button class="withdraw-button" id="withdrawButton" type="button" disabled>
-            <span class="withdraw-icon">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 3v12"></path>
-                <path d="m7 10 5 5 5-5"></path>
-                <path d="M5 21h14"></path>
-              </svg>
+        <div class="money-actions">
+          <a href="topup.html" class="money-action primary">
+            <span class="money-action-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
             </span>
-            <span>
-              <strong>Tarik Saldo</strong>
-              <small id="withdrawHint">Memeriksa saldo...</small>
-            </span>
-          </button>
+            <span><strong>Top Up</strong><small>Tambah saldo AdaPay</small></span>
+          </a>
 
-          <button class="history-button" id="historyButton" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="12" cy="12" r="9"></circle>
-              <path d="M12 7v5l3 2"></path>
-            </svg>
-            <span>Riwayat</span>
+          <button class="money-action secondary" id="withdrawButton" type="button" disabled>
+            <span class="money-action-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path></svg>
+            </span>
+            <span><strong>Tarik Saldo</strong><small id="withdrawHint">Memeriksa saldo...</small></span>
           </button>
         </div>
+
+        <button class="history-link" id="historyButton" type="button">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+          <span>Lihat riwayat AdaPay</span>
+          <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
+        </button>
       </section>
 
-      <section class="summary-grid" aria-label="Ringkasan dana">
+      <section class="summary-grid">
         <article class="summary-card">
-          <span class="summary-icon pending">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="12" cy="12" r="9"></circle>
-              <path d="M12 7v5l3 2"></path>
-            </svg>
-          </span>
-          <small>Tertahan</small>
-          <strong id="pendingBalance">—</strong>
+          <span class="summary-icon pending"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>
+          <small>Tertahan</small><strong id="pendingBalance">—</strong>
         </article>
-
         <article class="summary-card">
-          <span class="summary-icon income">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4 18 10 12l4 4 6-8"></path>
-              <path d="M15 8h5v5"></path>
-            </svg>
-          </span>
-          <small>Total pendapatan</small>
-          <strong id="lifetimeIncome">—</strong>
+          <span class="summary-icon income"><svg viewBox="0 0 24 24"><path d="M4 18 10 12l4 4 6-8"></path><path d="M15 8h5v5"></path></svg></span>
+          <small>Total pendapatan</small><strong id="lifetimeIncome">—</strong>
         </article>
-
         <article class="summary-card">
-          <span class="summary-icon withdrawn">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4 7h16v10H4z"></path>
-              <path d="M8 12h8"></path>
-            </svg>
-          </span>
-          <small>Sudah dicairkan</small>
-          <strong id="withdrawnBalance">—</strong>
+          <span class="summary-icon withdrawn"><svg viewBox="0 0 24 24"><path d="M4 7h16v10H4z"></path><path d="M8 12h8"></path></svg></span>
+          <small>Sudah dicairkan</small><strong id="withdrawnBalance">—</strong>
         </article>
       </section>
 
       <section class="wallet-section">
         <div class="section-heading">
-          <div>
-            <span>REKENING PENCAIRAN</span>
-            <h2>Rekening utama</h2>
-          </div>
+          <div><span>REKENING PENCAIRAN</span><h2>Rekening utama</h2></div>
           <a href="bank-account.html">Kelola</a>
         </div>
-
-        <a class="bank-card" id="bankCard" href="bank-account.html">
-          <span class="bank-icon">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M3 10h18"></path>
-              <path d="M5 10v8M9 10v8M15 10v8M19 10v8"></path>
-              <path d="M4 18h16"></path>
-              <path d="M12 3 3 7h18l-9-4Z"></path>
-            </svg>
-          </span>
-
+        <a class="bank-card" href="bank-account.html">
+          <span class="bank-icon"><svg viewBox="0 0 24 24"><path d="M3 10h18"></path><path d="M5 10v8M9 10v8M15 10v8M19 10v8"></path><path d="M4 18h16"></path><path d="M12 3 3 7h18l-9-4Z"></path></svg></span>
           <span class="bank-copy">
             <small id="bankStatusLabel">REKENING</small>
             <strong id="bankTitle">Memuat rekening...</strong>
             <span id="bankSubtitle">Mohon tunggu sebentar.</span>
           </span>
-
-          <span class="bank-verified" id="bankVerified" hidden>
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="m5 12 4 4 10-10"></path>
-            </svg>
-          </span>
-
-          <svg class="row-arrow" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="m9 18 6-6-6-6"></path>
-          </svg>
+          <span class="bank-verified" id="bankVerified" hidden><svg viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"></path></svg></span>
+          <svg class="row-arrow" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
         </a>
       </section>
 
-      <section class="wallet-section" id="withdrawalSection">
+      <section class="wallet-section">
         <div class="section-heading">
-          <div>
-            <span>PENCAIRAN</span>
-            <h2>Status terbaru</h2>
-          </div>
+          <div><span>PENCAIRAN</span><h2>Status terbaru</h2></div>
         </div>
-
-        <div class="withdrawal-card" id="withdrawalCard">
-          <div class="withdrawal-empty">
-            <span class="empty-icon">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4 7h16v10H4z"></path>
-                <path d="M8 12h8"></path>
-              </svg>
-            </span>
-            <strong>Belum ada pencairan</strong>
-            <p>Permintaan pencairan terbaru akan tampil di sini.</p>
-          </div>
-        </div>
+        <div class="withdrawal-card" id="withdrawalCard"></div>
       </section>
 
       <section class="wallet-section" id="transactionSection">
         <div class="section-heading">
-          <div>
-            <span>AKTIVITAS ADAPAY</span>
-            <h2>Transaksi terbaru</h2>
-          </div>
+          <div><span>AKTIVITAS ADAPAY</span><h2>Transaksi terbaru</h2></div>
           <button id="seeAllTransactions" type="button">Lihat semua</button>
         </div>
-
         <div class="transaction-list" id="transactionList">
-          <div class="transaction-loading">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
+          <div class="transaction-loading"><span></span><span></span><span></span></div>
         </div>
       </section>
 
       <section class="info-card">
-        <span class="info-icon">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="9"></circle>
-            <path d="M12 11v5"></path>
-            <path d="M12 8h.01"></path>
-          </svg>
-        </span>
-        <span>
-          <strong>Tentang saldo tertahan</strong>
-          <p>Dana penjualan dapat tetap tertahan sampai transaksi selesai sesuai proses AdaAja.</p>
-        </span>
+        <span class="info-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5"></path><path d="M12 8h.01"></path></svg></span>
+        <span><strong>Tentang saldo AdaPay</strong><p>Top Up, refund, dan hasil transaksi dapat masuk ke saldo AdaPay. Dana hasil penjualan tertentu dapat tetap tertahan sampai transaksi selesai.</p></span>
       </section>
 
-      <div class="page-message" id="pageMessage" role="status" aria-live="polite"></div>
+      <div class="page-message" id="pageMessage"></div>
       <p class="version-text">AdaPay · AdaAja V1.0</p>
     </main>
 
-    <nav class="bottom-nav" aria-label="Navigasi utama">
-      <a href="home.html" class="nav-item">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="m3 11 9-8 9 8"></path>
-          <path d="M5 10v10h14V10"></path>
-        </svg>
-        <span>Beranda</span>
-      </a>
-
-      <a href="explore.html" class="nav-item">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="11" cy="11" r="7"></circle>
-          <path d="m20 20-3.5-3.5"></path>
-        </svg>
-        <span>Jelajah</span>
-      </a>
-
-      <a href="upload.html" class="nav-create" aria-label="Jual barang">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 5v14M5 12h14"></path>
-        </svg>
-      </a>
-
-      <a href="activity.html" class="nav-item">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path>
-          <path d="M4 8v10l8 3 8-3V8"></path>
-        </svg>
-        <span>Aktivitas</span>
-      </a>
-
-      <a href="profile.html" class="nav-item active">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="12" cy="8" r="4"></circle>
-          <path d="M4 21a8 8 0 0 1 16 0"></path>
-        </svg>
-        <span>Akun</span>
-      </a>
+    <nav class="bottom-nav">
+      <a href="home.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"></path><path d="M5 10v10h14V10"></path></svg><span>Beranda</span></a>
+      <a href="explore.html" class="nav-item"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><span>Jelajah</span></a>
+      <a href="upload.html" class="nav-create"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg></a>
+      <a href="activity.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path><path d="M4 8v10l8 3 8-3V8"></path></svg><span>Aktivitas</span></a>
+      <a href="profile.html" class="nav-item active"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg><span>Akun</span></a>
     </nav>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=20260807-1"></script>
   <script src="auth-session.js?v=20260807-3"></script>
-  <script src="wallet.js?v=20260809-1"></script>
+  <script src="wallet.js?v=20260809-universal-1"></script>
 </body>
 </html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>Top Up AdaPay — AdaAja</title>
+  <link rel="stylesheet" href="topup.css?v=20260809-1">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="page-header">
+      <a class="header-button" href="wallet.html" aria-label="Kembali"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"></path></svg></a>
+      <div class="header-title"><span>ADAPAY</span><h1>Top Up Saldo</h1></div>
+      <span class="header-spacer"></span>
+    </header>
+
+    <main class="content">
+      <section class="topup-hero">
+        <div class="hero-glow"></div>
+        <span class="hero-kicker">SALDO ADAPAY</span>
+        <span class="hero-label">Saldo tersedia saat ini</span>
+        <strong id="currentBalance">—</strong>
+        <p>Tambah saldo melalui pembayaran Midtrans. Saldo baru masuk setelah pembayaran berhasil diverifikasi.</p>
+      </section>
+
+      <section class="form-card">
+        <div class="section-heading">
+          <span>NOMINAL TOP UP</span>
+          <h2>Pilih jumlah saldo</h2>
+          <p>Pilih nominal cepat atau masukkan nominal sendiri.</p>
+        </div>
+
+        <div class="amount-grid">
+          <button type="button" class="amount-chip" data-amount="50000">Rp50.000</button>
+          <button type="button" class="amount-chip" data-amount="100000">Rp100.000</button>
+          <button type="button" class="amount-chip" data-amount="250000">Rp250.000</button>
+          <button type="button" class="amount-chip" data-amount="500000">Rp500.000</button>
+        </div>
+
+        <label class="amount-field">
+          <span>Nominal lainnya</span>
+          <div class="amount-input-shell">
+            <strong>Rp</strong>
+            <input id="amountInput" type="text" inputmode="numeric" autocomplete="off" placeholder="Masukkan nominal">
+          </div>
+        </label>
+
+        <div class="topup-summary">
+          <span>
+            <small>Top Up</small>
+            <strong id="summaryAmount">—</strong>
+          </span>
+          <span>
+            <small>Metode pembayaran</small>
+            <strong>Midtrans</strong>
+          </span>
+        </div>
+
+        <button class="continue-button" id="continueButton" type="button" disabled>
+          <span>
+            <strong>Lanjut ke pembayaran</strong>
+            <small>Pilih metode pembayaran di Midtrans</small>
+          </span>
+          <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
+        </button>
+
+        <p class="secure-note">
+          <svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"></path><path d="m9 12 2 2 4-4"></path></svg>
+          Pembayaran diproses melalui Midtrans. Saldo tidak ditambahkan berdasarkan callback browser, tetapi setelah status pembayaran diverifikasi server.
+        </p>
+      </section>
+
+      <section class="recent-card">
+        <div class="recent-heading"><div><span>TOP UP TERBARU</span><h2>Riwayat singkat</h2></div></div>
+        <div id="topupHistory" class="topup-history"><div class="loading-row"></div><div class="loading-row"></div></div>
+      </section>
+
+      <div class="page-message" id="pageMessage"></div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=20260807-1"></script>
+  <script src="auth-session.js?v=20260807-3"></script>
+  <script src="topup.js?v=20260809-1"></script>
+</body>
+</html>
