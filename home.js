@@ -94,7 +94,8 @@ async function loadCurrentProfile() {
 
 async function setupAccount() {
   const accountAvatar = document.getElementById("accountAvatar");
-  const user = await window.AdaAjaAuth.getCurrentUser();
+  const session = await getSession(true);
+  const user = session?.user || null;
 
   if (!user) {
     currentSession = null;
@@ -216,11 +217,12 @@ async function loadFavorites() {
 }
 
 async function toggleFavorite(productId, button) {
-  const user = await window.AdaAjaAuth.getCurrentUser();
+  const session = await getSession(true);
+  const user = session?.user || null;
 
   if (!user) {
     localStorage.setItem("redirectAfterLogin", location.href);
-    location.href = "login.html";
+    openAccountPanel();
     return;
   }
 
@@ -364,7 +366,8 @@ function closeAccountPanel() {
 }
 
 async function handleAccountClick() {
-  const user = await window.AdaAjaAuth.getCurrentUser();
+  const session = await getSession(true);
+  const user = session?.user || null;
 
   if (user) {
     location.href = "profile.html";
@@ -400,7 +403,15 @@ searchInput.addEventListener("input", () => {
   );
 });
 
-document.getElementById("notificationButton").onclick = openNotification;
+document.getElementById("notificationButton").onclick = async () => {
+  const session = await getSession(true);
+  if (!session?.user) {
+    localStorage.setItem("redirectAfterLogin", "activity.html");
+    openAccountPanel();
+    return;
+  }
+  openNotification();
+};
 document.getElementById("closeNotification").onclick = closeNotification;
 document.getElementById("notificationBackdrop").onclick = closeNotification;
 document.getElementById("accountButton").onclick = handleAccountClick;
@@ -416,32 +427,56 @@ window.addEventListener(
 );
 
 /* =========================================================
-   AUTH GUARD — FITUR JUAL PRODUK
+   AUTH GUARD — SEMUA FITUR KHUSUS PENGGUNA
+   Guest tetap bebas membuka Home, Explore, kategori, pencarian,
+   dan detail produk. Fitur transaksi/akun membutuhkan login.
 ========================================================= */
-document.addEventListener("click", async (event) => {
-  const sellLink = event.target.closest('a[href]');
+const protectedPages = new Set([
+  "upload.html",
+  "my-orders.html",
+  "seller-orders.html",
+  "my-offers.html",
+  "seller-offers.html",
+  "messages.html",
+  "activity.html",
+  "profile.html",
+  "checkout.html",
+  "payment.html",
+  "favorites.html",
+  "wishlist.html",
+  "withdraw.html",
+  "wallet.html",
+  "settings.html"
+]);
 
-  if (!sellLink) return;
+function getPageName(url) {
+  return url.pathname.split("/").pop().toLowerCase();
+}
 
-  const destination = new URL(sellLink.href, window.location.href);
-  const isUploadPage = destination.pathname.toLowerCase().endsWith("/upload.html");
-
-  if (!isUploadPage) return;
-
-  const user = await window.AdaAjaAuth.getCurrentUser();
-
-  if (user) return;
-
-  event.preventDefault();
-
+function saveRedirectAfterLogin(destination) {
+  const page = destination.pathname.split("/").pop() || "home.html";
   localStorage.setItem(
     "redirectAfterLogin",
-    destination.pathname.split("/").pop() +
-      destination.search +
-      destination.hash
+    page + destination.search + destination.hash
   );
+}
 
-  location.href = "login.html";
+document.addEventListener("click", async (event) => {
+  const link = event.target.closest('a[href]');
+  if (!link) return;
+
+  const destination = new URL(link.href, window.location.href);
+  if (destination.origin !== window.location.origin) return;
+  if (!protectedPages.has(getPageName(destination))) return;
+
+  const session = await getSession(true);
+  if (session?.user) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  saveRedirectAfterLogin(destination);
+  openAccountPanel();
 });
 
 window.adaajaReloadProducts = loadProducts;

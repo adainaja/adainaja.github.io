@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#ffffff">
   <title>AdaAja - Beranda</title>
-  <link rel="stylesheet" href="home.css?v=20260808-2">
+  <link rel="stylesheet" href="home.css?v=20260809-authfix-1">
 </head>
 <body>
   <div class="app-shell">
@@ -61,7 +61,7 @@
         </div>
 
         <div class="welcome-footer">
-          <a href="upload.html" class="welcome-action">
+          <a href="upload.html" data-auth-required="true" class="welcome-action">
             <span>Mulai Jual</span>
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M5 12h14"></path>
@@ -82,7 +82,7 @@
       </div>
 
       <section class="quick-menu" aria-label="Menu cepat">
-        <a href="upload.html" class="quick-item">
+        <a href="upload.html" data-auth-required="true" class="quick-item">
           <span class="quick-icon">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M6 8h12l1 12H5L6 8Z"></path>
@@ -94,7 +94,7 @@
           <span>Jual</span>
         </a>
 
-        <a href="my-orders.html" class="quick-item">
+        <a href="my-orders.html" data-auth-required="true" class="quick-item">
           <span class="quick-icon">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path>
@@ -104,7 +104,7 @@
           <span>Pembelian</span>
         </a>
 
-        <a href="seller-orders.html" class="quick-item">
+        <a href="seller-orders.html" data-auth-required="true" class="quick-item">
           <span class="quick-icon">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M4 9h16"></path>
@@ -116,7 +116,7 @@
           <span>Pesanan Masuk</span>
         </a>
 
-        <a href="my-offers.html" class="quick-item">
+        <a href="my-offers.html" data-auth-required="true" class="quick-item">
           <span class="quick-icon">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M4 6h16v12H4z"></path>
@@ -128,7 +128,7 @@
         </a>
       </section>
 
-      <a href="messages.html" class="quick-chat" aria-label="Buka Chat">
+      <a href="messages.html" data-auth-required="true" class="quick-chat" aria-label="Buka Chat">
         <span class="quick-chat-icon">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M4 5h16v11H8l-4 4V5Z"></path>
@@ -266,13 +266,13 @@
         <span>Jelajah</span>
       </a>
 
-      <a href="upload.html" class="nav-create" aria-label="Jual barang">
+      <a href="upload.html" data-auth-required="true" class="nav-create" aria-label="Jual barang">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 5v14M5 12h14"></path>
         </svg>
       </a>
 
-      <a href="activity.html" class="nav-item">
+      <a href="activity.html" data-auth-required="true" class="nav-item">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M6 3h12l2 5-8 4-8-4 2-5Z"></path>
           <path d="M4 8v10l8 3 8-3V8"></path>
@@ -280,7 +280,7 @@
         <span>Aktivitas</span>
       </a>
 
-      <a href="profile.html" class="nav-item">
+      <a href="profile.html" data-auth-required="true" class="nav-item">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="12" cy="8" r="4"></circle>
           <path d="M4 21a8 8 0 0 1 16 0"></path>
@@ -371,6 +371,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=20260807-1"></script>
   <script src="auth-session.js?v=20260807-3"></script>
-  <script src="home.js?v=20260808-2"></script>
+  <script src="home.js?v=20260809-authfix-1"></script>
 </body>
 </html>
