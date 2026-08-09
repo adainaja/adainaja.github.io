@@ -102,7 +102,13 @@ function shippingInfo(order) {
   const service = order.courier_service || order.shipment?.courier_service || "";
   const courier = order.shipment?.courier_name || courierLabel(code);
   const cost = Number(order.shipping_cost || order.shipment?.shipping_cost || 0);
-  const trackingNumber = order.shipment?.tracking_number || order.tracking_number || "";
+  const trackingNumber =
+    order.shipment?.tracking_number ||
+    order.shipment?.waybill_id ||
+    order.shipment?.courier_waybill_id ||
+    order.shipment?.biteship_tracking_id ||
+    order.tracking_number ||
+    "";
   const shipmentStatus = String(order.shipment?.shipment_status || order.shipment?.status || "").toLowerCase();
 
   return { code, service, courier, cost, trackingNumber, shipmentStatus };
@@ -246,6 +252,13 @@ async function loadOrders() {
               tracking_number,
               shipping_cost,
               status,
+              shipment_status,
+              provider_status,
+              provider_order_id,
+              biteship_order_id,
+              biteship_tracking_id,
+              waybill_id,
+              courier_waybill_id,
               estimated_delivery_at,
               picked_up_at,
               delivered_at,
@@ -712,8 +725,9 @@ function openOrderSheet(orderId) {
     closeOrderSheet();
   });
 
-  document.getElementById("sheetShippingAction")?.addEventListener("click", () => {
+  document.getElementById("sheetShippingAction")?.addEventListener("click", async () => {
     const info = shippingInfo(selectedOrder);
+    const button = document.getElementById("sheetShippingAction");
 
     if (!info.code || !info.service) {
       showToast("Data kurir pesanan belum lengkap. Periksa data checkout sebelum melanjutkan.");
@@ -721,7 +735,7 @@ function openOrderSheet(orderId) {
     }
 
     if (!selectedOrder.shipment?.id) {
-      showToast(`Pengiriman ${info.courier} ${String(info.service).toUpperCase()} sudah dipilih pembeli. Shipment internal belum tersedia.`);
+      showToast(`Pengiriman ${info.courier} ${String(info.service).toUpperCase()} sudah dipilih pembeli, tetapi shipment internal belum tersedia.`);
       return;
     }
 
@@ -730,7 +744,69 @@ function openOrderSheet(orderId) {
       return;
     }
 
-    showToast(`${info.courier} • ${String(info.service).toUpperCase()} sudah terkunci. Lanjutkan booking Biteship untuk mendapatkan resi.`);
+    if (button?.disabled) return;
+    const originalText = button?.textContent || "Siapkan Pengiriman";
+
+    try {
+      if (button) {
+        button.disabled = true;
+        button.textContent = "Membuat booking...";
+      }
+
+      showToast("Menghubungkan pesanan ke Biteship...");
+
+      const { data, error } = await window.adaajaSupabase.functions.invoke(
+        "create-biteship-order",
+        { body: { order_id: selectedOrder.id } }
+      );
+
+      if (error) {
+        let detail = error.message || "Edge Function gagal dipanggil.";
+        try {
+          if (error.context && typeof error.context.json === "function") {
+            const payload = await error.context.json();
+            detail = payload?.error || payload?.message || detail;
+          }
+        } catch (_) {}
+        throw new Error(detail);
+      }
+
+      if (!data?.success) {
+        throw new Error(data?.error || data?.message || "Booking Biteship belum berhasil.");
+      }
+
+      const tracking =
+        data?.tracking_number ||
+        data?.shipment?.tracking_number ||
+        data?.shipment?.waybill_id ||
+        data?.shipment?.tracking_id ||
+        "";
+
+      if (data?.already_booked) {
+        showToast(
+          tracking
+            ? `Pengiriman sudah dibuat. Resi: ${tracking}`
+            : "Pengiriman sudah pernah dibuat di Biteship."
+        );
+      } else {
+        showToast(
+          tracking
+            ? `Booking Biteship berhasil. Resi: ${tracking}`
+            : "Booking Biteship berhasil dibuat."
+        );
+      }
+
+      closeOrderSheet();
+      await loadOrders();
+    } catch (error) {
+      console.error("Gagal membuat booking Biteship:", error);
+      showToast(error.message || "Booking Biteship gagal dibuat.");
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.textContent = originalText;
+      }
+    }
   });
 }
 
