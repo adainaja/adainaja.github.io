@@ -17,3 +17,140 @@ main{padding:15px 15px calc(30px + env(safe-area-inset-bottom))}
 .protection-card{display:grid;grid-template-columns:40px minmax(0,1fr);gap:10px;margin-top:12px;padding:13px;border-radius:19px;background:linear-gradient(135deg,#eaf9f0,#f8fdf9)}.protection-icon{display:grid;width:40px;height:40px;place-items:center;border-radius:13px;background:#fff;color:var(--green)}.protection-icon svg{width:18px;height:18px}.protection-card strong{display:block;color:#166534;font-size:7px}.protection-card p{margin:4px 0 0;color:#5f896d;font-size:5.7px;line-height:1.55}.orders-btn{margin-top:12px;border:1px solid #dce3e9;background:#fff;color:var(--navy)}.auto-note{text-align:center;color:#9aa4af;font-size:5.5px}
 .toast{position:fixed;z-index:100;right:16px;bottom:24px;left:16px;max-width:398px;margin:auto;padding:12px;border-radius:14px;background:rgba(8,37,65,.96);color:#fff;text-align:center;font-size:7px;font-weight:700;opacity:0;pointer-events:none;transform:translateY(8px);transition:.18s}.toast.show{opacity:1;transform:translateY(0)}
 .modal-backdrop{position:fixed;z-index:150;inset:0;display:flex;align-items:flex-end;justify-content:center;background:rgba(5,23,42,.55);backdrop-filter:blur(5px)}.modal-backdrop[hidden]{display:none}.modal-sheet{width:100%;max-width:430px;padding:8px 15px calc(17px + env(safe-area-inset-bottom));border-radius:28px 28px 0 0;background:#fff}.modal-handle{width:42px;height:4px;margin:2px auto 16px;border-radius:999px;background:#dbe2e8}.modal-icon{display:grid;width:48px;height:48px;place-items:center;border-radius:16px;background:#fff1e4;color:var(--orange)}.modal-sheet h3{margin:12px 0 0;color:var(--navy);font-size:16px}.modal-sheet p{margin:7px 0 0;color:#7e8996;font-size:6.5px;line-height:1.6}.modal-warning{margin-top:11px;padding:10px;border-radius:14px;background:#fff7ed;color:#8a5a2c;font-size:5.8px;line-height:1.5}
+
+
+/* =========================================================
+   CANCEL ORDER
+   ========================================================= */
+.cancel-order-btn{
+  display:grid;
+  grid-template-columns:42px minmax(0,1fr) 16px;
+  gap:10px;
+  align-items:center;
+  width:100%;
+  margin-top:8px;
+  padding:11px 12px;
+  border:1px solid #f2d9df;
+  border-radius:16px;
+  background:linear-gradient(180deg,#fff,#fffafb);
+  color:var(--red);
+  text-align:left;
+}
+.cancel-order-btn[hidden]{display:none}
+.cancel-order-icon{
+  display:grid;
+  width:42px;
+  height:42px;
+  place-items:center;
+  border-radius:13px;
+  background:#fff0f3;
+  color:var(--red);
+}
+.cancel-order-icon svg{width:17px;height:17px}
+.cancel-order-btn strong{
+  display:block;
+  color:#9f2439;
+  font-size:7.2px;
+}
+.cancel-order-btn small{
+  display:block;
+  margin-top:3px;
+  color:#a66b76;
+  font-size:5.7px;
+  line-height:1.45;
+}
+.cancel-order-chevron{
+  width:15px;
+  height:15px;
+  color:#c98b97;
+}
+
+.cancel-order-sheet{
+  text-align:left;
+}
+.cancel-modal-icon{
+  display:grid;
+  width:52px;
+  height:52px;
+  place-items:center;
+  border-radius:17px;
+  background:#fff0f3;
+  color:var(--red);
+}
+.cancel-modal-icon svg{width:22px;height:22px}
+.cancel-modal-kicker{
+  display:block;
+  margin-top:13px;
+  color:var(--red);
+  font-size:5.8px;
+  font-weight:800;
+  letter-spacing:.8px;
+}
+.cancel-order-sheet h3{
+  margin-top:5px;
+}
+.cancel-reason-shell{
+  display:block;
+  margin-top:14px;
+}
+.cancel-reason-shell>span{
+  display:block;
+  margin-bottom:6px;
+  color:var(--navy);
+  font-size:6px;
+  font-weight:800;
+}
+.cancel-reason-shell select{
+  width:100%;
+  min-height:44px;
+  padding:0 11px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  outline:none;
+  background:#f8fafc;
+  color:var(--navy);
+  font-family:inherit;
+  font-size:6.4px;
+  font-weight:700;
+}
+.cancel-reason-shell select:focus{
+  border-color:rgba(217,44,75,.28);
+  background:#fff;
+  box-shadow:0 0 0 4px rgba(217,44,75,.05);
+}
+.cancel-order-warning{
+  display:grid;
+  grid-template-columns:22px minmax(0,1fr);
+  gap:8px;
+  align-items:start;
+  margin-top:11px;
+  padding:11px;
+  border-radius:14px;
+  background:#fff7f8;
+  color:#8e4f5b;
+  font-size:5.7px;
+  line-height:1.55;
+}
+.cancel-order-warning svg{
+  width:16px;
+  height:16px;
+  margin-top:1px;
+  color:var(--red);
+}
+.danger-primary-btn{
+  width:100%;
+  min-height:48px;
+  margin-top:13px;
+  border:0;
+  border-radius:15px;
+  background:linear-gradient(145deg,#c82745,#e1445f);
+  color:#fff;
+  font-size:7px;
+  font-weight:800;
+  box-shadow:0 11px 24px rgba(201,39,69,.18);
+}
+.danger-primary-btn:disabled,
+.cancel-order-btn:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}

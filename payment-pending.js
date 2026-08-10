@@ -7,6 +7,7 @@ let pollTimer = null;
 let countdownTimer = null;
 let snapLoadingPromise = null;
 let toastTimer = null;
+let cancellingOrder = false;
 
 const $ = (id) => document.getElementById(id);
 const money = (v) => new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0}).format(Number(v||0));
@@ -191,6 +192,10 @@ function renderPayment(data){
   $("continuePaymentBtn").hidden = paid;
   $("continuePaymentText").textContent = hasMethod && !failed ? "Buka Pembayaran" : "Pilih Metode Pembayaran";
   $("changeMethodBtn").hidden = !hasMethod || paid || failed || status !== "pending";
+
+  // Buyer may cancel only while payment has not succeeded.
+  // Failed/expired/cancelled transactions do not need another cancel action.
+  $("cancelOrderBtn").hidden = paid || failed;
 }
 
 function renderOrder(data){
@@ -281,8 +286,121 @@ async function openSnap(replacePending=false){
   }
 }
 
+function openCancelOrderModal(){
+  if(cancellingOrder) return;
+  $("cancelOrderModal").hidden = false;
+  document.body.style.overflow = "hidden";
+}
+
+function closeCancelOrderModal(){
+  if(cancellingOrder) return;
+  $("cancelOrderModal").hidden = true;
+  document.body.style.overflow = "";
+}
+
+async function cancelOrder(){
+  if(cancellingOrder || !orderId) return;
+
+  cancellingOrder = true;
+
+  const confirmButton = $("confirmCancelOrderBtn");
+  const closeButton = $("closeCancelOrderModalBtn");
+  const cancelMainButton = $("cancelOrderBtn");
+  const changeButton = $("changeMethodBtn");
+  const continueButton = $("continuePaymentBtn");
+
+  const originalText = confirmButton.textContent;
+
+  confirmButton.disabled = true;
+  closeButton.disabled = true;
+  cancelMainButton.disabled = true;
+  changeButton.disabled = true;
+  continueButton.disabled = true;
+  confirmButton.textContent = "Membatalkan Pesanan…";
+
+  try{
+    // Always refresh first. This prevents cancelling an order that has
+    // just been paid while the page still shows stale pending data.
+    const latest = await fetchStatus(true);
+
+    const latestStatus = String(
+      latest?.transaction_status ||
+      latest?.payment_status ||
+      ""
+    ).toLowerCase();
+
+    if(["settlement","capture","paid"].includes(latestStatus)){
+      closeCancelOrderModal();
+      renderPayment(latest);
+      toast("Pembayaran sudah berhasil. Pesanan tidak dapat dibatalkan.");
+      return;
+    }
+
+    const reason = $("cancelReasonSelect").value || "Dibatalkan oleh pembeli";
+
+    const {data,error} = await window.adaajaSupabase.functions.invoke(
+      "cancel-order-payment",
+      {
+        body:{
+          order_id:orderId,
+          reason
+        }
+      }
+    );
+
+    if(error) throw error;
+
+    if(!data?.ok){
+      throw new Error(data?.error || "Pesanan belum dapat dibatalkan.");
+    }
+
+    $("cancelOrderModal").hidden = true;
+    document.body.style.overflow = "";
+
+    clearInterval(pollTimer);
+    clearInterval(countdownTimer);
+
+    toast("Pesanan berhasil dibatalkan.");
+
+    setTimeout(()=>{
+      location.href =
+        `my-orders.html?order_id=${encodeURIComponent(orderId)}&status=cancelled`;
+    },900);
+
+  }catch(err){
+    console.error("Cancel order error:",err);
+
+    const message =
+      err?.context?.body?.error ||
+      err?.message ||
+      "Pesanan belum dapat dibatalkan.";
+
+    toast(message);
+
+    // Re-sync UI because Midtrans may have changed while cancellation ran.
+    try{
+      const latest = await fetchStatus(true);
+      renderPayment(latest);
+    }catch(_){}
+  }finally{
+    cancellingOrder = false;
+    confirmButton.disabled = false;
+    closeButton.disabled = false;
+    cancelMainButton.disabled = false;
+    changeButton.disabled = false;
+    continueButton.disabled = false;
+    confirmButton.textContent = originalText;
+  }
+}
+
 $("continuePaymentBtn").addEventListener("click",()=>openSnap(false));
 $("changeMethodBtn").addEventListener("click",()=>{$("changeModal").hidden=false;});
+$("cancelOrderBtn").addEventListener("click",openCancelOrderModal);
+$("closeCancelOrderModalBtn").addEventListener("click",closeCancelOrderModal);
+$("confirmCancelOrderBtn").addEventListener("click",cancelOrder);
+$("cancelOrderModal").addEventListener("click",(event)=>{
+  if(event.target === $("cancelOrderModal")) closeCancelOrderModal();
+});
 $("cancelChangeBtn").addEventListener("click",()=>{$("changeModal").hidden=true;});
 $("confirmChangeBtn").addEventListener("click",async()=>{
   $("changeModal").hidden=true;
@@ -293,11 +411,25 @@ $("refreshTopBtn").addEventListener("click",()=>fetchStatus(false));
 $("ordersBtn").addEventListener("click",()=>location.href=`my-orders.html?order_id=${encodeURIComponent(orderId||"")}`);
 $("backBtn").addEventListener("click",()=>location.href=`my-orders.html?order_id=${encodeURIComponent(orderId||"")}`);
 
+document.addEventListener("keydown",(event)=>{
+  if(event.key === "Escape"){
+    if(!$("cancelOrderModal").hidden) closeCancelOrderModal();
+    if(!$("changeModal").hidden) $("changeModal").hidden = true;
+  }
+});
+
 (async()=>{
   if(!orderId){ toast("Pesanan tidak ditemukan."); return; }
   const user=await requireUser(); if(!user) return;
   try{ await fetchStatus(false); }catch(_){}
-  pollTimer=setInterval(async()=>{
+  pollTimer=setIntervaldocument.addEventListener("keydown",(event)=>{
+  if(event.key === "Escape"){
+    if(!$("cancelOrderModal").hidden) closeCancelOrderModal();
+    if(!$("changeModal").hidden) $("changeModal").hidden = true;
+  }
+});
+
+(async()=>{
     try{
       const data=await fetchStatus(true);
       const s=String(data.transaction_status||data.payment_status||"");

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#f6f8fb">
   <title>Pembayaran — AdaAja</title>
-  <link rel="stylesheet" href="payment-pending.css?v=20260811-2">
+  <link rel="stylesheet" href="payment-pending.css?v=20260811-cancel3">
 </head>
 <body>
   <div class="app-shell">
@@ -76,6 +76,23 @@
 
         <button class="ghost-btn danger-text" id="changeMethodBtn" type="button" hidden>
           Ganti metode pembayaran
+        </button>
+
+        <button class="cancel-order-btn" id="cancelOrderBtn" type="button" hidden>
+          <span class="cancel-order-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 7h16"></path>
+              <path d="M9 7V5h6v2"></path>
+              <path d="m8 10 .6 8h6.8l.6-8"></path>
+            </svg>
+          </span>
+          <span>
+            <strong>Batalkan Pesanan</strong>
+            <small>Saya tidak ingin melanjutkan transaksi ini</small>
+          </span>
+          <svg class="cancel-order-chevron" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m9 6 6 6-6 6"></path>
+          </svg>
         </button>
       </section>
 
@@ -159,9 +176,60 @@
     </section>
   </div>
 
+  <div class="modal-backdrop cancel-order-modal" id="cancelOrderModal" hidden>
+    <section class="modal-sheet cancel-order-sheet">
+      <div class="modal-handle"></div>
+
+      <div class="cancel-modal-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 7h16"></path>
+          <path d="M9 7V5h6v2"></path>
+          <path d="m8 10 .6 8h6.8l.6-8"></path>
+        </svg>
+      </div>
+
+      <span class="cancel-modal-kicker">BATALKAN PESANAN</span>
+      <h3>Batalkan transaksi ini?</h3>
+      <p>
+        Pesanan yang dibatalkan tidak dapat dibayar kembali.
+        Jika ingin membeli produk ini lagi, Anda perlu membuat checkout baru.
+      </p>
+
+      <label class="cancel-reason-shell">
+        <span>Alasan pembatalan</span>
+        <select id="cancelReasonSelect">
+          <option value="Berubah pikiran">Berubah pikiran</option>
+          <option value="Ingin mengganti produk">Ingin mengganti produk</option>
+          <option value="Alamat atau pengiriman perlu diubah">Alamat atau pengiriman perlu diubah</option>
+          <option value="Metode pembayaran bermasalah">Metode pembayaran bermasalah</option>
+          <option value="Lainnya">Lainnya</option>
+        </select>
+      </label>
+
+      <div class="cancel-order-warning">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M12 8v5"></path>
+          <path d="M12 17h.01"></path>
+        </svg>
+        <span>
+          Sistem akan memeriksa status pembayaran ke Midtrans terlebih dahulu.
+          Jika pembayaran ternyata sudah berhasil, pembatalan akan otomatis ditolak.
+        </span>
+      </div>
+
+      <button class="danger-primary-btn" id="confirmCancelOrderBtn" type="button">
+        Ya, Batalkan Pesanan
+      </button>
+      <button class="ghost-btn" id="closeCancelOrderModalBtn" type="button">
+        Kembali
+      </button>
+    </section>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=20260811-1"></script>
   <script src="auth-session.js?v=20260807-3"></script>
-  <script src="payment-pending.js?v=20260811-2"></script>
+  <script src="payment-pending.js?v=20260811-cancel3"></script>
 </body>
 </html>
