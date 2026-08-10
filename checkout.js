@@ -326,47 +326,12 @@ function renderAddress() {
 }
 
 function renderPaymentMethods(rows) {
-  if (!rows.length) return;
-
   const preferred =
     rows.find((row) => row.method_code === "default_estimate") ||
-    rows[0];
+    rows[0] ||
+    null;
 
-  paymentMethodCode = preferred.method_code;
-
-  paymentMethods.innerHTML = rows.map((row) => `
-    <label class="payment-option ${row.method_code === paymentMethodCode ? "active" : ""}">
-      <input
-        type="radio"
-        name="payment_method"
-        value="${esc(row.method_code)}"
-        ${row.method_code === paymentMethodCode ? "checked" : ""}
-      >
-      <span class="payment-logo">M</span>
-      <span class="payment-copy">
-        <strong>${esc(row.method_name || "Midtrans")}</strong>
-        <small>Pembayaran aman melalui Midtrans.</small>
-      </span>
-      <span class="radio-dot"></span>
-    </label>
-  `).join("");
-
-  paymentMethods.querySelectorAll(".payment-option").forEach((label) => {
-    label.addEventListener("click", async () => {
-      paymentMethods.querySelectorAll(".payment-option").forEach((item) => {
-        item.classList.toggle("active", item === label);
-      });
-
-      paymentMethodCode =
-        label.querySelector('input[name="payment_method"]').value;
-
-      currentQuote = null;
-
-      if (selectedShipping) {
-        await refreshQuote();
-      }
-    });
-  });
+  paymentMethodCode = preferred?.method_code || "default_estimate";
 }
 
 async function loadShippingRates() {
@@ -598,6 +563,82 @@ function updateSummary() {
   }
 }
 
+function midtransSnapUrl() {
+  return "https://app.sandbox.midtrans.com/snap/snap.js";
+}
+
+async function ensureSnapLoaded() {
+  if (window.snap?.pay) return;
+
+  const clientKey =
+    window.ADAAJA_MIDTRANS_CLIENT_KEY ||
+    window.MIDTRANS_CLIENT_KEY ||
+    "";
+
+  if (!clientKey) {
+    throw new Error(
+      "MIDTRANS_CLIENT_KEY Sandbox belum dipasang di frontend AdaAja."
+    );
+  }
+
+  const existing = document.querySelector('script[data-adaaja-midtrans-snap="1"]');
+
+  if (existing) {
+    await new Promise((resolve, reject) => {
+      if (window.snap?.pay) return resolve();
+      existing.addEventListener("load", resolve, { once: true });
+      existing.addEventListener("error", reject, { once: true });
+    });
+
+    if (!window.snap?.pay) {
+      throw new Error("Midtrans Snap gagal dimuat.");
+    }
+
+    return;
+  }
+
+  await new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = midtransSnapUrl();
+    script.setAttribute("data-client-key", clientKey);
+    script.setAttribute("data-adaaja-midtrans-snap", "1");
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+
+  if (!window.snap?.pay) {
+    throw new Error("Midtrans Snap gagal dimuat.");
+  }
+}
+
+function openSnapPayment(orderId, snapToken) {
+  return ensureSnapLoaded().then(() => {
+    window.snap.pay(snapToken, {
+      onSuccess(result) {
+        console.log("MIDTRANS SNAP SUCCESS", result);
+        location.href =
+          `my-orders.html?order_id=${encodeURIComponent(orderId)}&payment=success`;
+      },
+
+      onPending(result) {
+        console.log("MIDTRANS SNAP PENDING", result);
+        location.href =
+          `my-orders.html?order_id=${encodeURIComponent(orderId)}&payment=pending`;
+      },
+
+      onError(result) {
+        console.error("MIDTRANS SNAP ERROR", result);
+        showToast("Pembayaran gagal. Silakan coba lagi.");
+      },
+
+      onClose() {
+        showToast("Pembayaran belum diselesaikan.");
+      }
+    });
+  });
+}
+
 async function finalizeAndPay() {
   if (!currentUser || !product || !address || !selectedShipping || !currentQuote) {
     showToast("Lengkapi checkout terlebih dahulu.");
@@ -646,27 +687,15 @@ async function finalizeAndPay() {
       );
 
     if (paymentError) {
-      // Order remains pending payment and is visible in My Orders.
-      location.href = `my-orders.html?order_id=${encodeURIComponent(orderId)}&payment=pending`;
-      return;
-    }
-
-    if (paymentData?.redirect_url) {
-      location.href = paymentData.redirect_url;
-      return;
+      throw paymentError;
     }
 
     if (paymentData?.snap_token) {
-      // Edge Function works, but Snap JS is not intentionally loaded here.
-      // Use redirect fallback if available; otherwise keep order accessible.
-      showToast("Pembayaran sudah disiapkan.");
-      setTimeout(() => {
-        location.href = `my-orders.html?order_id=${encodeURIComponent(orderId)}&payment=pending`;
-      }, 800);
+      await openSnapPayment(orderId, paymentData.snap_token);
       return;
     }
 
-    location.href = `my-orders.html?order_id=${encodeURIComponent(orderId)}&payment=pending`;
+    throw new Error("Midtrans tidak mengembalikan Snap token.");
   } catch (error) {
     console.error("Finalize checkout error:", error);
     showToast(error.message || "Checkout gagal diproses.");

@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#ffffff">
   <meta name="description" content="Checkout aman AdaAja.">
   <title>Checkout — AdaAja</title>
-  <link rel="stylesheet" href="checkout.css?v=20260808-6">
+  <link rel="stylesheet" href="checkout.css?v=20260811-snap-popup1">
 </head>
 <body>
   <div class="app-shell">
@@ -146,15 +146,20 @@
         </div>
 
         <div class="payment-methods" id="paymentMethods">
-          <label class="payment-option active">
-            <input type="radio" name="payment_method" value="default_estimate" checked>
-            <span class="payment-logo">M</span>
-            <span class="payment-copy">
-              <strong>Midtrans</strong>
-              <small>Pilih metode pembayaran pada halaman pembayaran aman.</small>
+          <div class="snap-payment-card">
+            <span class="snap-payment-icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 7h16v10H4z"></path>
+                <path d="M8 11h8"></path>
+                <path d="M8 14h5"></path>
+              </svg>
             </span>
-            <span class="radio-dot"></span>
-          </label>
+            <span class="payment-copy">
+              <strong>Pilih metode setelah menekan Bayar Sekarang</strong>
+              <small>Bank Transfer • QRIS • E-Wallet • Kartu. Pilihan resmi dan logo pembayaran akan ditampilkan oleh Midtrans langsung di dalam popup.</small>
+            </span>
+            <span class="snap-ready-badge">Siap</span>
+          </div>
         </div>
       </section>
 
@@ -275,6 +280,12 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=20260807-1"></script>
   <script src="auth-session.js?v=20260807-3"></script>
-  <script src="checkout.js?v=20260808-6"></script>
+  <script>
+    window.ADAAJA_MIDTRANS_CLIENT_KEY =
+      window.ADAAJA_MIDTRANS_CLIENT_KEY ||
+      window.MIDTRANS_CLIENT_KEY ||
+      "";
+  </script>
+  <script src="checkout.js?v=20260811-snap-popup1"></script>
 </body>
 </html>

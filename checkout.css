@@ -63,3 +63,43 @@ svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke
 .toast{position:fixed;z-index:140;right:16px;bottom:174px;left:16px;max-width:398px;margin:auto;padding:12px 14px;border-radius:14px;background:rgba(9,37,68,.96);color:#fff;text-align:center;font-size:8px;font-weight:700;opacity:0;pointer-events:none;transform:translateY(8px);transition:.18s}.toast.show{opacity:1;transform:translateY(0)}
 
 @media(max-width:360px){.content{padding-left:11px;padding-right:11px}.top-header{padding-left:11px;padding-right:11px}.hero-card h2{font-size:21px}.checkout-bar{grid-template-columns:minmax(0,1fr) 145px}}
+
+
+/* =========================================================
+   MIDTRANS SNAP POPUP — PAYMENT CARD
+   ========================================================= */
+.snap-payment-card{
+  display:grid;
+  grid-template-columns:46px minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  padding:13px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:linear-gradient(180deg,#fbfdff,#f7faff);
+}
+.snap-payment-icon{
+  display:grid;
+  width:46px;
+  height:46px;
+  place-items:center;
+  border-radius:14px;
+  background:#eef6ff;
+  color:var(--blue);
+}
+.snap-payment-icon svg{width:19px;height:19px}
+.snap-ready-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:42px;
+  padding:6px 8px;
+  border-radius:999px;
+  background:#ecfdf3;
+  color:var(--green);
+  font-size:5.8px;
+  font-weight:800;
+}
+.payment-methods{margin-top:13px}
+.payment-copy strong{display:block;color:var(--navy);font-size:8px}
+.payment-copy small{display:block;margin-top:3px;color:#8b96a4;font-size:6px;line-height:1.5}
