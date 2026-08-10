@@ -618,22 +618,27 @@ function openSnapPayment(orderId, snapToken) {
       onSuccess(result) {
         console.log("MIDTRANS SNAP SUCCESS", result);
         location.href =
-          `my-orders.html?order_id=${encodeURIComponent(orderId)}&payment=success`;
+          `payment-pending.html?order_id=${encodeURIComponent(orderId)}&from=snap&state=success`;
       },
 
       onPending(result) {
         console.log("MIDTRANS SNAP PENDING", result);
         location.href =
-          `my-orders.html?order_id=${encodeURIComponent(orderId)}&payment=pending`;
+          `payment-pending.html?order_id=${encodeURIComponent(orderId)}&from=snap&state=pending`;
       },
 
       onError(result) {
         console.error("MIDTRANS SNAP ERROR", result);
-        showToast("Pembayaran gagal. Silakan coba lagi.");
+        showToast("Pembayaran belum berhasil. Anda dapat mencoba lagi.");
+        setTimeout(() => {
+          location.href =
+            `payment-pending.html?order_id=${encodeURIComponent(orderId)}&from=snap&state=error`;
+        }, 700);
       },
 
       onClose() {
-        showToast("Pembayaran belum diselesaikan.");
+        location.href =
+          `payment-pending.html?order_id=${encodeURIComponent(orderId)}&from=snap&state=closed`;
       }
     });
   });

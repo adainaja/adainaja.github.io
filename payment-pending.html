@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f8fb">
+  <title>Pembayaran — AdaAja</title>
+  <link rel="stylesheet" href="payment-pending.css?v=20260811-1">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="icon-btn" id="backBtn" type="button" aria-label="Kembali">
+        <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div>
+        <small>ADAAJA PAYMENTS</small>
+        <h1>Pembayaran</h1>
+      </div>
+      <button class="icon-btn" id="refreshTopBtn" type="button" aria-label="Refresh">
+        <svg viewBox="0 0 24 24"><path d="M20 6v5h-5"/><path d="M19 11a7 7 0 1 0 1 5"/></svg>
+      </button>
+    </header>
+
+    <main>
+      <section class="status-hero pending" id="statusHero">
+        <div class="hero-glow"></div>
+        <div class="status-icon" id="statusIcon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        </div>
+        <span class="eyebrow" id="statusEyebrow">MENUNGGU PEMBAYARAN</span>
+        <h2 id="statusTitle">Selesaikan pembayaran Anda</h2>
+        <p id="statusSubtitle">Kami sedang mengambil detail pembayaran terbaru dari Midtrans.</p>
+
+        <div class="amount-panel">
+          <span>Total pembayaran</span>
+          <strong id="heroAmount">Rp0</strong>
+          <small id="orderNumber">Memuat pesanan…</small>
+        </div>
+      </section>
+
+      <section class="timer-card" id="timerCard">
+        <div class="timer-copy">
+          <span class="timer-dot"></span>
+          <div>
+            <small>BATAS PEMBAYARAN</small>
+            <strong id="expiryText">Mengambil batas waktu…</strong>
+          </div>
+        </div>
+        <div class="countdown" id="countdown">--:--:--</div>
+      </section>
+
+      <section class="card payment-card">
+        <div class="section-head">
+          <div>
+            <small>METODE PEMBAYARAN</small>
+            <h3 id="methodTitle">Menyiapkan detail…</h3>
+          </div>
+          <span class="secure-chip">
+            <svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.7 3 8.3 7 10 4-1.7 7-5.3 7-10V6l-7-3Z"/><path d="m9.5 12 1.7 1.7 3.8-4"/></svg>
+            Aman
+          </span>
+        </div>
+
+        <div id="paymentDetail">
+          <div class="loading-box">
+            <span class="spinner"></span>
+            <div><strong>Memuat pembayaran</strong><small>Mohon tunggu sebentar.</small></div>
+          </div>
+        </div>
+
+        <button class="primary-btn" id="continuePaymentBtn" type="button" hidden>
+          <span id="continuePaymentText">Lanjutkan Pembayaran</span>
+          <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+
+        <button class="ghost-btn danger-text" id="changeMethodBtn" type="button" hidden>
+          Ganti metode pembayaran
+        </button>
+      </section>
+
+      <section class="card progress-card">
+        <div class="section-head">
+          <div>
+            <small>STATUS TRANSAKSI</small>
+            <h3>Proses pembayaran</h3>
+          </div>
+          <button class="mini-link" id="checkStatusBtn" type="button">Cek status</button>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-item done">
+            <span><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-8"/></svg></span>
+            <div><strong>Pesanan dibuat</strong><small>Rincian transaksi sudah diamankan.</small></div>
+          </div>
+          <div class="timeline-item active" id="paymentTimeline">
+            <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></span>
+            <div><strong id="paymentTimelineTitle">Menunggu pembayaran</strong><small id="paymentTimelineText">Selesaikan pembayaran sesuai metode yang dipilih.</small></div>
+          </div>
+          <div class="timeline-item" id="processingTimeline">
+            <span><svg viewBox="0 0 24 24"><path d="M4 12h16"/><path d="m14 6 6 6-6 6"/></svg></span>
+            <div><strong>Pesanan diproses</strong><small>Seller menerima notifikasi setelah pembayaran terkonfirmasi.</small></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card order-card">
+        <div class="section-head">
+          <div>
+            <small>RINGKASAN PESANAN</small>
+            <h3>Detail transaksi</h3>
+          </div>
+        </div>
+
+        <div class="product-row" id="productRow">
+          <div class="product-placeholder"></div>
+          <div><strong>Memuat produk…</strong><small>—</small></div>
+        </div>
+
+        <div class="summary">
+          <div><span>Harga barang</span><strong id="subtotal">Rp0</strong></div>
+          <div><span>Pengiriman</span><strong id="shipping">Rp0</strong></div>
+          <div><span>Biaya layanan</span><strong id="serviceFee">Rp0</strong></div>
+          <hr>
+          <div class="total"><span>Total pembayaran</span><strong id="total">Rp0</strong></div>
+        </div>
+      </section>
+
+      <section class="protection-card">
+        <span class="protection-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.7 3 8.3 7 10 4-1.7 7-5.3 7-10V6l-7-3Z"/><path d="m9.5 12 1.7 1.7 3.8-4"/></svg>
+        </span>
+        <div>
+          <strong>Perlindungan transaksi AdaAja</strong>
+          <p>Pembayaran yang berhasil tidak langsung menjadi saldo tersedia seller. Dana mengikuti proses transaksi sampai pesanan selesai.</p>
+        </div>
+      </section>
+
+      <button class="orders-btn" id="ordersBtn" type="button">Lihat Pesanan Saya</button>
+      <p class="auto-note">Status diperiksa otomatis selama halaman ini terbuka.</p>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="modal-backdrop" id="changeModal" hidden>
+    <section class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24"><path d="M4 7h16v10H4z"/><path d="M8 11h8"/></svg>
+      </div>
+      <h3>Ganti metode pembayaran?</h3>
+      <p>Metode pembayaran yang sedang menunggu akan dibatalkan terlebih dahulu. Setelah itu popup Midtrans akan dibuka kembali untuk memilih metode baru.</p>
+      <div class="modal-warning">
+        Fitur ini hanya dapat digunakan selama transaksi lama masih berstatus <b>pending</b>.
+      </div>
+      <button class="primary-btn" id="confirmChangeBtn" type="button">Ya, Ganti Metode</button>
+      <button class="ghost-btn" id="cancelChangeBtn" type="button">Kembali</button>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=20260811-1"></script>
+  <script src="auth-session.js?v=20260807-3"></script>
+  <script src="payment-pending.js?v=20260811-1"></script>
+</body>
+</html>
