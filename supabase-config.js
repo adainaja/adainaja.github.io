@@ -26,4 +26,8 @@
 
   window.ADAAJA_AUTH_CALLBACK_URL =
     new URL("auth-callback.html", window.location.href).href;
+
+  window.ADAAJA_MIDTRANS_CLIENT_KEY = "Mid-client-xf0ZLafY1ZaMFm3Y";
+
+})();
 })();
