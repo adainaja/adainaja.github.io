@@ -114,8 +114,36 @@ function card(o){
  ${released?`<div class="completed-notice"><span>✓</span><div><strong>Transaksi selesai</strong><small>Pesanan telah dikonfirmasi dan dana seller sudah dilepas dari escrow.</small></div></div>`:""}
 
  <div class="order-summary"><div><span>${o.items.length||1} produk</span><strong>${esc(paymentLabel(o))}</strong></div><div class="total"><span>Total pembayaran</span><strong>${money(o.total)}</strong></div></div>
+
+ ${displayStatus==="pending_payment"
+   ? `<div class="payment-pending-notice">
+        <span class="payment-pending-notice-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 7v5l3 2"></path>
+          </svg>
+        </span>
+        <div>
+          <strong>Menunggu pembayaran</strong>
+          <small>Buka detail pembayaran untuk melihat VA, batas waktu, status, atau mengganti metode pembayaran.</small>
+        </div>
+      </div>`
+   : ""}
+
  <div class="order-actions">
    <a class="secondary" href="${i.product_id?`product-detail.html?id=${encodeURIComponent(i.product_id)}`:"explore.html"}">Lihat Produk</a>
+
+   ${displayStatus==="pending_payment"
+     ? `<a class="primary payment-pending-button" href="payment-pending.html?order_id=${encodeURIComponent(o.id)}">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h16v10H4z"></path>
+            <path d="M8 11h8"></path>
+            <path d="M8 14h5"></path>
+          </svg>
+          ${o?.payment?.payment_method ? "Lanjutkan Pembayaran" : "Bayar Sekarang"}
+        </a>`
+     : ""}
+
    ${o.shipment?.id&&["shipped","delivered","completed"].includes(displayStatus)?`<button class="secondary track-button" data-order-id="${esc(o.id)}">Lacak Paket</button>`:""}
    ${needsConfirmation?`<button class="primary confirm-received-button" data-order-id="${esc(o.id)}">Pesanan Diterima</button>`:""}
  </div>
