@@ -9,6 +9,14 @@ const minimumOrderText = document.getElementById("minimumOrderText");
 const shippingState = document.getElementById("shippingState");
 const shippingList = document.getElementById("shippingList");
 const paymentMethods = document.getElementById("paymentMethods");
+const shippingPickerButton = document.getElementById("shippingPickerButton");
+const shippingPickerLogo = document.getElementById("shippingPickerLogo");
+const shippingPickerEyebrow = document.getElementById("shippingPickerEyebrow");
+const shippingPickerTitle = document.getElementById("shippingPickerTitle");
+const shippingPickerMeta = document.getElementById("shippingPickerMeta");
+const shippingPickerPrice = document.getElementById("shippingPickerPrice");
+const shippingSheetBackdrop = document.getElementById("shippingSheetBackdrop");
+const shippingSheetList = document.getElementById("shippingSheetList");
 const buyerNote = document.getElementById("buyerNote");
 const payButton = document.getElementById("payButton");
 const toast = document.getElementById("toast");
@@ -85,6 +93,77 @@ async function requireUser() {
   return user;
 }
 
+function courierBadgeText(rate) {
+  const code = String(rate?.courier_code || "").toLowerCase();
+  const name = String(rate?.courier_company || "").trim();
+
+  const aliases = {
+    jne: "JNE",
+    jnt: "J&T",
+    "j&t": "J&T",
+    sicepat: "SiCepat",
+    anteraja: "AnterAja",
+    ninja: "Ninja",
+    tiki: "TIKI",
+    pos: "POS",
+    grab: "Grab",
+    gojek: "GoSend",
+    gosend: "GoSend",
+    lalamove: "Lalamove",
+    paxel: "Paxel",
+    lion: "Lion",
+    lionparcel: "Lion"
+  };
+
+  return aliases[code] || name || code.toUpperCase().slice(0, 8) || "Kurir";
+}
+
+function shippingEta(rate) {
+  return rate.estimated_text ||
+    (
+      rate.estimated_min_days != null
+        ? `${rate.estimated_min_days}${rate.estimated_max_days && rate.estimated_max_days !== rate.estimated_min_days ? `–${rate.estimated_max_days}` : ""} hari`
+        : "Estimasi mengikuti kurir"
+    );
+}
+
+function renderSelectedShipping() {
+  if (!selectedShipping) {
+    shippingPickerButton.classList.remove("has-selection");
+    shippingPickerLogo.textContent = "—";
+    shippingPickerLogo.removeAttribute("data-courier");
+    shippingPickerEyebrow.textContent = "PILIH PENGIRIMAN";
+    shippingPickerTitle.textContent = "Belum ada ekspedisi dipilih";
+    shippingPickerMeta.textContent = shippingOptions.length
+      ? `${shippingOptions.length} layanan tersedia`
+      : "Tarif dan estimasi akan tampil di sini.";
+    shippingPickerPrice.textContent = shippingOptions.length ? "Pilih" : "—";
+    return;
+  }
+
+  shippingPickerButton.classList.add("has-selection");
+  shippingPickerLogo.textContent = courierBadgeText(selectedShipping);
+  shippingPickerLogo.dataset.courier = String(selectedShipping.courier_code || "").toLowerCase();
+  shippingPickerEyebrow.textContent = "PENGIRIMAN TERPILIH";
+  shippingPickerTitle.textContent =
+    `${selectedShipping.courier_company} · ${selectedShipping.service_name}`;
+  shippingPickerMeta.textContent = shippingEta(selectedShipping);
+  shippingPickerPrice.textContent = money(
+    selectedShipping.customer_price ?? selectedShipping.base_cost ?? 0
+  );
+}
+
+function openShippingSheet() {
+  if (!shippingOptions.length) return;
+  shippingSheetBackdrop.hidden = false;
+  document.body.style.overflow = "hidden";
+}
+
+function closeShippingSheet() {
+  shippingSheetBackdrop.hidden = true;
+  document.body.style.overflow = "";
+}
+
 function shippingLoading() {
   shippingState.hidden = false;
   shippingState.innerHTML = `
@@ -97,6 +176,8 @@ function shippingLoading() {
     </div>
   `;
   shippingList.innerHTML = "";
+  shippingPickerButton.disabled = true;
+  renderSelectedShipping();
 }
 
 function shippingUnavailable(message) {
@@ -113,6 +194,8 @@ function shippingUnavailable(message) {
   shippingList.innerHTML = "";
   selectedShipping = null;
   currentQuote = null;
+  shippingPickerButton.disabled = true;
+  renderSelectedShipping();
   updateSummary();
 }
 
@@ -366,6 +449,9 @@ async function loadShippingRates() {
       throw new Error("Belum ada layanan kurir yang tersedia untuk alamat ini.");
     }
 
+    document.getElementById("shippingDestinationLabel").textContent =
+      address?.city || address?.district || address?.postal_code || "Alamat Anda";
+
     shippingOptions = rates.map((rate, index) => ({
       id: rate.id || `${rate.courier_code || rate.company || "courier"}-${rate.service_code || rate.type || index}`,
       courier_company: rate.courier_company || rate.company || rate.courier_name || "Kurir",
@@ -390,43 +476,52 @@ async function loadShippingRates() {
 
 function renderShippingOptions() {
   shippingState.hidden = true;
+  shippingPickerButton.disabled = false;
 
-  shippingList.innerHTML = shippingOptions.map((rate) => {
-    const eta =
-      rate.estimated_text ||
-      (
-        rate.estimated_min_days != null
-          ? `${rate.estimated_min_days}${rate.estimated_max_days && rate.estimated_max_days !== rate.estimated_min_days ? `–${rate.estimated_max_days}` : ""} hari`
-          : "Estimasi mengikuti kurir"
-      );
+  shippingSheetList.innerHTML = shippingOptions.map((rate) => {
+    const eta = shippingEta(rate);
+    const active = selectedShipping?.id === rate.id;
 
     return `
-      <label class="shipping-option" data-id="${esc(rate.id)}">
-        <input type="radio" name="shipping_rate" value="${esc(rate.id)}">
-        <span class="courier-mark">${esc(String(rate.courier_company).slice(0, 2).toUpperCase())}</span>
-        <span class="shipping-copy">
+      <button class="shipping-sheet-option ${active ? "active" : ""}" type="button" data-id="${esc(rate.id)}">
+        <span class="courier-logo-badge" data-courier="${esc(String(rate.courier_code || "").toLowerCase())}">
+          ${esc(courierBadgeText(rate))}
+        </span>
+
+        <span class="shipping-sheet-option-copy">
           <strong>${esc(rate.courier_company)} · ${esc(rate.service_name)}</strong>
           <span>${esc(eta)}</span>
+          <em>${esc(String(rate.service_code || "service").toUpperCase())}</em>
         </span>
-        <strong>${money(rate.base_cost)}</strong>
-      </label>
+
+        <span class="shipping-sheet-option-price">
+          <strong>${money(rate.customer_price ?? rate.base_cost)}</strong>
+          <small>ongkir</small>
+        </span>
+
+        <span class="shipping-sheet-radio"></span>
+      </button>
     `;
   }).join("");
 
-  shippingList.querySelectorAll(".shipping-option").forEach((label) => {
-    label.addEventListener("click", async () => {
-      shippingList.querySelectorAll(".shipping-option").forEach((item) => {
-        item.classList.toggle("active", item === label);
+  shippingSheetList.querySelectorAll(".shipping-sheet-option").forEach((button) => {
+    button.addEventListener("click", async () => {
+      shippingSheetList.querySelectorAll(".shipping-sheet-option").forEach((item) => {
+        item.classList.toggle("active", item === button);
       });
 
       selectedShipping =
-        shippingOptions.find((rate) => rate.id === label.dataset.id) ||
+        shippingOptions.find((rate) => rate.id === button.dataset.id) ||
         null;
 
       currentQuote = null;
+      renderSelectedShipping();
+      closeShippingSheet();
       await refreshQuote();
     });
   });
+
+  renderSelectedShipping();
 }
 
 async function refreshQuote() {
@@ -475,15 +570,16 @@ async function refreshQuote() {
 
     selectedShipping.customer_price = finalShipping;
 
-    const selectedLabel = shippingList.querySelector(
-      `.shipping-option[data-id="${CSS.escape(selectedShipping.id)}"]`
+    const sheetItem = shippingSheetList.querySelector(
+      `.shipping-sheet-option[data-id="${CSS.escape(selectedShipping.id)}"]`
     );
 
-    if (selectedLabel) {
-      selectedLabel.querySelector(":scope > strong:last-child").textContent =
-        money(finalShipping);
+    if (sheetItem) {
+      const priceEl = sheetItem.querySelector(".shipping-sheet-option-price strong");
+      if (priceEl) priceEl.textContent = money(finalShipping);
     }
 
+    renderSelectedShipping();
     updateSummary();
   } catch (error) {
     console.error("Quote error:", error);
@@ -612,33 +708,71 @@ async function ensureSnapLoaded() {
   }
 }
 
+async function inspectPaymentAfterSnapClose(orderId) {
+  try {
+    const { data, error } = await window.adaajaSupabase.functions.invoke(
+      "get-midtrans-payment-status",
+      { body: { order_id: orderId } }
+    );
+
+    if (error) throw error;
+
+    const status = String(
+      data?.transaction_status ||
+      data?.payment_status ||
+      ""
+    ).toLowerCase();
+
+    if (["settlement", "capture", "paid"].includes(status)) {
+      location.href =
+        `payment-pending.html?order_id=${encodeURIComponent(orderId)}&state=success`;
+      return;
+    }
+
+    // Midtrans Status API starts returning payment_type after a payment
+    // channel has actually been selected.
+    if (
+      data?.payment_channel_selected ||
+      data?.payment_type ||
+      (status === "pending" && data?.midtrans_status_found)
+    ) {
+      location.href =
+        `payment-pending.html?order_id=${encodeURIComponent(orderId)}&state=pending`;
+      return;
+    }
+
+    // Buyer closed Snap before selecting a payment channel.
+    showToast("Metode pembayaran belum dipilih.");
+  } catch (error) {
+    console.warn("Check payment after Snap close:", error);
+    showToast("Pembayaran belum dipilih. Silakan tekan Bayar Sekarang lagi.");
+  }
+}
+
 function openSnapPayment(orderId, snapToken) {
   return ensureSnapLoaded().then(() => {
     window.snap.pay(snapToken, {
       onSuccess(result) {
         console.log("MIDTRANS SNAP SUCCESS", result);
         location.href =
-          `payment-pending.html?order_id=${encodeURIComponent(orderId)}&from=snap&state=success`;
+          `payment-pending.html?order_id=${encodeURIComponent(orderId)}&state=success`;
       },
 
       onPending(result) {
         console.log("MIDTRANS SNAP PENDING", result);
         location.href =
-          `payment-pending.html?order_id=${encodeURIComponent(orderId)}&from=snap&state=pending`;
+          `payment-pending.html?order_id=${encodeURIComponent(orderId)}&state=pending`;
       },
 
       onError(result) {
         console.error("MIDTRANS SNAP ERROR", result);
         showToast("Pembayaran belum berhasil. Anda dapat mencoba lagi.");
-        setTimeout(() => {
-          location.href =
-            `payment-pending.html?order_id=${encodeURIComponent(orderId)}&from=snap&state=error`;
-        }, 700);
       },
 
       onClose() {
-        location.href =
-          `payment-pending.html?order_id=${encodeURIComponent(orderId)}&from=snap&state=closed`;
+        // Stay on checkout if the buyer closed Snap before selecting a channel.
+        // Move to payment-pending only after Midtrans has a real payment channel.
+        inspectPaymentAfterSnapClose(orderId);
       }
     });
   });
@@ -759,6 +893,12 @@ quantityInput.addEventListener("input", () => {
 
 buyerNote.addEventListener("input", () => {
   document.getElementById("noteCount").textContent = buyerNote.value.length;
+});
+
+shippingPickerButton.addEventListener("click", openShippingSheet);
+document.getElementById("closeShippingSheet").addEventListener("click", closeShippingSheet);
+shippingSheetBackdrop.addEventListener("click", (event) => {
+  if (event.target === shippingSheetBackdrop) closeShippingSheet();
 });
 
 payButton.addEventListener("click", finalizeAndPay);

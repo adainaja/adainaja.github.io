@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#ffffff">
   <meta name="description" content="Checkout aman AdaAja.">
   <title>Checkout — AdaAja</title>
-  <link rel="stylesheet" href="checkout.css?v=20260811-snap-popup1">
+  <link rel="stylesheet" href="checkout.css?v=20260811-ship-v2">
 </head>
 <body>
   <div class="app-shell">
@@ -129,7 +129,18 @@
           </div>
         </div>
 
-        <div class="shipping-list" id="shippingList"></div>
+        <button class="shipping-picker" id="shippingPickerButton" type="button" disabled>
+          <span class="shipping-picker-logo" id="shippingPickerLogo">—</span>
+          <span class="shipping-picker-copy">
+            <small id="shippingPickerEyebrow">PILIH PENGIRIMAN</small>
+            <strong id="shippingPickerTitle">Belum ada ekspedisi dipilih</strong>
+            <span id="shippingPickerMeta">Tarif dan estimasi akan tampil di sini.</span>
+          </span>
+          <span class="shipping-picker-price" id="shippingPickerPrice">Pilih</span>
+          <svg class="shipping-picker-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"></path></svg>
+        </button>
+
+        <div class="shipping-list" id="shippingList" hidden></div>
       </section>
 
       <section class="checkout-section">
@@ -275,6 +286,37 @@
     </nav>
   </div>
 
+  <div class="shipping-sheet-backdrop" id="shippingSheetBackdrop" hidden>
+    <section class="shipping-sheet" role="dialog" aria-modal="true" aria-labelledby="shippingSheetTitle">
+      <div class="sheet-handle"></div>
+
+      <div class="shipping-sheet-head">
+        <div>
+          <small>PENGIRIMAN</small>
+          <h2 id="shippingSheetTitle">Pilih ekspedisi</h2>
+          <p>Pilih layanan sesuai estimasi dan biaya yang paling cocok.</p>
+        </div>
+        <button id="closeShippingSheet" type="button" aria-label="Tutup">
+          <svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg>
+        </button>
+      </div>
+
+      <div class="shipping-sheet-summary">
+        <span>
+          <small>Asal</small>
+          <strong id="shippingOriginLabel">Seller</strong>
+        </span>
+        <i></i>
+        <span>
+          <small>Tujuan</small>
+          <strong id="shippingDestinationLabel">Alamat Anda</strong>
+        </span>
+      </div>
+
+      <div class="shipping-sheet-list" id="shippingSheetList"></div>
+    </section>
+  </div>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -286,6 +328,6 @@
       window.MIDTRANS_CLIENT_KEY ||
       "";
   </script>
-  <script src="checkout.js?v=20260811-snap-popup1"></script>
+  <script src="checkout.js?v=20260811-ship-v2"></script>
 </body>
 </html>

@@ -146,7 +146,7 @@ function renderPayment(data){
     $("statusTitle").textContent = hasMethod ? "Selesaikan pembayaran Anda" : "Pembayaran belum dipilih";
     $("statusSubtitle").textContent = hasMethod
       ? "Anda boleh menutup halaman ini. Status akan diperbarui saat pembayaran diterima."
-      : "Buka Midtrans untuk memilih Virtual Account, QRIS, e-wallet, atau metode lain.";
+      : "Tekan Pilih Metode Pembayaran untuk membuka pilihan resmi Midtrans.";
     $("timerCard").style.display = "";
   }
 
