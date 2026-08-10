@@ -30,4 +30,3 @@
   window.ADAAJA_MIDTRANS_CLIENT_KEY = "Mid-client-xf0ZLafY1ZaMFm3Y";
 
 })();
-})();
