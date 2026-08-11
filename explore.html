@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#ffffff">
   <title>AdaAja - Jelajah</title>
-  <link rel="stylesheet" href="explore.css?v=20260811-final">
+  <link rel="stylesheet" href="explore.css?v=20260811-r6">
 </head>
 <body>
   <div class="app-shell">
@@ -26,14 +26,7 @@
     </header>
 
     <main class="content explore-content">
-      <section class="explore-heading">
-        <div>
-          <span class="section-label">JELAJAH</span>
-          <h1>Temukan barang yang kamu cari.</h1>
-          <p>Jelajahi produk baru dan bekas dari pengguna AdaAja.</p>
-        </div>
-
-      </section>
+      <section class="explore-discovery-zone">
       <section class="category-strip" aria-label="Kategori produk">
         <button class="category-chip active" type="button" data-category="all"><span class="chip-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"></rect><rect x="14" y="3" width="7" height="7" rx="2"></rect><rect x="3" y="14" width="7" height="7" rx="2"></rect><rect x="14" y="14" width="7" height="7" rx="2"></rect></svg></span><span>Semua</span></button>
         <button class="category-chip" type="button" data-category="electronics"><span class="chip-icon"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"></rect><path d="M8 7h8M8 11h8M8 15h5"></path></svg></span><span>Elektronik</span></button>
@@ -52,25 +45,32 @@
         <button class="category-chip" type="button" data-category="event"><span class="chip-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M8 3v4M16 3v4M3 10h18"></path></svg></span><span>Event</span></button>
         <button class="category-chip" type="button" data-category="other"><span class="chip-icon"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle></svg></span><span>Lainnya</span></button>
       </section>
-
-      <section class="discovery-card">
-        <div class="discovery-icon"><svg viewBox="0 0 24 24"><path d="M12 21s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="10" r="2"></circle></svg></div>
-        <div class="discovery-copy"><strong>Produk di dekatmu</strong><small>Temukan barang dari penjual di sekitar lokasi.</small></div>
-        <button id="nearbyButton" type="button" aria-label="Lihat produk terdekat"><span>Lihat</span><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></button>
       </section>
 
+      <section class="discovery-card">
+        <div class="local-art" aria-hidden="true">
+          <span class="local-ring ring-one"></span><span class="local-ring ring-two"></span>
+          <span class="local-pin"><svg viewBox="0 0 24 24"><path d="M12 21s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="10" r="2"></circle></svg></span>
+        </div>
+        <div class="discovery-copy"><span>ADAAJA LOKAL</span><strong>Barang dekat, lebih gampang ditemukan.</strong><small>Jelajahi listing dari penjual di sekitar lokasimu.</small></div>
+        <button id="nearbyButton" type="button" aria-label="Lihat produk terdekat"><span>Lihat sekitar</span><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></button>
+      </section>
+
+      <section class="shopping-results">
       <section class="result-toolbar">
-        <div class="result-copy"><strong id="resultTitle">Semua produk</strong><span id="resultCount">Memuat produk...</span></div>
+        <div class="result-copy"><em id="resultEyebrow">TEMUKAN</em><strong id="resultTitle">Semua produk</strong><span id="resultCount">Memuat produk...</span></div>
         <div class="product-controls">
-          <label class="sort-select" for="sortSelect"><svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h9M8 18h6"></path><path d="M4 5v14"></path></svg><select id="sortSelect" aria-label="Urutkan produk"><option value="latest">Terbaru</option><option value="price_low">Harga terendah</option><option value="price_high">Harga tertinggi</option><option value="stock">Stok terbanyak</option></select></label>
+          <button class="sort-trigger" id="sortButton" type="button" aria-label="Urutkan produk"><svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h9M8 18h6"></path><path d="M4 5v14"></path></svg><span id="sortButtonLabel">Terbaru</span><svg class="sort-chevron" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"></path></svg></button>
+          <select id="sortSelect" class="native-sort" aria-label="Urutkan produk"><option value="latest">Terbaru</option><option value="price_low">Harga terendah</option><option value="price_high">Harga tertinggi</option><option value="stock">Stok terbanyak</option></select>
           <button class="filter-trigger toolbar-filter" id="filterButton" type="button" aria-label="Buka filter"><svg viewBox="0 0 24 24"><path d="M4 7h10"></path><path d="M18 7h2"></path><circle cx="16" cy="7" r="2"></circle><path d="M4 17h2"></path><path d="M10 17h10"></path><circle cx="8" cy="17" r="2"></circle></svg><span>Filter</span><i id="filterIndicator"></i></button>
         </div>
       </section>
       <div class="active-filter-chips" id="activeFilterChips" hidden></div>
 
-      <section class="product-grid" id="productGrid" aria-live="polite">
-        <div class="skeleton-card"><div class="skeleton-image"></div><div class="skeleton-line long"></div><div class="skeleton-line short"></div></div>
-        <div class="skeleton-card"><div class="skeleton-image"></div><div class="skeleton-line long"></div><div class="skeleton-line short"></div></div>
+      <section class="product-grid" id="productGrid" aria-live="polite" aria-busy="true">
+        <div class="skeleton-card"><div class="skeleton-image"></div><div class="skeleton-line long"></div><div class="skeleton-line price"></div><div class="skeleton-line short"></div></div>
+        <div class="skeleton-card"><div class="skeleton-image"></div><div class="skeleton-line long"></div><div class="skeleton-line price"></div><div class="skeleton-line short"></div></div>
+      </section>
       </section>
     </main>
 
@@ -90,13 +90,28 @@
 
   <div class="filter-panel" id="filterPanel" aria-hidden="true">
     <button class="panel-backdrop" id="filterBackdrop" type="button" aria-label="Tutup filter"></button>
-    <section class="filter-sheet"><div class="panel-handle"></div><div class="filter-header"><div><span>SESUAIKAN</span><h2>Filter produk</h2></div><button id="closeFilter" type="button" aria-label="Tutup filter"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg></button></div>
+    <section class="filter-sheet"><div class="panel-handle"></div><div class="filter-header"><div><span>SESUAIKAN</span><h2>Filter produk</h2><p>Sesuaikan hasil pencarianmu.</p></div><button id="closeFilter" type="button" aria-label="Tutup filter"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg></button></div>
       <div class="filter-group"><strong>Kondisi</strong><div class="filter-options"><button type="button" data-condition="all" class="selected">Semua</button><button type="button" data-condition="baru">Baru</button><button type="button" data-condition="bekas">Bekas</button></div></div>
-      <div class="filter-group"><strong>Rentang harga</strong><div class="price-fields"><label>Minimum<input id="minPrice" type="number" min="0" inputmode="numeric" placeholder="Rp0"></label><label>Maksimum<input id="maxPrice" type="number" min="0" inputmode="numeric" placeholder="Tanpa batas"></label></div></div>
+      <div class="filter-group"><strong>Rentang harga</strong><div class="price-fields"><label>Harga minimum<span class="price-input"><b>Rp</b><input id="minPrice" type="number" min="0" inputmode="numeric" placeholder="0"></span></label><label>Harga maksimum<span class="price-input"><b>Rp</b><input id="maxPrice" type="number" min="0" inputmode="numeric" placeholder="Tanpa batas"></span></label></div></div>
       <div class="filter-actions"><button id="resetFilter" class="filter-reset" type="button">Atur ulang</button><button id="applyFilter" class="filter-apply" type="button">Terapkan filter</button></div>
     </section>
   </div>
 
+
+
+  <div class="sort-panel" id="sortPanel" aria-hidden="true">
+    <button class="panel-backdrop" id="sortBackdrop" type="button" aria-label="Tutup urutan"></button>
+    <section class="sort-sheet" role="dialog" aria-modal="true" aria-labelledby="sortPanelTitle">
+      <div class="panel-handle"></div>
+      <div class="sort-sheet-head"><div><span>URUTKAN</span><h2 id="sortPanelTitle">Tampilkan lebih dulu</h2></div><button id="closeSort" type="button" aria-label="Tutup"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg></button></div>
+      <div class="sort-options">
+        <button type="button" data-sort-value="latest"><span>Terbaru</span><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"></path></svg></button>
+        <button type="button" data-sort-value="price_low"><span>Harga terendah</span><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"></path></svg></button>
+        <button type="button" data-sort-value="price_high"><span>Harga tertinggi</span><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"></path></svg></button>
+        <button type="button" data-sort-value="stock"><span>Stok terbanyak</span><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"></path></svg></button>
+      </div>
+    </section>
+  </div>
 
   <div class="account-panel" id="accountPanel" aria-hidden="true">
     <button class="panel-backdrop" id="accountBackdrop" type="button" aria-label="Tutup menu akun"></button>
@@ -144,6 +159,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=20260807-1"></script>
   <script src="auth-session.js?v=20260807-1"></script>
-  <script src="explore.js?v=20260811-final"></script>
+  <script src="explore.js?v=20260811-r6"></script>
 </body>
 </html>

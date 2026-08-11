@@ -25,6 +25,7 @@ const topHeader = document.getElementById("topHeader");
 const notificationPanel = document.getElementById("notificationPanel");
 const filterPanel = document.getElementById("filterPanel");
 const accountPanel = document.getElementById("accountPanel");
+const sortPanel = document.getElementById("sortPanel");
 const resultTitle = document.getElementById("resultTitle");
 const resultCount = document.getElementById("resultCount");
 const sortSelect = document.getElementById("sortSelect");
@@ -42,6 +43,76 @@ let maxPrice = Infinity;
 
 let currentSession = null;
 let currentProfile = null;
+
+
+/* ===== Explore Revision 3: dependency and loading safeguards ===== */
+const EXPLORE_IS_FILE = location.protocol === "file:";
+let exploreLoadFailsafe = null;
+
+function hasExploreBackend() {
+  return Boolean(
+    window.adaajaSupabase &&
+    typeof window.adaajaSupabase.from === "function" &&
+    window.adaajaSupabase.auth
+  );
+}
+
+function hasExploreAuthHelper() {
+  return Boolean(
+    window.AdaAjaAuth &&
+    typeof window.AdaAjaAuth.getCurrentUser === "function"
+  );
+}
+
+function setProductGridBusy(isBusy) {
+  if (!productGrid) return;
+  productGrid.setAttribute("aria-busy", isBusy ? "true" : "false");
+}
+
+function renderProductUnavailableState(message, { local = false } = {}) {
+  if (!productGrid) return;
+  setProductGridBusy(false);
+  productGrid.dataset.state = "unavailable";
+  resultCount.textContent = "Belum tersedia";
+  productGrid.innerHTML = `
+    <div class="product-state">
+      <div class="product-state-card">
+        <span class="product-state-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 7h16v12H4z"></path>
+            <path d="M8 7V5h8v2"></path>
+            <path d="M8 12h8"></path>
+          </svg>
+        </span>
+        <strong>Produk belum dapat dimuat</strong>
+        <p>${escapeHtml(message || "Periksa koneksi lalu coba lagi.")}</p>
+        <div class="product-state-actions">
+          ${local ? `<a class="primary" href="explore.html">Buka ulang</a>` : `<button class="primary" type="button" id="retryProductsButton">Coba lagi</button>`}
+        </div>
+        ${local ? `<small class="dev-note">Preview lokal tidak memuat konfigurasi Supabase dari repository.</small>` : ""}
+      </div>
+    </div>
+  `;
+  document.getElementById("retryProductsButton")?.addEventListener("click", loadProducts);
+}
+
+function clearExploreFailsafe() {
+  if (exploreLoadFailsafe) {
+    clearTimeout(exploreLoadFailsafe);
+    exploreLoadFailsafe = null;
+  }
+}
+
+function startExploreFailsafe() {
+  clearExploreFailsafe();
+  exploreLoadFailsafe = setTimeout(() => {
+    if (productGrid?.getAttribute("aria-busy") === "true") {
+      renderProductUnavailableState(
+        "Proses memuat terlalu lama. Silakan coba lagi."
+      );
+    }
+  }, 8000);
+}
 
 function escapeHtml(value) {
   return String(value || "")
@@ -95,7 +166,7 @@ function normalizeCategory(product) {
 }
 
 function getPublicImageUrl(storagePath) {
-  if (!storagePath) return "";
+  if (!storagePath || !hasExploreBackend() || !window.adaajaSupabase.storage) return "";
 
   const { data } = window.adaajaSupabase.storage
     .from(PRODUCT_IMAGE_BUCKET)
@@ -106,6 +177,10 @@ function getPublicImageUrl(storagePath) {
 
 async function getSession() {
   if (currentSession?.user) return currentSession;
+  if (!hasExploreBackend()) {
+    currentSession = null;
+    return null;
+  }
 
   const { data, error } = await window.adaajaSupabase.auth.getSession();
 
@@ -306,6 +381,8 @@ function getFilteredProducts() {
 
 function renderProducts() {
   const data = getFilteredProducts();
+  setProductGridBusy(false);
+  productGrid.dataset.state = data.length ? "ready" : "empty";
 
   resultTitle.textContent =
     searchInput.value.trim()
@@ -332,19 +409,19 @@ function renderProducts() {
           </svg>
         </span>
 
-        <strong>${hasFilters ? "Produk tidak ditemukan" : "Belum ada produk"}</strong>
+        <strong>${hasFilters ? "Belum ada yang cocok" : "Belum ada produk"}</strong>
 
         <p>
           ${
             hasFilters
-              ? "Coba ubah kata pencarian, kategori, atau filter yang digunakan."
+              ? "Coba kata kunci, kategori, atau filter lain."
               : "Produk terbaru dari pengguna akan muncul di halaman ini."
           }
         </p>
 
         ${
           hasFilters
-            ? `<button type="button" id="clearAllButton">Hapus pencarian & filter</button>`
+            ? `<button type="button" id="clearAllButton">Reset pencarian</button>`
             : `<a href="upload.html">Jual produk pertama</a>`
         }
       </div>
@@ -364,8 +441,9 @@ function renderProducts() {
 }
 
 async function loadFavorites() {
-  const user = await window.AdaAjaAuth.getCurrentUser();
   favoriteProductIds = new Set();
+  if (!hasExploreBackend() || !hasExploreAuthHelper()) return;
+  const user = await window.AdaAjaAuth.getCurrentUser();
 
   if (!user) return;
 
@@ -383,6 +461,11 @@ async function loadFavorites() {
 }
 
 async function toggleFavorite(productId, button) {
+  if (!hasExploreBackend() || !hasExploreAuthHelper()) {
+    localStorage.setItem("redirectAfterLogin", location.href);
+    location.href = "login.html";
+    return;
+  }
   const user = await window.AdaAjaAuth.getCurrentUser();
 
   if (!user) {
@@ -432,6 +515,18 @@ function bindFavoriteButtons() {
 
 async function loadProducts() {
   resultCount.textContent = "Memuat produk...";
+  setProductGridBusy(true);
+  productGrid.dataset.state = "loading";
+  startExploreFailsafe();
+
+  if (!hasExploreBackend()) {
+    clearExploreFailsafe();
+    const message = EXPLORE_IS_FILE
+      ? "Halaman sedang dibuka sebagai file lokal. Jalankan melalui GitHub Pages/repository agar data Supabase dapat dimuat."
+      : "Konfigurasi data AdaAja belum tersedia.";
+    renderProductUnavailableState(message, { local: EXPLORE_IS_FILE });
+    return;
+  }
 
   try {
     await loadFavorites();
@@ -497,39 +592,34 @@ async function loadProducts() {
       };
     });
 
+    clearExploreFailsafe();
+    setProductGridBusy(false);
+    productGrid.dataset.state = products.length ? "ready" : "empty";
     renderProducts();
   } catch (error) {
+    clearExploreFailsafe();
     console.error("Gagal memuat produk Supabase:", error);
-
-    resultCount.textContent = "Gagal memuat";
-
-    productGrid.innerHTML = `
-      <div class="search-empty">
-        <strong>Produk belum dapat dimuat</strong>
-        <p>${escapeHtml(error.message || "Silakan muat ulang halaman.")}</p>
-        <button type="button" id="reloadButton">Muat ulang</button>
-      </div>
-    `;
-
-    document
-      .getElementById("reloadButton")
-      ?.addEventListener("click", loadProducts);
+    renderProductUnavailableState(
+      error?.message || "Periksa koneksi lalu coba lagi."
+    );
   }
 }
 
 function openPanel(panel) {
+  if (!panel) return;
   panel.classList.add("active");
   panel.setAttribute("aria-hidden", "false");
   document.body.classList.add("panel-open");
 }
 
 function closePanel(panel) {
+  if (!panel) return;
   panel.classList.remove("active");
   panel.setAttribute("aria-hidden", "true");
 
   if (
     !document.querySelector(
-      ".notification-panel.active,.filter-panel.active,.account-panel.active"
+      ".notification-panel.active,.filter-panel.active,.account-panel.active,.sort-panel.active"
     )
   ) {
     document.body.classList.remove("panel-open");
@@ -613,6 +703,10 @@ function resetAll() {
 }
 
 async function applyNearbySearch() {
+  if (!hasExploreBackend()) {
+    searchInput.focus();
+    return;
+  }
   const session = await getSession();
 
   if (!session?.user) {
@@ -673,11 +767,9 @@ document.getElementById("notificationButton").onclick =
 
 document.getElementById("accountButton")?.addEventListener("click", handleAccountClick);
 
-document.getElementById("closeAccountPanel").onclick =
-  closeAccountPanel;
+document.getElementById("closeAccountPanel")?.addEventListener("click", closeAccountPanel);
 
-document.getElementById("accountBackdrop").onclick =
-  closeAccountPanel;
+document.getElementById("accountBackdrop")?.addEventListener("click", closeAccountPanel);
 
 document.getElementById("closeNotification").onclick =
   () => closePanel(notificationPanel);
@@ -819,27 +911,89 @@ document.addEventListener("click", async (event) => {
       );
     });
 
+  updateFilterIndicator();
+
+  if (!hasExploreBackend()) {
+    console.warn("[AdaAja Explore] Supabase dependency is not available.", {
+      protocol: location.protocol
+    });
+    await loadProducts();
+    return;
+  }
+
   await getSession();
 
   await Promise.all([
     setupAccount(),
     loadProducts()
   ]);
-
-  updateFilterIndicator();
 })();
 
 /* ===== Explore final UI helpers ===== */
+function normalizeLocationText(value) {
+  let raw = String(value || "").trim();
+  if (!raw) return "";
+
+  // Collapse broken letter-spacing from stored text, e.g. "B A T A M" -> "BATAM".
+  raw = raw.replace(/\b(?:[A-Za-z]\s+){2,}[A-Za-z]\b/g, (chunk) =>
+    chunk.replace(/\s+/g, "")
+  );
+  raw = raw.replace(/\s+/g, " ").trim();
+
+  // Normalize common Indonesian administrative labels without assuming a city.
+  raw = raw
+    .replace(/\bKOTA\s+/gi, "Kota ")
+    .replace(/\bKABUPATEN\s+/gi, "Kabupaten ")
+    .replace(/\bKAB\.?\s+/gi, "Kabupaten ");
+
+  return raw;
+}
+
+function titleCaseLocation(value) {
+  return String(value || "").toLowerCase().replace(/(^|[\s-])([a-zà-ÿ])/g, (_, lead, chr) =>
+    lead + chr.toUpperCase()
+  );
+}
+
+function formatProductLocation(productOrRegion) {
+  const product = typeof productOrRegion === "object" && productOrRegion !== null
+    ? productOrRegion
+    : { ship_from_region: productOrRegion };
+
+  const directCity = normalizeLocationText(
+    product.city || product.ship_from_city || product.seller_city || ""
+  );
+  if (directCity) return titleCaseLocation(directCity).slice(0, 34);
+
+  const raw = normalizeLocationText(product.ship_from_region || "");
+  if (!raw) return "Lokasi belum tersedia";
+
+  const adminMatch = raw.match(/\b(Kota|Kabupaten)\s+([A-Za-zÀ-ÿ][A-Za-zÀ-ÿ .'-]{1,40})/i);
+  if (adminMatch) {
+    const cleaned = `${adminMatch[1]} ${adminMatch[2]}`
+      .split(/,|;|\||\bProv(?:insi)?\b|\bKec(?:amatan)?\.?\b/i)[0]
+      .trim();
+    return titleCaseLocation(cleaned).slice(0, 34);
+  }
+
+  const parts = raw.split(",").map((v) => v.trim()).filter(Boolean);
+  const administrative = parts.find((v) =>
+    /^(?:kota|kabupaten)\s+/i.test(v)
+  );
+  if (administrative) return titleCaseLocation(administrative).slice(0, 34);
+
+  // Prefer a plausible city-level segment over street / housing / postal-code fragments.
+  const plausible = [...parts].reverse().find((v) =>
+    !/^(?:jl\.?|jalan|jln\.?|perum(?:ahan)?|komp(?:lek)?|blok|no\.?|rt\b|rw\b|kel(?:urahan)?\.?|kec(?:amatan)?\.?)/i.test(v) &&
+    !/^\d{5}$/.test(v) &&
+    v.length <= 34
+  );
+
+  return titleCaseLocation(plausible || raw).slice(0, 34);
+}
+
 function extractCity(region) {
-  const raw = String(region || '').trim();
-  if (!raw) return 'Lokasi belum tersedia';
-  const cityMatch = raw.match(/(?:Kota|Kabupaten|Kab\.?|City)\s+([A-Za-zÀ-ÿ .'-]+)/i);
-  if (cityMatch) return cityMatch[0].replace(/\s+/g,' ').trim();
-  const known = ['Batam','Jakarta','Bandung','Surabaya','Medan','Semarang','Yogyakarta','Makassar','Pekanbaru','Palembang','Tangerang','Bekasi','Depok','Bogor','Malang','Denpasar','Balikpapan','Samarinda','Padang','Pontianak','Banjarmasin','Solo','Surakarta'];
-  const found = known.find(c => raw.toLowerCase().includes(c.toLowerCase()));
-  if (found) return found;
-  const parts = raw.split(',').map(v=>v.trim()).filter(Boolean);
-  return (parts.find(v => !/^(perum|jalan|jl\.?|blok|no\.?|rt|rw|kel\.?|kec\.?)/i.test(v)) || parts[parts.length-1] || raw).slice(0,28);
+  return formatProductLocation(region);
 }
 
 function formatCompactRupiah(value){
@@ -852,9 +1006,9 @@ renderProductCard = function(product) {
   const imageHtml = image ? `<img src="${image}" alt="${escapeHtml(product.name || 'Produk')}" loading="lazy">` : `<div class="product-image-placeholder">Foto tidak tersedia</div>`;
   const condition = formatCondition(product.condition);
   const unit = formatUnit(product.unit);
-  const city = extractCity(product.ship_from_region);
+  const city = formatProductLocation(product);
   return `<a href="product-detail.html?id=${encodeURIComponent(product.id)}" class="product-card">
-    <div class="product-image">${imageHtml}${condition ? `<span class="product-condition">${escapeHtml(condition)}</span>` : ''}
+    <div class="product-image">${imageHtml}${condition ? `<span class="product-condition ${normalizeCondition(product.condition) === 'bekas' ? 'condition-used' : 'condition-new'}">${escapeHtml(condition)}</span>` : ''}
       <button class="favorite-mark ${favoriteProductIds.has(product.id)?'active':''}" type="button" data-favorite-product="${escapeHtml(product.id)}" aria-label="${favoriteProductIds.has(product.id)?'Hapus dari favorit':'Simpan ke favorit'}"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"></path></svg></button>
     </div>
     <div class="product-body"><h3>${escapeHtml(product.name || 'Produk')}</h3>
@@ -885,7 +1039,13 @@ const _renderProducts = renderProducts;
 renderProducts = function(){
   _renderProducts();
   const keyword=searchInput.value.trim();
-  if(keyword){resultTitle.textContent=`Hasil untuk “${keyword}”`;}
+  const eyebrow=document.getElementById('resultEyebrow');
+  if(keyword){
+    resultTitle.textContent=`Hasil untuk “${keyword}”`;
+    if(eyebrow) eyebrow.textContent='HASIL PENCARIAN';
+  } else if(eyebrow) {
+    eyebrow.textContent='TEMUKAN';
+  }
   renderActiveFilterChips();
 };
 
@@ -896,3 +1056,52 @@ if(searchInput && !document.getElementById('searchClear')){
   const sync=()=>clear.classList.toggle('visible',!!searchInput.value.trim());
   searchInput.addEventListener('input',sync); clear.onclick=()=>{searchInput.value='';sync();renderProducts();searchInput.focus();}; sync();
 }
+
+
+/* ===== Revision 2 custom sort presentation ===== */
+(function setupPremiumSort(){
+  const sortButton = document.getElementById("sortButton");
+  const sortLabel = document.getElementById("sortButtonLabel");
+  const closeSort = document.getElementById("closeSort");
+  const sortBackdrop = document.getElementById("sortBackdrop");
+  if (!sortButton || !sortSelect || !sortPanel) return;
+
+  const syncSortUI = () => {
+    const selected = sortSelect.options[sortSelect.selectedIndex];
+    if (sortLabel) sortLabel.textContent = selected?.textContent || "Terbaru";
+    document.querySelectorAll("[data-sort-value]").forEach((button) => {
+      button.classList.toggle("selected", button.dataset.sortValue === sortSelect.value);
+    });
+  };
+
+  sortButton.addEventListener("click", () => {
+    syncSortUI();
+    openPanel(sortPanel);
+  });
+  closeSort?.addEventListener("click", () => closePanel(sortPanel));
+  sortBackdrop?.addEventListener("click", () => closePanel(sortPanel));
+
+  document.querySelectorAll("[data-sort-value]").forEach((button) => {
+    button.addEventListener("click", () => {
+      sortSelect.value = button.dataset.sortValue;
+      sortSelect.dispatchEvent(new Event("change", { bubbles: true }));
+      syncSortUI();
+      closePanel(sortPanel);
+    });
+  });
+
+  sortSelect.addEventListener("change", syncSortUI);
+  syncSortUI();
+})();
+
+/* ===== Explore Revision 5: discovery navigation polish ===== */
+(function setupDiscoveryCategoryPolish(){
+  const strip = document.querySelector('.category-strip');
+  if (!strip) return;
+  strip.querySelectorAll('.category-chip').forEach((button) => {
+    button.setAttribute('aria-label', `Kategori ${button.textContent.trim()}`);
+    button.addEventListener('click', () => {
+      button.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    });
+  });
+})();
