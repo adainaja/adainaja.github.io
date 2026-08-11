@@ -144,6 +144,7 @@ async function loadCurrentProfile() {
 }
 
 async function setupAccount() {
+  if (!accountAvatar) return;
   const session = await getSession();
 
   if (!session?.user) {
@@ -670,8 +671,7 @@ sortSelect.addEventListener("change", renderProducts);
 document.getElementById("notificationButton").onclick =
   () => openPanel(notificationPanel);
 
-document.getElementById("accountButton").onclick =
-  handleAccountClick;
+document.getElementById("accountButton")?.addEventListener("click", handleAccountClick);
 
 document.getElementById("closeAccountPanel").onclick =
   closeAccountPanel;
@@ -828,3 +828,71 @@ document.addEventListener("click", async (event) => {
 
   updateFilterIndicator();
 })();
+
+/* ===== Explore final UI helpers ===== */
+function extractCity(region) {
+  const raw = String(region || '').trim();
+  if (!raw) return 'Lokasi belum tersedia';
+  const cityMatch = raw.match(/(?:Kota|Kabupaten|Kab\.?|City)\s+([A-Za-zÀ-ÿ .'-]+)/i);
+  if (cityMatch) return cityMatch[0].replace(/\s+/g,' ').trim();
+  const known = ['Batam','Jakarta','Bandung','Surabaya','Medan','Semarang','Yogyakarta','Makassar','Pekanbaru','Palembang','Tangerang','Bekasi','Depok','Bogor','Malang','Denpasar','Balikpapan','Samarinda','Padang','Pontianak','Banjarmasin','Solo','Surakarta'];
+  const found = known.find(c => raw.toLowerCase().includes(c.toLowerCase()));
+  if (found) return found;
+  const parts = raw.split(',').map(v=>v.trim()).filter(Boolean);
+  return (parts.find(v => !/^(perum|jalan|jl\.?|blok|no\.?|rt|rw|kel\.?|kec\.?)/i.test(v)) || parts[parts.length-1] || raw).slice(0,28);
+}
+
+function formatCompactRupiah(value){
+  return formatRupiah(value).replace(/\u00a0/g,' ');
+}
+
+// Override product-card renderer with compact marketplace hierarchy.
+renderProductCard = function(product) {
+  const image = getPublicImageUrl(product.cover_storage_path || '');
+  const imageHtml = image ? `<img src="${image}" alt="${escapeHtml(product.name || 'Produk')}" loading="lazy">` : `<div class="product-image-placeholder">Foto tidak tersedia</div>`;
+  const condition = formatCondition(product.condition);
+  const unit = formatUnit(product.unit);
+  const city = extractCity(product.ship_from_region);
+  return `<a href="product-detail.html?id=${encodeURIComponent(product.id)}" class="product-card">
+    <div class="product-image">${imageHtml}${condition ? `<span class="product-condition">${escapeHtml(condition)}</span>` : ''}
+      <button class="favorite-mark ${favoriteProductIds.has(product.id)?'active':''}" type="button" data-favorite-product="${escapeHtml(product.id)}" aria-label="${favoriteProductIds.has(product.id)?'Hapus dari favorit':'Simpan ke favorit'}"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"></path></svg></button>
+    </div>
+    <div class="product-body"><h3>${escapeHtml(product.name || 'Produk')}</h3>
+      <div class="product-price-line"><strong>${formatCompactRupiah(product.price)}</strong><span class="product-unit">/ ${escapeHtml(unit)}</span></div>
+      <div class="product-footer"><span class="product-location"><svg viewBox="0 0 24 24"><path d="M12 21s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path><circle cx="12" cy="10" r="2"></circle></svg>${escapeHtml(city)}</span>
+      <div class="product-meta"><span>Stok ${Number(product.stock||0)} ${escapeHtml(unit)}</span><span class="product-min">Min. ${formatMin(product.minimum_order)} ${escapeHtml(unit)}</span></div></div>
+    </div></a>`;
+};
+
+function renderActiveFilterChips(){
+  const box=document.getElementById('activeFilterChips'); if(!box)return;
+  const chips=[];
+  if(activeCondition!=='all') chips.push({key:'condition',label:formatCondition(activeCondition)});
+  if(minPrice>0 || maxPrice!==Infinity){
+    const left=minPrice>0?formatRupiah(minPrice):'Rp0'; const right=maxPrice!==Infinity?formatRupiah(maxPrice):'Tanpa batas';
+    chips.push({key:'price',label:`${left}–${right}`});
+  }
+  if(!chips.length){box.hidden=true;box.innerHTML='';return;}
+  box.hidden=false; box.innerHTML=chips.map(c=>`<button class="active-filter-chip" type="button" data-remove-filter="${c.key}">${escapeHtml(c.label)} <b>×</b></button>`).join('');
+  box.querySelectorAll('[data-remove-filter]').forEach(btn=>btn.onclick=()=>{
+    if(btn.dataset.removeFilter==='condition'){activeCondition='all';document.querySelectorAll('[data-condition]').forEach(x=>x.classList.toggle('selected',x.dataset.condition==='all'));}
+    if(btn.dataset.removeFilter==='price'){minPrice=0;maxPrice=Infinity;minPriceInput.value='';maxPriceInput.value='';}
+    updateFilterIndicator();renderActiveFilterChips();renderProducts();
+  });
+}
+
+const _renderProducts = renderProducts;
+renderProducts = function(){
+  _renderProducts();
+  const keyword=searchInput.value.trim();
+  if(keyword){resultTitle.textContent=`Hasil untuk “${keyword}”`;}
+  renderActiveFilterChips();
+};
+
+// Search clear button.
+if(searchInput && !document.getElementById('searchClear')){
+  const clear=document.createElement('button');clear.type='button';clear.id='searchClear';clear.className='search-clear';clear.setAttribute('aria-label','Hapus pencarian');clear.innerHTML='<svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg>';
+  searchInput.parentElement.appendChild(clear);
+  const sync=()=>clear.classList.toggle('visible',!!searchInput.value.trim());
+  searchInput.addEventListener('input',sync); clear.onclick=()=>{searchInput.value='';sync();renderProducts();searchInput.focus();}; sync();
+}
