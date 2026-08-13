@@ -107,6 +107,8 @@ async function registerWithSupabase() {
 
     sessionStorage.setItem("pending_registration_email", email);
     sessionStorage.setItem("pending_registration_name", fullName);
+    sessionStorage.setItem("pending_terms_accepted_at", new Date().toISOString());
+    sessionStorage.setItem("pending_terms_version", "2026-08-14");
 
     localStorage.removeItem("register_password");
     localStorage.removeItem("register_email");
