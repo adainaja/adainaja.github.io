@@ -1,3 +1,4 @@
+// AdaAja Checkout — Midtrans verification legal disclosure revision 2026-08-14
 const params = new URLSearchParams(location.search);
 const productIdFromUrl = params.get("product_id") || params.get("id");
 const offerId = params.get("offer_id");
