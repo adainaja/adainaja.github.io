@@ -78,10 +78,7 @@ async function registerWithSupabase() {
   }
 
   if (!agree) {
-    setMessage(
-      "Setujui Syarat & Ketentuan dan Kebijakan Privasi terlebih dahulu.",
-      "error"
-    );
+    openLegalModal();
     return;
   }
 
@@ -154,6 +151,72 @@ async function registerWithSupabase() {
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   registerWithSupabase();
+});
+
+
+const legalModal = document.getElementById("legalModal");
+const legalModalBackdrop = document.getElementById("legalModalBackdrop");
+const legalModalClose = document.getElementById("legalModalClose");
+const legalCancelButton = document.getElementById("legalCancelButton");
+const legalAcceptButton = document.getElementById("legalAcceptButton");
+const modalAgree = document.getElementById("modalAgree");
+const legalModalMessage = document.getElementById("legalModalMessage");
+const mainAgree = document.getElementById("agree");
+const termsStatusRow = document.getElementById("termsStatusRow");
+const termsStatusText = document.getElementById("termsStatusText");
+
+function openLegalModal() {
+  legalModal.classList.add("active");
+  legalModal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("legal-modal-open");
+  legalModalMessage.textContent = "";
+  modalAgree.checked = Boolean(mainAgree.checked);
+}
+
+function closeLegalModal() {
+  legalModal.classList.remove("active");
+  legalModal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("legal-modal-open");
+  legalModalMessage.textContent = "";
+}
+
+function markLegalApproved() {
+  mainAgree.checked = true;
+  termsStatusRow?.classList.add("approved");
+
+  if (termsStatusText) {
+    termsStatusText.textContent = "Syarat & Privasi telah disetujui";
+  }
+
+  sessionStorage.setItem("adaaaja_legal_consent", JSON.stringify({
+    accepted_at: new Date().toISOString(),
+    terms_version: "2026-08-14",
+    privacy_version: "2026-08-14"
+  }));
+}
+
+legalModalBackdrop?.addEventListener("click", closeLegalModal);
+legalModalClose?.addEventListener("click", closeLegalModal);
+legalCancelButton?.addEventListener("click", closeLegalModal);
+
+legalAcceptButton?.addEventListener("click", async () => {
+  if (!modalAgree.checked) {
+    legalModalMessage.textContent =
+      "Centang persetujuan Syarat & Ketentuan dan Kebijakan Privasi untuk melanjutkan.";
+    return;
+  }
+
+  markLegalApproved();
+  closeLegalModal();
+  setMessage("");
+
+  await registerWithSupabase();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && legalModal?.classList.contains("active")) {
+    closeLegalModal();
+  }
 });
 
 window.addEventListener("load", async () => {

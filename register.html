@@ -136,21 +136,21 @@
 
         <p id="message" role="status" aria-live="polite"></p>
 
-        <label class="terms-row" for="agree">
-          <input type="checkbox" id="agree" required>
-          <span class="custom-check">
+        <div class="terms-row terms-status-row" id="termsStatusRow">
+          <input type="checkbox" id="agree" required tabindex="-1" aria-hidden="true">
+          <span class="custom-check" aria-hidden="true">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="m5 12 4 4 10-10"></path>
             </svg>
           </span>
           <span>
-            Saya menyetujui
-            <a href="about-app.html#terms">Syarat & Ketentuan</a>
-            dan
-            <a href="about-app.html#privacy">Kebijakan Privasi</a>
-            AdaAja.
+            <strong id="termsStatusText">Persetujuan belum diberikan</strong>
+            <small>
+              Syarat & Ketentuan dan Kebijakan Privasi akan ditampilkan saat Anda menekan
+              <b>Buat Akun AdaAja</b>.
+            </small>
           </span>
-        </label>
+        </div>
 
         <button class="primary-button" id="registerButton" type="submit">
           <span>Buat Akun AdaAja</span>
@@ -167,6 +167,100 @@
       </form>
     </section>
   </main>
+
+
+  <div class="legal-modal" id="legalModal" aria-hidden="true">
+    <button class="legal-modal-backdrop" id="legalModalBackdrop" type="button" aria-label="Tutup persetujuan"></button>
+
+    <section class="legal-modal-sheet" role="dialog" aria-modal="true" aria-labelledby="legalModalTitle">
+      <div class="legal-modal-handle"></div>
+
+      <div class="legal-modal-head">
+        <span class="legal-modal-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 3h9l3 3v15H6z"></path>
+            <path d="M15 3v4h4"></path>
+            <path d="M9 11h6M9 15h6"></path>
+          </svg>
+        </span>
+
+        <div>
+          <span class="legal-modal-eyebrow">SEBELUM MELANJUTKAN</span>
+          <h2 id="legalModalTitle">Syarat & Privasi AdaAja</h2>
+          <p>Baca ketentuan penggunaan dan kebijakan privasi sebelum membuat akun.</p>
+        </div>
+
+        <button class="legal-modal-close" id="legalModalClose" type="button" aria-label="Tutup">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="legal-modal-body">
+        <a class="legal-doc-card" href="about-app.html#terms" target="_blank" rel="noopener">
+          <span class="legal-doc-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 3h9l3 3v15H6z"></path>
+              <path d="M15 3v4h4M9 11h6M9 15h6"></path>
+            </svg>
+          </span>
+          <span class="legal-doc-copy">
+            <strong>Syarat & Ketentuan</strong>
+            <small>Ketentuan akun, transaksi, produk, pembayaran, pengiriman, dan penggunaan platform.</small>
+          </span>
+          <svg class="legal-doc-arrow" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m9 18 6-6-6-6"></path>
+          </svg>
+        </a>
+
+        <a class="legal-doc-card" href="about-app.html#privacy" target="_blank" rel="noopener">
+          <span class="legal-doc-icon privacy">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="5" y="10" width="14" height="11" rx="2"></rect>
+              <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+            </svg>
+          </span>
+          <span class="legal-doc-copy">
+            <strong>Kebijakan Privasi</strong>
+            <small>Penjelasan data akun, transaksi, keamanan, dan penggunaan data pengguna.</small>
+          </span>
+          <svg class="legal-doc-arrow" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m9 18 6-6-6-6"></path>
+          </svg>
+        </a>
+
+        <label class="modal-agreement" for="modalAgree">
+          <input type="checkbox" id="modalAgree">
+          <span class="modal-check">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m5 12 4 4 10-10"></path>
+            </svg>
+          </span>
+          <span>
+            Saya telah membaca dan menyetujui
+            <a href="about-app.html#terms" target="_blank" rel="noopener">Syarat & Ketentuan</a>
+            serta
+            <a href="about-app.html#privacy" target="_blank" rel="noopener">Kebijakan Privasi</a>
+            AdaAja.
+          </span>
+        </label>
+
+        <p class="legal-modal-message" id="legalModalMessage" role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="legal-modal-actions">
+        <button class="legal-cancel-button" id="legalCancelButton" type="button">Nanti</button>
+        <button class="legal-accept-button" id="legalAcceptButton" type="button">
+          Setujui & Lanjutkan
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 12h14"></path>
+            <path d="m13 6 6 6-6 6"></path>
+          </svg>
+        </button>
+      </div>
+    </section>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=20260807-1"></script>
