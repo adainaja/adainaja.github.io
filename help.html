@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Pusat Bantuan AdaAja untuk akun, pembelian, pembayaran, pengiriman, penjualan, pembatalan, refund, dan AdaPay.">
+  <title>Pusat Bantuan — AdaAja</title>
+  <link rel="stylesheet" href="help.css?v=20260814-1">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="page-header">
+      <a class="header-button" href="profile.html" aria-label="Kembali ke profil">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m15 18-6-6 6-6"></path>
+        </svg>
+      </a>
+
+      <div class="header-title">
+        <span>BANTUAN</span>
+        <h1>Pusat Bantuan</h1>
+      </div>
+
+      <a class="header-button" href="home.html" aria-label="Beranda">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m3 11 9-8 9 8"></path>
+          <path d="M5 10v10h14V10"></path>
+        </svg>
+      </a>
+    </header>
+
+    <main class="content">
+      <section class="hero">
+        <span class="hero-kicker">PUSAT BANTUAN ADAAJA</span>
+        <h2>Ada yang bisa kami bantu?</h2>
+        <p>Temukan panduan mengenai akun, pesanan, pembayaran, pengiriman, penjualan, pembatalan, refund, dan AdaPay.</p>
+      </section>
+
+      <div class="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.5-3.5"></path>
+        </svg>
+        <input id="helpSearch" type="search" placeholder="Cari bantuan, misalnya: refund, pembayaran..." autocomplete="off">
+      </div>
+
+      <section class="section">
+        <div class="section-heading">
+          <span>KATEGORI</span>
+          <h3>Pilih topik bantuan</h3>
+        </div>
+
+        <div class="categories" id="categoryGrid">
+          <a class="category-card orange" href="#faq-akun" data-keywords="akun keamanan login password otp verifikasi profil">
+            <span class="category-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="8" r="4"></circle>
+                <path d="M4 21a8 8 0 0 1 16 0"></path>
+              </svg>
+            </span>
+            <strong>Akun & Keamanan</strong>
+            <small>Login, verifikasi, profil, password, dan keamanan akun.</small>
+          </a>
+
+          <a class="category-card" href="#faq-pesanan" data-keywords="pembelian pesanan checkout beli transaksi order">
+            <span class="category-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 8h12l1 12H5L6 8Z"></path>
+                <path d="M9 8a3 3 0 0 1 6 0"></path>
+              </svg>
+            </span>
+            <strong>Pembelian & Pesanan</strong>
+            <small>Checkout, status pesanan, detail transaksi, dan penyelesaian.</small>
+          </a>
+
+          <a class="category-card" href="#faq-pembayaran" data-keywords="pembayaran midtrans bayar gagal pending berhasil sukses">
+            <span class="category-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                <path d="M3 10h18"></path>
+              </svg>
+            </span>
+            <strong>Pembayaran</strong>
+            <small>Metode bayar, status pembayaran, dan kendala transaksi.</small>
+          </a>
+
+          <a class="category-card orange" href="#faq-pengiriman" data-keywords="pengiriman kurir ongkir alamat resi">
+            <span class="category-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 7h11v10H3z"></path>
+                <path d="M14 10h4l3 3v4h-7z"></path>
+                <circle cx="7" cy="18" r="2"></circle>
+                <circle cx="18" cy="18" r="2"></circle>
+              </svg>
+            </span>
+            <strong>Pengiriman</strong>
+            <small>Alamat, kurir, ongkir, resi, dan status pengiriman.</small>
+          </a>
+
+          <a class="category-card" href="#faq-penjualan" data-keywords="penjualan seller jual produk upload edit listing">
+            <span class="category-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 6h16v14H4z"></path>
+                <path d="M8 6V4h8v2"></path>
+                <path d="M8 11h8"></path>
+              </svg>
+            </span>
+            <strong>Penjualan</strong>
+            <small>Upload produk, kelola listing, pesanan masuk, dan seller.</small>
+          </a>
+
+          <a class="category-card" href="#faq-refund" data-keywords="refund pengembalian dana pembatalan retur">
+            <span class="category-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 12a9 9 0 1 0 3-6.7"></path>
+                <path d="M3 4v6h6"></path>
+              </svg>
+            </span>
+            <strong>Pembatalan & Refund</strong>
+            <small>Panduan pembatalan transaksi dan pengembalian dana.</small>
+          </a>
+
+          <a class="category-card orange" href="#faq-adapay" data-keywords="adapay saldo top up dompet wallet pencairan">
+            <span class="category-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 6h14a2 2 0 0 1 2 2v10H4V6Z"></path>
+                <path d="M16 12h4v4h-4a2 2 0 0 1 0-4Z"></path>
+              </svg>
+            </span>
+            <strong>AdaPay</strong>
+            <small>Saldo, top up, riwayat transaksi, dan pencairan.</small>
+          </a>
+
+          <a class="category-card" href="#hubungi" data-keywords="hubungi customer service bantuan cs email dukungan">
+            <span class="category-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 5h16v12H8l-4 4V5Z"></path>
+              </svg>
+            </span>
+            <strong>Hubungi Kami</strong>
+            <small>Butuh bantuan lebih lanjut? Hubungi tim AdaAja.</small>
+          </a>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <span>FAQ</span>
+          <h3>Pertanyaan umum</h3>
+        </div>
+
+        <div class="faq-card" id="faqList">
+          <div class="faq-item" id="faq-akun" data-keywords="akun login verifikasi otp password profil">
+            <button class="faq-question" type="button" aria-expanded="false">
+              <strong>Saya tidak bisa masuk ke akun. Apa yang harus dilakukan?</strong>
+              <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>
+            </button>
+            <div class="faq-answer">
+              Pastikan email atau nomor HP yang digunakan benar. Jika proses verifikasi belum selesai, selesaikan verifikasi terlebih dahulu. Bila masalah berlanjut, gunakan menu Hubungi Kami.
+            </div>
+          </div>
+
+          <div class="faq-item" id="faq-pesanan" data-keywords="pesanan checkout order beli transaksi">
+            <button class="faq-question" type="button" aria-expanded="false">
+              <strong>Di mana saya bisa melihat status pesanan?</strong>
+              <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>
+            </button>
+            <div class="faq-answer">
+              Status transaksi dapat dilihat melalui menu Aktivitas atau Pesanan Saya. Status akan mengikuti proses pembayaran, pemrosesan penjual, pengiriman, dan penyelesaian pesanan.
+            </div>
+          </div>
+
+          <div class="faq-item" id="faq-pembayaran" data-keywords="pembayaran midtrans pending gagal sukses berhasil">
+            <button class="faq-question" type="button" aria-expanded="false">
+              <strong>Pembayaran sudah dilakukan tetapi status masih pending.</strong>
+              <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>
+            </button>
+            <div class="faq-answer">
+              Status pembayaran dapat membutuhkan waktu untuk diperbarui setelah konfirmasi dari penyedia pembayaran. Jangan melakukan pembayaran ulang untuk pesanan yang sama sebelum status transaksi dipastikan.
+            </div>
+          </div>
+
+          <div class="faq-item" id="faq-pengiriman" data-keywords="pengiriman kurir resi alamat ongkir">
+            <button class="faq-question" type="button" aria-expanded="false">
+              <strong>Bagaimana cara mengetahui status pengiriman?</strong>
+              <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>
+            </button>
+            <div class="faq-answer">
+              Setelah pesanan dikirim, informasi pengiriman dan nomor resi dapat dilihat pada detail pesanan apabila tersedia dari layanan pengiriman yang dipilih.
+            </div>
+          </div>
+
+          <div class="faq-item" id="faq-penjualan" data-keywords="seller jual upload produk penjualan listing">
+            <button class="faq-question" type="button" aria-expanded="false">
+              <strong>Bagaimana cara mulai menjual produk di AdaAja?</strong>
+              <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>
+            </button>
+            <div class="faq-answer">
+              Login ke akun, tekan tombol tambah/jual, lengkapi informasi produk, harga, kondisi, stok, berat, deskripsi, serta alamat asal pengiriman, lalu publikasikan produk.
+            </div>
+          </div>
+
+          <div class="faq-item" id="faq-refund" data-keywords="refund pembatalan retur pengembalian dana">
+            <button class="faq-question" type="button" aria-expanded="false">
+              <strong>Bagaimana cara mengajukan pembatalan atau refund?</strong>
+              <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>
+            </button>
+            <div class="faq-answer">
+              Pengajuan pembatalan atau refund mengikuti status transaksi dan Kebijakan Pembatalan & Pengembalian Dana AdaAja. Untuk kasus tertentu, hubungi tim bantuan dengan menyertakan nomor pesanan.
+              <a class="inline-link" href="about-app.html#refund">Baca kebijakan refund</a>.
+            </div>
+          </div>
+
+          <div class="faq-item" id="faq-adapay" data-keywords="adapay saldo top up dompet wallet pencairan">
+            <button class="faq-question" type="button" aria-expanded="false">
+              <strong>Di mana saya bisa melihat saldo dan riwayat AdaPay?</strong>
+              <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>
+            </button>
+            <div class="faq-answer">
+              Buka halaman Profil lalu pilih AdaPay. Di sana Anda dapat melihat saldo tersedia, riwayat transaksi, dan fitur lain yang tersedia untuk akun Anda.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="hubungi">
+        <div class="section-heading">
+          <span>DUKUNGAN</span>
+          <h3>Masih butuh bantuan?</h3>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-top">
+            <span class="contact-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 5h16v12H8l-4 4V5Z"></path>
+              </svg>
+            </span>
+            <span class="contact-copy">
+              <strong>Hubungi Tim AdaAja</strong>
+              <small>Untuk masalah transaksi, sertakan nomor pesanan agar proses pengecekan lebih cepat.</small>
+            </span>
+          </div>
+
+          <div class="contact-actions">
+            <!-- WAJIB: ganti alamat di bawah dengan email customer support resmi sebelum link uji coba dikirim ke Midtrans. -->
+            <a class="primary" href="mailto:EMAIL_SUPPORT_RESMI_ADAAJA" id="emailSupport">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 4h16v16H4z"></path>
+                <path d="m4 7 8 6 8-6"></path>
+              </svg>
+              Email Dukungan
+            </a>
+
+            <a class="secondary" href="about-app.html">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M12 10v6M12 7h.01"></path>
+              </svg>
+              Tentang Aplikasi
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section compliance-section">
+        <div class="section-heading">
+          <span>INFORMASI & KEBIJAKAN</span>
+          <h3>Ketentuan layanan</h3>
+        </div>
+
+        <div class="policy-menu">
+          <a href="about-app.html#terms">
+            <span>Syarat & Ketentuan</span>
+            <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
+          </a>
+          <a href="about-app.html#privacy">
+            <span>Kebijakan Privasi</span>
+            <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
+          </a>
+          <a href="about-app.html#refund">
+            <span>Pembatalan & Pengembalian Dana</span>
+            <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="help.js?v=20260814-1"></script>
+</body>
+</html>
